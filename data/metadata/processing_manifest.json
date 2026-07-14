@@ -1,0 +1,20 @@
+{
+  "project": "AI Legal Assistant - Vietnamese Land Law",
+  "pipeline_name": "Knowledge Base Builder",
+  "pipeline_version": "0.1.0",
+  "created_at": "2026-07-07T21:17:45",
+  "default_parser": "pymupdf",
+  "default_chunk_strategy": "legal_structure",
+  "default_embedding_model": "intfloat/multilingual-e5-small",
+  "vector_database": "faiss",
+  "processing_stages": [
+    "metadata_created",
+    "downloaded",
+    "parsed",
+    "structure_extracted",
+    "chunked",
+    "embedded",
+    "indexed"
+  ],
+  "notes": "Manifest quản lý cấu hình xử lý dữ liệu cho Knowledge Base Builder."
+}

@@ -1,0 +1,23 @@
+{
+  "document_id": "luat_dat_dai_2024",
+  "input_file": "E:\\2026\\project\\AI - Agent pháp luật\\data\\processed\\luat_dat_dai_2024.txt",
+  "output_file": "E:\\2026\\project\\AI - Agent pháp luật\\data\\processed\\luat_dat_dai_2024_normalized.txt",
+  "raw_characters": 544171,
+  "normalized_characters": 523079,
+  "raw_lines": 9503,
+  "normalized_lines": 5160,
+  "removed_lines": 522,
+  "blank_lines_collapsed": 662,
+  "wrapped_lines_merged": 3159,
+  "wrapped_titles_merged": 70,
+  "removed_by_type": {
+    "header": 253,
+    "page_number": 253,
+    "digital_signature": 12,
+    "document_banner": 4
+  },
+  "status": "success",
+  "warnings": [],
+  "removed_characters": 21092,
+  "retention_ratio": 0.96124
+}

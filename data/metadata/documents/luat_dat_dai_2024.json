@@ -1,0 +1,51 @@
+{
+  "document_id": "luat_dat_dai_2024",
+  "document_title": "Luật Đất đai 2024",
+  "document_number": "31/2024/QH15",
+  "document_type": "Luật",
+  "version": "1.0",
+  "language": "vi",
+  "issuing_authority": "",
+  "issued_date": "",
+  "original_effective_date": "",
+  "current_effective_date": "",
+  "expiry_date": null,
+  "legal_status": "unknown",
+  "scope": "Toàn quốc",
+  "jurisdiction": "Việt Nam",
+  "legal_domain": "Đất đai",
+  "tags": [
+    "dat_dai",
+    "cap_gcn",
+    "dang_ky_dat_dai",
+    "tach_thua",
+    "hop_thua",
+    "chuyen_muc_dich",
+    "chuyen_nhuong",
+    "boi_thuong",
+    "thu_hoi_dat"
+  ],
+  "relations": {
+    "amended_by": [],
+    "amends": [],
+    "replaces": [],
+    "replaced_by": [],
+    "related_documents": []
+  },
+  "source": {
+    "source_type": "official",
+    "source_name": "",
+    "source_url": "",
+    "raw_file_path": "data/raw/laws/luat_dat_dai_2024",
+    "sha256": null
+  },
+  "processing": {
+    "processing_status": "metadata_created",
+    "parser": null,
+    "chunk_strategy": null,
+    "embedding_model": null,
+    "indexed": false,
+    "last_processed_at": null
+  },
+  "notes": "Văn bản lõi dùng để xây dựng Legal Structure Parser, Legal Chunker và Citation Engine."
+}

@@ -1,1 +1,60 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+*.egg
+.eggs/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
 
+# Local environments and secrets
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+# Editors and operating-system files
+.vscode/
+.idea/
+.history/
+.DS_Store
+Thumbs.db
+.ipynb_checkpoints/
+
+# Runtime output
+*.log
+logs/
+tmp/
+data/evaluation/runs/
+
+# Model caches and checkpoints
+.cache/
+.huggingface/
+models/
+checkpoints/
+*.ckpt
+*.pt
+*.pth
+*.bin
+*.onnx
+
+# Generated retrieval artifacts are ignored by default.
+data/processed/*.npy
+data/processed/*embeddings*
+data/processed/*manifest*
+data/processed/*metadata*
+data/vector_db/*.faiss
+data/vector_db/*metadata*
+
+# Keep the small, verified MVP snapshot runnable after cloning.
+!data/processed/legal_embeddings.npy
+!data/processed/legal_embeddings_manifest.json
+!data/processed/legal_embeddings_metadata.json
+!data/vector_db/legal_chunks.faiss
+!data/vector_db/legal_chunks_metadata.json

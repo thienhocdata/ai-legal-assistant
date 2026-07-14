@@ -1,0 +1,48 @@
+{
+  "document_id": "tthc_dang_ky_dat_dai",
+  "document_title": "Thủ tục đăng ký đất đai, tài sản gắn liền với đất, cấp Giấy chứng nhận",
+  "document_number": "",
+  "document_type": "Thủ tục hành chính",
+  "version": "1.0",
+  "language": "vi",
+  "issuing_authority": "",
+  "issued_date": "",
+  "original_effective_date": "",
+  "current_effective_date": "",
+  "expiry_date": null,
+  "legal_status": "unknown",
+  "scope": "Toàn quốc",
+  "jurisdiction": "Việt Nam",
+  "legal_domain": "Đất đai",
+  "tags": [
+    "thu_tuc_hanh_chinh",
+    "dang_ky_dat_dai",
+    "cap_gcn",
+    "ho_so",
+    "trinh_tu",
+    "thoi_han"
+  ],
+  "relations": {
+    "amended_by": [],
+    "amends": [],
+    "replaces": [],
+    "replaced_by": [],
+    "related_documents": []
+  },
+  "source": {
+    "source_type": "official",
+    "source_name": "",
+    "source_url": "",
+    "raw_file_path": "data/raw/procedures/tthc_dang_ky_dat_dai",
+    "sha256": null
+  },
+  "processing": {
+    "processing_status": "metadata_created",
+    "parser": null,
+    "chunk_strategy": null,
+    "embedding_model": null,
+    "indexed": false,
+    "last_processed_at": null
+  },
+  "notes": "Dữ liệu thủ tục hành chính dùng để test nhóm câu hỏi về hồ sơ, trình tự và thời hạn giải quyết."
+}

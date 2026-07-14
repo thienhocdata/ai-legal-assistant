@@ -1,0 +1,46 @@
+{
+  "document_id": "luat_43_2024",
+  "document_title": "Luật sửa đổi, bổ sung một số điều của Luật Đất đai",
+  "document_number": "43/2024/QH15",
+  "document_type": "Luật",
+  "version": "1.0",
+  "language": "vi",
+  "issuing_authority": "",
+  "issued_date": "",
+  "original_effective_date": "",
+  "current_effective_date": "",
+  "expiry_date": null,
+  "legal_status": "unknown",
+  "scope": "Toàn quốc",
+  "jurisdiction": "Việt Nam",
+  "legal_domain": "Đất đai",
+  "tags": [
+    "dat_dai",
+    "sua_doi",
+    "hieu_luc",
+    "quan_he_van_ban"
+  ],
+  "relations": {
+    "amended_by": [],
+    "amends": [],
+    "replaces": [],
+    "replaced_by": [],
+    "related_documents": []
+  },
+  "source": {
+    "source_type": "official",
+    "source_name": "",
+    "source_url": "",
+    "raw_file_path": "data/raw/laws/luat_43_2024",
+    "sha256": null
+  },
+  "processing": {
+    "processing_status": "metadata_created",
+    "parser": null,
+    "chunk_strategy": null,
+    "embedding_model": null,
+    "indexed": false,
+    "last_processed_at": null
+  },
+  "notes": "Văn bản dùng để kiểm soát quan hệ sửa đổi và hiệu lực liên quan đến Luật Đất đai 2024."
+}

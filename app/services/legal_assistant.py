@@ -1,0 +1,150 @@
+from __future__ import annotations
+
+from dataclasses import asdict
+from time import perf_counter
+from typing import Any
+
+from app.agent import ClarificationEngine, QueryAnalyzer
+from app.citation import CitationEngine
+from app.core.config import Settings
+from app.guardrails import GuardrailEngine
+from app.llm_provider import BaseLLMProvider, ExtractiveProvider, create_llm_provider
+from app.observability import JsonlEventLogger
+from app.rag.retriever import LegalRetriever
+
+
+SYSTEM_PROMPT = """Bạn là trợ lý tra cứu pháp luật đất đai Việt Nam.
+Chỉ sử dụng các căn cứ được cung cấp. Mỗi nhận định pháp lý phải gắn nhãn [n]
+tương ứng. Nếu căn cứ không đủ, hãy nói rõ là chưa đủ căn cứ. Không tự suy đoán
+hiệu lực văn bản, tình tiết vụ việc hoặc kết luận thay cho luật sư. Trả lời bằng
+tiếng Việt, phân biệt quy định pháp luật với khuyến nghị người dùng nên xác minh."""
+
+
+class LegalAssistantService:
+    def __init__(
+        self,
+        *,
+        settings: Settings | None = None,
+        provider: BaseLLMProvider | None = None,
+        retriever: LegalRetriever | None = None,
+    ) -> None:
+        self.settings = settings or Settings.from_env()
+        root = self.settings.project_root
+        self.provider = provider or create_llm_provider(self.settings.llm_provider)
+        self.retriever = retriever or LegalRetriever(
+            index_path=root / "data" / "vector_db" / "legal_chunks.faiss",
+            vector_metadata_path=root / "data" / "vector_db" / "legal_chunks_metadata.json",
+            embedding_manifest_path=root / "data" / "processed" / "legal_embeddings_manifest.json",
+            chunks_path=root / "data" / "processed" / "legal_chunks.json",
+            device="cpu",
+        )
+        self.query_analyzer = QueryAnalyzer()
+        self.clarification = ClarificationEngine()
+        self.citations = CitationEngine()
+        self.guardrails = GuardrailEngine(
+            minimum_dense_score=self.settings.minimum_dense_score
+        )
+        self.logger = JsonlEventLogger(
+            root / "data" / "evaluation" / "runs" / "assistant_events.jsonl"
+        )
+
+    def answer(self, question: str) -> dict[str, Any]:
+        started = perf_counter()
+        input_decision = self.guardrails.check_input(question)
+        if not input_decision.allowed:
+            return self._finish(
+                started,
+                {
+                    "status": "blocked",
+                    "answer": input_decision.message,
+                    "guardrail": input_decision.to_dict(),
+                    "citations": [],
+                },
+            )
+
+        analysis = self.query_analyzer.analyze(question)
+        clarification = self.clarification.clarify(analysis)
+        if clarification.status != "ready":
+            return self._finish(
+                started,
+                {
+                    "status": clarification.status,
+                    "answer": clarification.reason,
+                    "clarification_questions": clarification.questions,
+                    "analysis": analysis.to_dict(),
+                    "citations": [],
+                },
+            )
+
+        results = self.retriever.retrieve_hybrid(
+            analysis.rewritten_question,
+            top_k=self.settings.retrieval_top_k,
+        )
+        citations = self.citations.build(results)
+        evidence_decision = self.guardrails.check_evidence(results, citations)
+        if not evidence_decision.allowed:
+            return self._finish(
+                started,
+                {
+                    "status": "insufficient_evidence",
+                    "answer": evidence_decision.message,
+                    "guardrail": evidence_decision.to_dict(),
+                    "analysis": analysis.to_dict(),
+                    "citations": [citation.to_dict() for citation in citations],
+                },
+            )
+
+        context = self.citations.format_context(citations)
+        prompt = (
+            f"CÂU HỎI: {analysis.original_question}\n\n"
+            f"CĂN CỨ TRUY XUẤT:\n{context}\n\n"
+            "Hãy trả lời ngắn gọn, nêu điều kiện hoặc ngoại lệ quan trọng và gắn [n]."
+        )
+        response = self.provider.generate(system_prompt=SYSTEM_PROMPT, user_prompt=prompt)
+        output_decision = self.guardrails.check_output(response.text, len(citations))
+        if not output_decision.allowed and not isinstance(self.provider, ExtractiveProvider):
+            response = ExtractiveProvider().generate(
+                system_prompt=SYSTEM_PROMPT,
+                user_prompt=prompt,
+            )
+            output_decision = self.guardrails.check_output(response.text, len(citations))
+
+        status = "success" if output_decision.allowed else "generation_rejected"
+        answer = response.text if output_decision.allowed else output_decision.message
+        return self._finish(
+            started,
+            {
+                "status": status,
+                "answer": answer,
+                "analysis": analysis.to_dict(),
+                "citations": [citation.to_dict() for citation in citations],
+                "retrieval": {
+                    "top_k": len(results),
+                    "top_dense_score": float(results[0]["dense_score"]),
+                    "top_combined_score": float(results[0]["score"]),
+                },
+                "provider": response.provider,
+                "model": response.model,
+                "disclaimer": (
+                    "Thông tin chỉ phục vụ tham khảo và cần đối chiếu văn bản đang có hiệu lực "
+                    "cũng như tình tiết cụ thể trước khi áp dụng."
+                ),
+            },
+        )
+
+    def _finish(
+        self,
+        started: float,
+        payload: dict[str, Any],
+    ) -> dict[str, Any]:
+        payload["latency_ms"] = round((perf_counter() - started) * 1000, 2)
+        self.logger.log(
+            "answer",
+            {
+                "status": payload.get("status"),
+                "latency_ms": payload["latency_ms"],
+                "citation_count": len(payload.get("citations", [])),
+                "provider": payload.get("provider"),
+            },
+        )
+        return payload

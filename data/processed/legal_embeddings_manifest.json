@@ -1,0 +1,16 @@
+{
+  "document_id": "luat_dat_dai_2024",
+  "source_chunks_file": "E:\\2026\\project\\AI - Agent pháp luật\\data\\processed\\legal_chunks.json",
+  "embeddings_file": "E:\\2026\\project\\AI - Agent pháp luật\\data\\processed\\legal_embeddings.npy",
+  "metadata_file": "E:\\2026\\project\\AI - Agent pháp luật\\data\\processed\\legal_embeddings_metadata.json",
+  "model_name": "intfloat/multilingual-e5-small",
+  "device": "cpu",
+  "normalize_embeddings": true,
+  "chunk_count": 431,
+  "embedding_dimension": 384,
+  "dtype": "float32",
+  "text_field": "clean_text",
+  "document_prefix": "passage: ",
+  "query_prefix": "query: ",
+  "source_chunks_sha256": "4d9fb353993e721427fbbd88f6d5ff14e0722ea737cb41390d9a7638598e2bcd"
+}
