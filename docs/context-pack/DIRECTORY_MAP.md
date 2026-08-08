@@ -1,0 +1,21 @@
+# Bản đồ thư mục
+
+- `app/main.py`: FastAPI, health check, chat endpoint và static UI.
+- `app/services/`: orchestration end-to-end.
+- `app/agent/`: query analysis, rewriting và clarification.
+- `app/citation/`: tạo citation và context.
+- `app/guardrails/`: input, evidence và output gates.
+- `app/llm_provider/`: extractive local, Gemini và factory.
+- `app/kb/`: downloader, parser, normalizer, legal parser, chunkers, embedding và validation.
+- `app/rag/`: FAISS vector store và retriever.
+- `app/evaluation/`: tính metric retrieval.
+- `app/observability/`: JSONL event logging.
+- `app/static/`: giao diện web.
+- `scripts/`: build pipeline, validation, search và evaluation.
+- `tests/`: unit/integration tests.
+- `data/raw/`: tài liệu nguồn.
+- `data/metadata/`: inventory, document metadata và processing manifest.
+- `data/processed/`: text, cây pháp lý, chunks và embeddings.
+- `data/vector_db/`: FAISS và metadata nối chunk.
+- `data/evaluation/`: ground truth và báo cáo đánh giá.
+- `docs/ghi chú/`: nhật ký lịch sử, không phải nguồn trạng thái hiện hành.

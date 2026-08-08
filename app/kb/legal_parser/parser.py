@@ -17,6 +17,23 @@ from .models import (
 class LegalStructureParser:
     EXPECTED_ARTICLES = 260
 
+    def __init__(
+        self,
+        *,
+        document_id: str = "luat_dat_dai_2024",
+        document_number: str = "31/2024/QH15",
+        document_name: str = "Luật Đất đai 2024",
+        document_type: str = "Luật",
+        expected_articles: int = EXPECTED_ARTICLES,
+        enforce_article_sequence: bool = False,
+    ) -> None:
+        self.document_id = document_id
+        self.document_number = document_number
+        self.document_name = document_name
+        self.document_type = document_type
+        self.expected_articles = expected_articles
+        self.enforce_article_sequence = enforce_article_sequence
+
     CHAPTER_RE = re.compile(r"^Chương\s+([IVXLCDM]+)\s*$", re.IGNORECASE)
     SECTION_RE = re.compile(r"^Mục\s+(\d+)\s*$", re.IGNORECASE)
     ARTICLE_RE = re.compile(r"^Điều\s+(\d+)\.\s*(.*)$", re.IGNORECASE)
@@ -64,10 +81,10 @@ class LegalStructureParser:
 
     def parse_text(self, text: str, *, source_file: str) -> LegalDocument:
         document = LegalDocument(
-            document_id="luat_dat_dai_2024",
-            document_number="31/2024/QH15",
-            document_name="Luật Đất đai 2024",
-            document_type="Luật",
+            document_id=self.document_id,
+            document_number=self.document_number,
+            document_name=self.document_name,
+            document_type=self.document_type,
             source_file=source_file,
         )
 
@@ -83,6 +100,8 @@ class LegalStructureParser:
 
         pending_chapter_title = False
         pending_section_title = False
+        last_article_number = 0
+        skipping_annotation = False
 
         def finalize_chapter_title() -> None:
             nonlocal chapter_title_buffer, pending_chapter_title
@@ -128,6 +147,17 @@ class LegalStructureParser:
             article_match = self.ARTICLE_RE.match(line)
             clause_match = self.CLAUSE_RE.match(line)
             point_match = self.POINT_RE.match(line)
+
+            if self.enforce_article_sequence and article_match:
+                article_number = int(article_match.group(1))
+                expected_next = last_article_number + 1
+                if last_article_number and article_number != expected_next:
+                    skipping_annotation = True
+                    continue
+                skipping_annotation = False
+
+            if skipping_annotation:
+                continue
 
             if pending_chapter_title and not (
                 chapter_match or section_match or article_match
@@ -217,6 +247,7 @@ class LegalStructureParser:
 
                 current_clause = None
                 current_point = None
+                last_article_number = int(article_match.group(1))
                 if opening_body:
                     article_body_buffer.append(opening_body)
                 continue
@@ -286,11 +317,11 @@ class LegalStructureParser:
     def validate(self, document: LegalDocument) -> dict[str, int]:
         articles = self.collect_articles(document)
         article_numbers = [int(article.article_no) for article in articles]
-        expected = list(range(1, self.EXPECTED_ARTICLES + 1))
+        expected = list(range(1, self.expected_articles + 1))
 
-        if len(articles) != self.EXPECTED_ARTICLES:
+        if len(articles) != self.expected_articles:
             raise ValueError(
-                f"Dự kiến {self.EXPECTED_ARTICLES} Điều, "
+                f"Dự kiến {self.expected_articles} Điều, "
                 f"nhưng nhận được {len(articles)}."
             )
 

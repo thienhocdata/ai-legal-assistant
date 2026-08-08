@@ -1,0 +1,98 @@
+{
+  "document_id": "vbhn_133_2025_luat_dat_dai",
+  "document_title": "Văn bản hợp nhất Luật Đất đai",
+  "document_number": "133/VBHN-VPQH",
+  "document_type": "Văn bản hợp nhất",
+  "version": "1.0",
+  "language": "vi",
+  "issuing_authority": "Văn phòng Quốc hội",
+  "issued_date": "2025-09-03",
+  "original_effective_date": "",
+  "current_effective_date": "",
+  "expiry_date": null,
+  "legal_status": "reference",
+  "scope": "Toàn quốc",
+  "jurisdiction": "Việt Nam",
+  "legal_domain": "Đất đai",
+  "tags": ["dat_dai", "van_ban_hop_nhat", "nguon_tra_cuu_hien_hanh"],
+  "relations": {
+    "amended_by": [],
+    "amends": [],
+    "replaces": [],
+    "replaced_by": [],
+    "related_documents": ["luat_dat_dai_2024", "luat_43_2024"]
+  },
+  "source": {
+    "source_type": "official",
+    "source_name": "Cổng Thông tin điện tử Chính phủ",
+    "source_url": "https://vanban.chinhphu.vn/?docid=215258&pageid=27160",
+    "raw_file_path": "data/raw/laws/vbhn_133_2025_luat_dat_dai",
+    "sha256": "3ec24563c55ea2879f1a70eb3e7e688e11ccf0148e981cf6137efdd1ee48cdce",
+    "hash_method": "sha256(concatenated_file_hashes_sorted_by_path)",
+    "files": [
+      {
+        "path": "data/raw/laws/vbhn_133_2025_luat_dat_dai/133-vbhn-vpqh.pdf",
+        "source_url": "https://datafiles.chinhphu.vn/cpp/files/vbpq/2025/9/133-vbhn-vpqh.pdf",
+        "sha256": "0e0987da290483be644457f136d2647eed75e328d3de71ad4cd7d0075e36f298",
+        "content_length": 4299045,
+        "role": "official"
+      },
+      {
+        "path": "data/raw/laws/vbhn_133_2025_luat_dat_dai/official_gazette/part1.doc",
+        "source_url": "https://congbao.chinhphu.vn/van-ban/van-ban-hop-nhat-so-133-vbhn-vpqh-46142.htm",
+        "sha256": "b647c1fee9eb2b487f0b616d3b85fb0ebfca467f313c618f52105475ab6b2f8f",
+        "content_length": 976384,
+        "role": "official"
+      },
+      {
+        "path": "data/raw/laws/vbhn_133_2025_luat_dat_dai/official_gazette/part2.doc",
+        "source_url": "https://congbao.chinhphu.vn/van-ban/van-ban-hop-nhat-so-133-vbhn-vpqh-46142.htm",
+        "sha256": "7e0223636edc0b4feba4399f55bb58fa8d6daf47a880f0bdaa925c45628ee5c4",
+        "content_length": 1076224,
+        "role": "official"
+      },
+      {
+        "path": "data/raw/laws/vbhn_133_2025_luat_dat_dai/official_gazette/part3.doc",
+        "source_url": "https://congbao.chinhphu.vn/van-ban/van-ban-hop-nhat-so-133-vbhn-vpqh-46142.htm",
+        "sha256": "db9843f2ce4afb96ec2d30f2911a7f71bb8311189a293f727cd911963bbecbf9",
+        "content_length": 1129984,
+        "role": "official"
+      },
+      {
+        "path": "data/raw/laws/vbhn_133_2025_luat_dat_dai/official_gazette/part1.docx",
+        "source_url": "",
+        "sha256": "5f6ffb0c54e322a0bdf54912440229d04afccb37b6778b7321b64e8ecd3767e9",
+        "content_length": 226746,
+        "role": "derived",
+        "derived_from": "data/raw/laws/vbhn_133_2025_luat_dat_dai/official_gazette/part1.doc"
+      },
+      {
+        "path": "data/raw/laws/vbhn_133_2025_luat_dat_dai/official_gazette/part2.docx",
+        "source_url": "",
+        "sha256": "942390c4eb7c80cd49fc0696ee527139e8681d89498fa70bf841aae1bfacb010",
+        "content_length": 230023,
+        "role": "derived",
+        "derived_from": "data/raw/laws/vbhn_133_2025_luat_dat_dai/official_gazette/part2.doc"
+      },
+      {
+        "path": "data/raw/laws/vbhn_133_2025_luat_dat_dai/official_gazette/part3.docx",
+        "source_url": "",
+        "sha256": "a6b782dbb44a8c391fdad01b3143a2951789ad05940f26d25fa009d25c25ab99",
+        "content_length": 245149,
+        "role": "derived",
+        "derived_from": "data/raw/laws/vbhn_133_2025_luat_dat_dai/official_gazette/part3.doc"
+      }
+    ]
+  },
+  "processing": {
+    "processing_status": "downloaded",
+    "parser": "pymupdf-experimental",
+    "chunk_strategy": "legal_structure-experimental",
+    "embedding_model": null,
+    "indexed": false,
+    "last_processed_at": null,
+    "experimental_status": "indexed",
+    "experimental_artifact_path": "data/experiments/vbhn_133_2025_luat_dat_dai"
+  },
+  "notes": "Đã tải PDF và ba phần Công báo chính thức, xác minh ngày 08/08/2026. Ba DOCX là bản chuyển đổi cục bộ từ DOC chính thức để parser đọc, có liên kết derived_from. Nguồn Công báo qua quality gate với đủ 260 Điều, 0 tiêu đề đáng ngờ và đã tạo index thử nghiệm 441 chunks. Production corpus/index chưa bị thay thế."
+}

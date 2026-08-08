@@ -30,6 +30,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--top-k", type=int, default=5)
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--mode", choices=("dense", "hybrid"), default="hybrid")
+    parser.add_argument(
+        "--artifact-dir",
+        type=Path,
+        help="Optional isolated artifact directory; defaults to production artifacts.",
+    )
     return parser.parse_args()
 
 
@@ -44,11 +49,28 @@ class _HybridAdapter:
 def main() -> None:
     args = parse_args()
     questions = json.loads(args.questions.read_text(encoding="utf-8"))
+    if args.artifact_dir:
+        artifact_dir = (
+            args.artifact_dir
+            if args.artifact_dir.is_absolute()
+            else ROOT / args.artifact_dir
+        ).resolve()
+        if ROOT.resolve() not in artifact_dir.parents:
+            raise ValueError("Artifact directory must stay inside the repository.")
+        index_path = artifact_dir / "legal_chunks.faiss"
+        vector_metadata_path = artifact_dir / "legal_chunks_metadata.json"
+        embedding_manifest_path = artifact_dir / "legal_embeddings_manifest.json"
+        chunks_path = artifact_dir / "legal_chunks.json"
+    else:
+        index_path = ROOT / "data" / "vector_db" / "legal_chunks.faiss"
+        vector_metadata_path = ROOT / "data" / "vector_db" / "legal_chunks_metadata.json"
+        embedding_manifest_path = ROOT / "data" / "processed" / "legal_embeddings_manifest.json"
+        chunks_path = ROOT / "data" / "processed" / "legal_chunks.json"
     retriever = LegalRetriever(
-        index_path=ROOT / "data" / "vector_db" / "legal_chunks.faiss",
-        vector_metadata_path=ROOT / "data" / "vector_db" / "legal_chunks_metadata.json",
-        embedding_manifest_path=ROOT / "data" / "processed" / "legal_embeddings_manifest.json",
-        chunks_path=ROOT / "data" / "processed" / "legal_chunks.json",
+        index_path=index_path,
+        vector_metadata_path=vector_metadata_path,
+        embedding_manifest_path=embedding_manifest_path,
+        chunks_path=chunks_path,
         device=args.device,
     )
     evaluated_retriever = _HybridAdapter(retriever) if args.mode == "hybrid" else retriever
@@ -58,6 +80,7 @@ def main() -> None:
     report["evaluated_at"] = datetime.now(timezone.utc).isoformat()
     report["dataset"] = str(args.questions)
     report["retrieval_mode"] = args.mode
+    report["artifact_dir"] = str(args.artifact_dir or "production")
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(
         json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"

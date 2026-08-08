@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import date
+import re
 from typing import Literal
 
 from pydantic import BaseModel, Field, HttpUrl, field_validator
@@ -23,6 +25,7 @@ LegalStatus = Literal[
     "expired",
     "partially_expired",
     "amended",
+    "reference",
 ]
 
 
@@ -34,12 +37,31 @@ class DocumentRelations(BaseModel):
     related_documents: list[str] = Field(default_factory=list)
 
 
+class SourceFile(BaseModel):
+    path: str
+    source_url: str
+    sha256: str
+    content_length: int = Field(gt=0)
+    role: Literal["official", "derived"] = "official"
+    derived_from: str | None = None
+
+    @field_validator("sha256")
+    @classmethod
+    def validate_sha256(cls, value: str) -> str:
+        normalized = value.lower()
+        if not re.fullmatch(r"[0-9a-f]{64}", normalized):
+            raise ValueError("sha256 must contain exactly 64 hexadecimal characters")
+        return normalized
+
+
 class DocumentSource(BaseModel):
     source_type: str
     source_name: str = ""
     source_url: str = ""
     raw_file_path: str
     sha256: str | None = None
+    hash_method: str | None = None
+    files: list[SourceFile] = Field(default_factory=list)
 
 
 class DocumentProcessing(BaseModel):
@@ -49,6 +71,8 @@ class DocumentProcessing(BaseModel):
     embedding_model: str | None = None
     indexed: bool = False
     last_processed_at: str | None = None
+    experimental_status: ProcessingStatus | None = None
+    experimental_artifact_path: str | None = None
 
 
 class DocumentMetadata(BaseModel):
@@ -91,6 +115,18 @@ class DocumentMetadata(BaseModel):
     def validate_tags(cls, value: list[str]) -> list[str]:
         if not value:
             raise ValueError("tags không được để trống")
+        return value
+
+
+    @field_validator(
+        "issued_date",
+        "original_effective_date",
+        "current_effective_date",
+    )
+    @classmethod
+    def validate_iso_date(cls, value: str) -> str:
+        if value:
+            date.fromisoformat(value)
         return value
 
 

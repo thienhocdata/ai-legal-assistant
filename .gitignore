@@ -32,6 +32,7 @@ Thumbs.db
 logs/
 tmp/
 data/evaluation/runs/
+data/experiments/
 
 # Model caches and checkpoints
 .cache/

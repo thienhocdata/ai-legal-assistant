@@ -1,46 +1,43 @@
 {
   "document_id": "luat_43_2024",
-  "document_title": "Luật sửa đổi, bổ sung một số điều của Luật Đất đai",
+  "document_title": "Luật sửa đổi, bổ sung một số điều của Luật Đất đai, Luật Nhà ở, Luật Kinh doanh bất động sản và Luật Các tổ chức tín dụng",
   "document_number": "43/2024/QH15",
   "document_type": "Luật",
-  "version": "1.0",
+  "version": "1.1",
   "language": "vi",
-  "issuing_authority": "",
-  "issued_date": "",
-  "original_effective_date": "",
-  "current_effective_date": "",
+  "issuing_authority": "Quốc hội",
+  "issued_date": "2024-06-29",
+  "original_effective_date": "2024-08-01",
+  "current_effective_date": "2024-08-01",
   "expiry_date": null,
-  "legal_status": "unknown",
+  "legal_status": "in_force",
   "scope": "Toàn quốc",
   "jurisdiction": "Việt Nam",
   "legal_domain": "Đất đai",
-  "tags": [
-    "dat_dai",
-    "sua_doi",
-    "hieu_luc",
-    "quan_he_van_ban"
-  ],
+  "tags": ["dat_dai", "sua_doi", "hieu_luc", "quan_he_van_ban"],
   "relations": {
     "amended_by": [],
-    "amends": [],
+    "amends": ["luat_dat_dai_2024"],
     "replaces": [],
     "replaced_by": [],
-    "related_documents": []
+    "related_documents": ["133/VBHN-VPQH"]
   },
   "source": {
     "source_type": "official",
-    "source_name": "",
-    "source_url": "",
+    "source_name": "Cổng Thông tin điện tử Chính phủ",
+    "source_url": "https://vanban.chinhphu.vn/?classid=1&docid=211201&pageid=27160&typegroupid=3",
     "raw_file_path": "data/raw/laws/luat_43_2024",
-    "sha256": null
+    "sha256": null,
+    "hash_method": null,
+    "files": []
   },
   "processing": {
-    "processing_status": "metadata_created",
+    "processing_status": "pending",
     "parser": null,
     "chunk_strategy": null,
     "embedding_model": null,
     "indexed": false,
     "last_processed_at": null
   },
-  "notes": "Văn bản dùng để kiểm soát quan hệ sửa đổi và hiệu lực liên quan đến Luật Đất đai 2024."
+  "notes": "Nguồn chính thức đã xác minh ngày 05/08/2026; file PDF chưa được tải hoặc ingest. Luật này sửa ngày hiệu lực chính của Luật Đất đai 31/2024/QH15 thành 01/08/2024."
 }

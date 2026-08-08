@@ -20,7 +20,7 @@ def test_inventory_parses_semicolon_and_multiple_urls() -> None:
     records = inventory.load()
     land_law = inventory.get("src_luat_dat_dai_2024")
 
-    assert len(records) == 3
+    assert len(records) == 4
     assert len(land_law.source_urls) == 3
     assert land_law.raw_target_path == "data/raw/laws/luat_dat_dai_2024"
 

@@ -3,14 +3,14 @@
   "document_title": "Luật Đất đai 2024",
   "document_number": "31/2024/QH15",
   "document_type": "Luật",
-  "version": "1.0",
+  "version": "1.1",
   "language": "vi",
-  "issuing_authority": "",
-  "issued_date": "",
-  "original_effective_date": "",
-  "current_effective_date": "",
+  "issuing_authority": "Quốc hội",
+  "issued_date": "2024-01-18",
+  "original_effective_date": "2025-01-01",
+  "current_effective_date": "2024-08-01",
   "expiry_date": null,
-  "legal_status": "unknown",
+  "legal_status": "amended",
   "scope": "Toàn quốc",
   "jurisdiction": "Việt Nam",
   "legal_domain": "Đất đai",
@@ -26,26 +26,47 @@
     "thu_hoi_dat"
   ],
   "relations": {
-    "amended_by": [],
+    "amended_by": ["luat_43_2024"],
     "amends": [],
-    "replaces": [],
+    "replaces": ["45/2013/QH13"],
     "replaced_by": [],
-    "related_documents": []
+    "related_documents": ["133/VBHN-VPQH"]
   },
   "source": {
     "source_type": "official",
-    "source_name": "",
-    "source_url": "",
+    "source_name": "Cổng Thông tin điện tử Chính phủ",
+    "source_url": "https://vanban.chinhphu.vn/?classid=1&docid=211189&pageid=27160&typegroupid=3",
     "raw_file_path": "data/raw/laws/luat_dat_dai_2024",
-    "sha256": null
+    "sha256": "fb9ea83adff93c22b882ec9d36b57472976c9876c9fcbc21d7a84649a78d06ce",
+    "hash_method": "sha256(concat(file_sha256_hex_sorted_by_path))",
+    "files": [
+      {
+        "path": "data/raw/laws/luat_dat_dai_2024/luat_dat_dai_2024_part1.pdf",
+        "source_url": "https://datafiles.chinhphu.vn/cpp/files/vbpq/2024/9/31-2024-qh15_1.pdf",
+        "sha256": "2558044082ee768192a311aee548eb9fae4daada546013aa5181eb91c8842637",
+        "content_length": 1338272
+      },
+      {
+        "path": "data/raw/laws/luat_dat_dai_2024/luat_dat_dai_2024_part2.pdf",
+        "source_url": "https://datafiles.chinhphu.vn/cpp/files/vbpq/2024/9/31-2024-qh15_2.pdf",
+        "sha256": "651797458d2399fd70cd5b4d3edb3845d223540fa34d82f826718c248aca619e",
+        "content_length": 1310044
+      },
+      {
+        "path": "data/raw/laws/luat_dat_dai_2024/luat_dat_dai_2024_part3.pdf",
+        "source_url": "https://datafiles.chinhphu.vn/cpp/files/vbpq/2024/9/31-2024-qh15_3.pdf",
+        "sha256": "6f679f5043ac94fec88ec6f565131faf7aacc819290191069f80799b60d294d0",
+        "content_length": 905865
+      }
+    ]
   },
   "processing": {
-    "processing_status": "metadata_created",
-    "parser": null,
-    "chunk_strategy": null,
-    "embedding_model": null,
-    "indexed": false,
-    "last_processed_at": null
+    "processing_status": "indexed",
+    "parser": "pymupdf",
+    "chunk_strategy": "legal_structure",
+    "embedding_model": "intfloat/multilingual-e5-small",
+    "indexed": true,
+    "last_processed_at": "2026-07-13T13:08:34+07:00"
   },
-  "notes": "Văn bản lõi dùng để xây dựng Legal Structure Parser, Legal Chunker và Citation Engine."
+  "notes": "Corpus hiện chứa bản gốc Luật 31/2024/QH15. Luật đã được sửa đổi bởi Luật 43/2024/QH15; Văn bản hợp nhất 133/VBHN-VPQH ngày 03/09/2025 chưa được ingest. Không dùng corpus này để khẳng định nội dung hợp nhất hiện hành nếu chưa đối chiếu văn bản hợp nhất."
 }
