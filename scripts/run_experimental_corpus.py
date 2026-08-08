@@ -93,7 +93,7 @@ def _extract_gazette_docx() -> tuple[str, list[str]]:
     for path in paths:
         document = Document(path)
         paragraphs = [
-            paragraph.text
+            paragraph.text.rstrip()
             for paragraph in document.paragraphs
             if not _is_gazette_boilerplate(paragraph.text)
         ]

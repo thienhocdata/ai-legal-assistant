@@ -1,8 +1,8 @@
 {
   "document_id": "vbhn_133_2025_luat_dat_dai",
-  "promoted_at": "2026-08-08T15:04:09.123424+00:00",
+  "promoted_at": "2026-08-08T15:11:35.646318+00:00",
   "source_experiment": "data\\experiments\\vbhn_133_2025_luat_dat_dai",
-  "backup_dir": "data\\backups\\pre_vbhn_133_2025_luat_dat_dai_20260808T150409Z",
+  "backup_dir": "data\\backups\\pre_vbhn_133_2025_luat_dat_dai_20260808T151135Z",
   "quality_gate": {
     "passed": true,
     "reasons": []
