@@ -1,5 +1,7 @@
 # Báo cáo kiểm toán tài liệu
 
+> Snapshot lịch sử ngày 05/08/2026. Trạng thái hiện hành nằm trong `docs/context-pack/`; production đã chuyển sang VBHN 133 ngày 08/08/2026.
+
 Ngày kiểm toán: 05/08/2026. Phạm vi: repository hiện tại; không thay đổi source, dữ liệu hay artifact.
 
 ## Kết luận

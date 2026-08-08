@@ -61,12 +61,12 @@
     ]
   },
   "processing": {
-    "processing_status": "indexed",
+    "processing_status": "chunked",
     "parser": "pymupdf",
     "chunk_strategy": "legal_structure",
     "embedding_model": "intfloat/multilingual-e5-small",
-    "indexed": true,
+    "indexed": false,
     "last_processed_at": "2026-07-13T13:08:34+07:00"
   },
-  "notes": "Corpus hiện chứa bản gốc Luật 31/2024/QH15. Luật đã được sửa đổi bởi Luật 43/2024/QH15; Văn bản hợp nhất 133/VBHN-VPQH ngày 03/09/2025 chưa được ingest. Không dùng corpus này để khẳng định nội dung hợp nhất hiện hành nếu chưa đối chiếu văn bản hợp nhất."
+  "notes": "Bản gốc Luật 31/2024/QH15 vẫn được giữ để truy vết nhưng không còn là index production mặc định. Production đã chuyển sang Văn bản hợp nhất 133/VBHN-VPQH ngày 08/08/2026."
 }

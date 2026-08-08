@@ -2,10 +2,10 @@
 
 ## Nguồn hiện có
 
-- Luật Đất đai 2024, số 31/2024/QH15: ba PDF từ miền `datafiles.chinhphu.vn`, đã lưu hash từng file và collection hash, trạng thái `indexed`. Corpus là bản gốc đã được sửa đổi.
+- Luật Đất đai 2024, số 31/2024/QH15: ba PDF từ miền `datafiles.chinhphu.vn`, đã lưu hash từng file và collection hash; giữ để truy vết, không còn là index production mặc định.
 - Luật 43/2024/QH15: URL và dữ kiện pháp lý đã xác minh, chưa tải file, trạng thái `pending`.
-- Văn bản hợp nhất 133/VBHN-VPQH ngày 03/09/2025: đã tải PDF và ba phần Công báo dạng DOC chính thức, lưu hash từng file và bản DOCX chuyển đổi cục bộ. Nguồn Công báo qua quality gate với đủ 260 Điều, 0 tiêu đề đáng ngờ và 441 chunks; embeddings/FAISS chỉ nằm trong `data/experiments/`, chưa thay index chính.
-- Technical diff theo Điều giữa production và bản hợp nhất: 225/260 Điều khớp sau chuẩn hóa khoảng trắng, 35 Điều có thay đổi cần kiểm tra citation/pháp lý; báo cáo nằm trong artifact thử nghiệm.
+- Văn bản hợp nhất 133/VBHN-VPQH ngày 03/09/2025: corpus production mặc định từ 08/08/2026. Nguồn gồm PDF và ba phần Công báo DOC chính thức; DOCX chuyển đổi cục bộ có provenance. Quality gate đạt đủ 260 Điều, 0 tiêu đề đáng ngờ, 0 boilerplate Công báo, 441 chunks và FAISS 441 vectors.
+- Technical diff trước promotion: 225/260 Điều khớp sau chuẩn hóa khoảng trắng, 35 Điều phản ánh thay đổi hợp nhất hoặc khác biệt chunking; bộ 35 truy vấn theo tiêu đề đạt Hit@1 1,0 trên cả hai corpus.
 - Thủ tục đăng ký đất đai: metadata dự kiến, chưa có URL/file, trạng thái `pending`.
 
 ## Các trường bắt buộc trước khi coi một nguồn là sẵn sàng pháp lý
@@ -19,7 +19,7 @@
 ## Quy tắc thay đổi dữ liệu
 
 - Không sửa bằng tay file `.npy`, `.faiss` hoặc JSON sinh tự động để “khớp số”.
-- Artifact thử nghiệm phải nằm trong `data/experiments/`; không được ghi vào `data/processed/` hoặc `data/vector_db/`.
+- Artifact thử nghiệm phải nằm trong `data/experiments/`; chỉ script promotion có quality gate và `--confirm` mới được ghi vào `data/processed/` hoặc `data/vector_db/`.
 - Cập nhật inventory/metadata nguồn, chạy pipeline, rồi xác minh manifest và test.
 - Giữ nguyên raw source để truy vết; nguồn thay đổi phải có version/hash mới.
 - Chỉ dùng nguồn chính thức hoặc nguồn được phê duyệt rõ ràng.

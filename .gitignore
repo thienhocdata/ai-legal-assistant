@@ -33,6 +33,7 @@ logs/
 tmp/
 data/evaluation/runs/
 data/experiments/
+data/backups/
 
 # Model caches and checkpoints
 .cache/
@@ -57,5 +58,6 @@ data/vector_db/*metadata*
 !data/processed/legal_embeddings.npy
 !data/processed/legal_embeddings_manifest.json
 !data/processed/legal_embeddings_metadata.json
+!data/processed/promotion_manifest.json
 !data/vector_db/legal_chunks.faiss
 !data/vector_db/legal_chunks_metadata.json

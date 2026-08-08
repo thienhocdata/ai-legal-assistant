@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import json
 from pathlib import Path
 
 from app.schemas.kb_schemas import DocumentMetadata
@@ -16,13 +17,13 @@ def _load_metadata(document_id: str) -> DocumentMetadata:
     return DocumentMetadata.model_validate_json(path.read_text(encoding="utf-8"))
 
 
-def test_indexed_land_law_source_files_are_verifiable() -> None:
+def test_original_land_law_source_files_remain_verifiable_after_promotion() -> None:
     metadata = _load_metadata("luat_dat_dai_2024")
 
     assert metadata.legal_status == "amended"
     assert metadata.current_effective_date == "2024-08-01"
-    assert metadata.processing.processing_status == "indexed"
-    assert metadata.processing.indexed is True
+    assert metadata.processing.processing_status == "chunked"
+    assert metadata.processing.indexed is False
     assert len(metadata.source.files) == 3
     assert validate_source_files(metadata) == []
 
@@ -49,13 +50,33 @@ def test_inventory_rows_have_matching_metadata_files() -> None:
         assert metadata.document_id == row["document_id"]
 
 
-def test_downloaded_consolidated_source_is_verifiable_but_not_indexed() -> None:
+def test_consolidated_source_is_verifiable_and_indexed() -> None:
     metadata = _load_metadata("vbhn_133_2025_luat_dat_dai")
 
-    assert metadata.processing.processing_status == "downloaded"
-    assert metadata.processing.indexed is False
+    assert metadata.processing.processing_status == "indexed"
+    assert metadata.processing.indexed is True
     assert metadata.processing.experimental_status == "indexed"
     assert len(metadata.source.files) == 7
     assert sum(item.role == "official" for item in metadata.source.files) == 4
     assert sum(item.role == "derived" for item in metadata.source.files) == 3
     assert validate_source_files(metadata) == []
+
+
+def test_production_artifacts_use_consolidated_document() -> None:
+    chunks = json.loads(
+        (ROOT / "data" / "processed" / "legal_chunks.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    embedding_manifest = json.loads(
+        (ROOT / "data" / "processed" / "legal_embeddings_manifest.json").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    assert len(chunks) == 441
+    assert {chunk["document_id"] for chunk in chunks} == {
+        "vbhn_133_2025_luat_dat_dai"
+    }
+    assert embedding_manifest["document_id"] == "vbhn_133_2025_luat_dat_dai"
+    assert embedding_manifest["chunk_count"] == 441

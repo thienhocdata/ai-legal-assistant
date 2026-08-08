@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from functools import lru_cache
+import json
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
@@ -45,9 +46,16 @@ async def health() -> dict:
         ROOT / "data" / "processed" / "legal_embeddings_manifest.json",
         ROOT / "data" / "vector_db" / "legal_chunks.faiss",
     ]
+    manifest_path = ROOT / "data" / "processed" / "legal_embeddings_manifest.json"
+    active_document_id = None
+    if manifest_path.exists():
+        active_document_id = json.loads(
+            manifest_path.read_text(encoding="utf-8")
+        ).get("document_id")
     return {
         "status": "ready" if all(path.exists() for path in required) else "degraded",
         "artifacts": {path.name: path.exists() for path in required},
+        "active_document_id": active_document_id,
     }
 
 

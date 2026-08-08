@@ -1,6 +1,6 @@
 # Cổng tài liệu dự án
 
-Ngày rà soát gần nhất: 05/08/2026.
+Ngày rà soát gần nhất: 08/08/2026.
 
 ## Đọc nhanh
 

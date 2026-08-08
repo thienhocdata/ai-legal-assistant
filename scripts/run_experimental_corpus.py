@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import re
 import sys
 
 from docx import Document
@@ -35,6 +36,17 @@ DOCUMENT_NAME = "Văn bản hợp nhất Luật Đất đai"
 INPUT_PDF = ROOT / "data" / "raw" / "laws" / DOCUMENT_ID / "133-vbhn-vpqh.pdf"
 GAZETTE_DIR = ROOT / "data" / "raw" / "laws" / DOCUMENT_ID / "official_gazette"
 OUTPUT_DIR = ROOT / "data" / "experiments" / DOCUMENT_ID
+GAZETTE_BOILERPLATE_PATTERNS = (
+    re.compile(r"^\(Xem tiếp Công báo số .+\)$", re.IGNORECASE),
+    re.compile(r"^\(Tiếp theo Công báo số .+\)$", re.IGNORECASE),
+    re.compile(r"^VĂN BẢN KHÁC$", re.IGNORECASE),
+    re.compile(r"^VĂN BẢN HỢP NHẤT\s*-\s*VĂN PHÒNG QUỐC HỘI$", re.IGNORECASE),
+    re.compile(
+        r"^Văn bản hợp nhất số 133/VBHN-VPQH ngày 03 tháng 9 năm 2025$",
+        re.IGNORECASE,
+    ),
+    re.compile(r"^hợp nhất Luật Đất đai$", re.IGNORECASE),
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -68,6 +80,11 @@ def _safe_output_dir(value: Path) -> Path:
     return path
 
 
+def _is_gazette_boilerplate(text: str) -> bool:
+    normalized = " ".join(text.split())
+    return any(pattern.fullmatch(normalized) for pattern in GAZETTE_BOILERPLATE_PATTERNS)
+
+
 def _extract_gazette_docx() -> tuple[str, list[str]]:
     paths = sorted(GAZETTE_DIR.glob("part*.docx"))
     if len(paths) != 3:
@@ -75,11 +92,18 @@ def _extract_gazette_docx() -> tuple[str, list[str]]:
     parts: list[str] = []
     for path in paths:
         document = Document(path)
-        parts.append("\n".join(paragraph.text for paragraph in document.paragraphs))
+        paragraphs = [
+            paragraph.text
+            for paragraph in document.paragraphs
+            if not _is_gazette_boilerplate(paragraph.text)
+        ]
+        parts.append("\n".join(paragraphs))
     return "\n".join(parts), [str(path.relative_to(ROOT)) for path in paths]
 
 
 def main() -> None:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
     args = parse_args()
     output_dir = _safe_output_dir(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -130,6 +154,17 @@ def main() -> None:
         quality_reasons.append(
             f"Suspicious article titles: {structure_stats['suspicious_titles']}"
         )
+    remaining_boilerplate = sorted(
+        {
+            line.strip()
+            for line in raw_text.splitlines()
+            if _is_gazette_boilerplate(line)
+        }
+    )
+    if remaining_boilerplate:
+        quality_reasons.append(
+            f"Gazette boilerplate remains in extracted text: {remaining_boilerplate}"
+        )
 
     baseline = CharacterChunker(chunk_size=1000, overlap_chars=150)
     baseline_chunks = baseline.split_file(normalized_path, document_id=DOCUMENT_ID)
@@ -161,6 +196,7 @@ def main() -> None:
         "extraction": {
             "page_count": len(pages) or None,
             "low_text_pages": low_text_pages,
+            "gazette_boilerplate_remaining": remaining_boilerplate,
         },
         "quality_gate": {
             "passed": not quality_reasons,

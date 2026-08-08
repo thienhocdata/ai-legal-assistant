@@ -17,6 +17,7 @@ def main() -> None:
     health = client.get("/api/health")
     assert health.status_code == 200
     assert health.json()["status"] == "ready"
+    assert health.json()["active_document_id"] == "vbhn_133_2025_luat_dat_dai"
     page = client.get("/")
     assert page.status_code == 200
     assert "Minh Luật" in page.text

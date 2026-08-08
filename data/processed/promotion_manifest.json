@@ -1,0 +1,12 @@
+{
+  "document_id": "vbhn_133_2025_luat_dat_dai",
+  "promoted_at": "2026-08-08T15:04:09.123424+00:00",
+  "source_experiment": "data\\experiments\\vbhn_133_2025_luat_dat_dai",
+  "backup_dir": "data\\backups\\pre_vbhn_133_2025_luat_dat_dai_20260808T150409Z",
+  "quality_gate": {
+    "passed": true,
+    "reasons": []
+  },
+  "chunk_count": 441,
+  "embedding_dimension": 384
+}

@@ -6,7 +6,7 @@
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-Baseline ngày 08/08/2026: 34 test đạt; pytest cảnh báo không ghi được `.pytest_cache`, không phải test failure.
+Baseline sau promotion ngày 08/08/2026: 38 test đạt; pytest cảnh báo không ghi được `.pytest_cache`, không phải test failure.
 
 ## Theo loại thay đổi
 
@@ -25,6 +25,13 @@ Baseline ngày 08/08/2026: 34 test đạt; pytest cảnh báo không ghi đượ
 
 Script chỉ ghi vào `data/experiments/` và từ chối `data/processed/` hoặc `data/vector_db/`. Chỉ được chuyển sang embeddings khi manifest có `quality_gate.passed: true` và `eligible_for_embeddings: true`.
 
+Promotion production phải chạy validation trước và tự tạo backup cục bộ:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\promote_experimental_corpus.py --validate-only
+.\.venv\Scripts\python.exe scripts\promote_experimental_corpus.py --confirm
+```
+
 ## Đánh giá retrieval
 
 ```powershell
@@ -34,3 +41,5 @@ $env:HF_HUB_OFFLINE='1'
 ```
 
 Không diễn giải Hit@k, Recall@k hoặc MRR trên 30 câu như độ chính xác pháp lý tổng quát. Mọi tuyên bố chất lượng pháp lý cần tập dữ liệu đại diện và chuyên gia duyệt.
+
+Kết quả production VBHN 133 ngày 08/08/2026 trên 30 câu, hybrid: Hit@1 `0,9667`, Recall@3/5 `1,0`, MRR `0,9778`. API chat thử nghiệm trả về citation `vbhn_133_2025_luat_dat_dai`, Điều 159.

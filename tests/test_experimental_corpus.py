@@ -5,7 +5,11 @@ from pathlib import Path
 import pytest
 
 from app.kb.legal_parser import LegalStructureParser
-from scripts.run_experimental_corpus import ROOT, _safe_output_dir
+from scripts.run_experimental_corpus import (
+    ROOT,
+    _is_gazette_boilerplate,
+    _safe_output_dir,
+)
 
 
 def test_parser_supports_versioned_document_identity() -> None:
@@ -34,6 +38,13 @@ def test_experimental_output_cannot_replace_production() -> None:
 
     safe = _safe_output_dir(Path("data/experiments/example"))
     assert safe == (ROOT / "data" / "experiments" / "example").resolve()
+
+
+def test_gazette_boilerplate_is_filtered_without_removing_legal_text() -> None:
+    assert _is_gazette_boilerplate("(Xem tiếp Công báo số 1339 + 1340)")
+    assert _is_gazette_boilerplate("VĂN BẢN KHÁC")
+    assert _is_gazette_boilerplate("hợp nhất Luật Đất đai")
+    assert not _is_gazette_boilerplate("Điều 77. Trách nhiệm báo cáo")
 
 
 def test_sequence_guard_skips_quoted_articles_from_amending_laws() -> None:

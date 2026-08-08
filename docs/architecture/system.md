@@ -34,13 +34,13 @@ Official Sources
 | # | Module | Trạng thái |
 |---|---|---|
 | 01 | Data Acquisition | Có inventory, downloader, retry, hash, atomic write |
-| 02 | PDF Parser | Hoàn thành cho 3 PDF Luật Đất đai 2024 |
+| 02 | Source Parser | PDF gốc và Công báo Word của VBHN 133 |
 | 03 | Text Normalizer | Noise removal, wrapped-line repair, report |
 | 04 | Legal Structure Parser | 16 Chương, 260 Điều, regression title repair |
-| 05 | Character Chunker | 615 chunks, baseline |
-| 06 | Legal-aware Chunker | 431 chunks, legal boundary first |
+| 05 | Character Chunker | 618 chunks, baseline |
+| 06 | Legal-aware Chunker | 441 chunks, legal boundary first |
 | 07 | Chunk Validator | Shared validation gate |
-| 08 | Embedding Service | E5-small, 431×384, L2 normalized |
+| 08 | Embedding Service | E5-small, 441×384, L2 normalized |
 | 09 | Vector Store | FAISS IndexFlatIP |
 | 10 | Retriever | Dense + hybrid title boost |
 | 11 | Query Understanding | Intent, refs, synonym rewriting |

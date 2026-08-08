@@ -2,9 +2,12 @@
   "provider": "faiss",
   "index_type": "IndexFlatIP",
   "metric": "cosine_similarity",
-  "vector_count": 431,
+  "vector_count": 441,
   "dimension": 384,
   "model_name": "intfloat/multilingual-e5-small",
   "index_file": "E:\\2026\\project\\AI - Agent pháp luật\\data\\vector_db\\legal_chunks.faiss",
-  "metadata_file": "E:\\2026\\project\\AI - Agent pháp luật\\data\\vector_db\\legal_chunks_metadata.json"
+  "metadata_file": "E:\\2026\\project\\AI - Agent pháp luật\\data\\vector_db\\legal_chunks_metadata.json",
+  "production_replaced": true,
+  "promoted_from": "data\\experiments\\vbhn_133_2025_luat_dat_dai",
+  "promoted_at": "2026-08-08T15:04:09.122702+00:00"
 }

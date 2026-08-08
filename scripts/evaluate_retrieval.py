@@ -47,6 +47,8 @@ class _HybridAdapter:
 
 
 def main() -> None:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
     args = parse_args()
     questions = json.loads(args.questions.read_text(encoding="utf-8"))
     if args.artifact_dir:

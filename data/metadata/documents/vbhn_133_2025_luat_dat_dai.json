@@ -85,14 +85,14 @@
     ]
   },
   "processing": {
-    "processing_status": "downloaded",
-    "parser": "pymupdf-experimental",
-    "chunk_strategy": "legal_structure-experimental",
-    "embedding_model": null,
-    "indexed": false,
-    "last_processed_at": null,
+    "processing_status": "indexed",
+    "parser": "python-docx+legal-structure",
+    "chunk_strategy": "legal_structure",
+    "embedding_model": "intfloat/multilingual-e5-small",
+    "indexed": true,
+    "last_processed_at": "2026-08-08T22:04:09+07:00",
     "experimental_status": "indexed",
     "experimental_artifact_path": "data/experiments/vbhn_133_2025_luat_dat_dai"
   },
-  "notes": "Đã tải PDF và ba phần Công báo chính thức, xác minh ngày 08/08/2026. Ba DOCX là bản chuyển đổi cục bộ từ DOC chính thức để parser đọc, có liên kết derived_from. Nguồn Công báo qua quality gate với đủ 260 Điều, 0 tiêu đề đáng ngờ và đã tạo index thử nghiệm 441 chunks. Production corpus/index chưa bị thay thế."
+  "notes": "Production corpus mặc định từ 08/08/2026. Đã tải PDF và ba phần Công báo chính thức; DOCX là bản chuyển đổi cục bộ có provenance. Quality gate đạt: 260 Điều, 441 chunks, không còn boilerplate Công báo hoặc tiêu đề đáng ngờ."
 }

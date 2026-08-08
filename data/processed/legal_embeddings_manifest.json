@@ -1,16 +1,18 @@
 {
-  "document_id": "luat_dat_dai_2024",
+  "document_id": "vbhn_133_2025_luat_dat_dai",
   "source_chunks_file": "E:\\2026\\project\\AI - Agent pháp luật\\data\\processed\\legal_chunks.json",
   "embeddings_file": "E:\\2026\\project\\AI - Agent pháp luật\\data\\processed\\legal_embeddings.npy",
   "metadata_file": "E:\\2026\\project\\AI - Agent pháp luật\\data\\processed\\legal_embeddings_metadata.json",
   "model_name": "intfloat/multilingual-e5-small",
   "device": "cpu",
   "normalize_embeddings": true,
-  "chunk_count": 431,
+  "chunk_count": 441,
   "embedding_dimension": 384,
   "dtype": "float32",
   "text_field": "clean_text",
   "document_prefix": "passage: ",
   "query_prefix": "query: ",
-  "source_chunks_sha256": "4d9fb353993e721427fbbd88f6d5ff14e0722ea737cb41390d9a7638598e2bcd"
+  "source_chunks_sha256": "9ac4cbaf60336b103faf529dfbf60066c096ffa2aa95d4bd0db1ce33c0d22eba",
+  "promoted_from": "data\\experiments\\vbhn_133_2025_luat_dat_dai",
+  "promoted_at": "2026-08-08T15:04:09.111430+00:00"
 }

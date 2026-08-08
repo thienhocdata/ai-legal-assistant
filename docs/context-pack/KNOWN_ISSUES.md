@@ -2,13 +2,11 @@
 
 ## Ưu tiên cao
 
-- Corpus đang index là bản gốc Luật 31/2024/QH15, chưa phải Văn bản hợp nhất 133/VBHN-VPQH.
 - Bản PDF của 133/VBHN-VPQH có trang 218 là ảnh scan và chú thích hợp nhất gây nhiễu parser; pipeline đã tránh lỗi này bằng ba phần Công báo Word chính thức, nhưng nhánh PDF vẫn không được dùng để build index.
-- Index 133/VBHN-VPQH hiện chỉ là artifact thử nghiệm, chưa được chọn làm corpus production.
 - Luật 43/2024/QH15 đã có metadata/URL nhưng chưa tải hoặc ingest.
 - Kho luật chỉ có một văn bản lõi; câu hỏi ngoài phạm vi dễ thiếu căn cứ.
 - Ground truth 30 câu còn nhỏ và chưa phải đánh giá pháp lý bởi chuyên gia.
-- Hybrid retrieval trên 30 câu của index thử nghiệm đạt cùng baseline production; kết quả này chưa đủ để quyết định chuyển production.
+- Production đã chuyển sang VBHN 133, nhưng ground truth 30 câu và bộ 35 truy vấn theo tiêu đề chưa phải đánh giá pháp lý bởi chuyên gia.
 
 ## Kỹ thuật và vận hành
 

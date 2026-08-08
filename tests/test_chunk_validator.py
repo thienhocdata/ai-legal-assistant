@@ -47,7 +47,7 @@ def test_generated_legal_chunks_are_valid() -> None:
         validator.load(CHUNKS_PATH), require_legal_metadata=True
     )
     assert report.valid
-    assert report.chunk_count == 431
+    assert report.chunk_count == 441
 
 
 def main() -> None:

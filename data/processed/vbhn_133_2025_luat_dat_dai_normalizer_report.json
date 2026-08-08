@@ -1,0 +1,18 @@
+{
+  "document_id": "vbhn_133_2025_luat_dat_dai",
+  "input_file": "E:\\2026\\project\\AI - Agent pháp luật\\data\\experiments\\vbhn_133_2025_luat_dat_dai\\raw.txt",
+  "output_file": "E:\\2026\\project\\AI - Agent pháp luật\\data\\experiments\\vbhn_133_2025_luat_dat_dai\\normalized.txt",
+  "raw_characters": 525398,
+  "normalized_characters": 524851,
+  "raw_lines": 3007,
+  "normalized_lines": 2971,
+  "removed_lines": 0,
+  "blank_lines_collapsed": 11,
+  "wrapped_lines_merged": 24,
+  "wrapped_titles_merged": 2,
+  "removed_by_type": {},
+  "status": "success",
+  "warnings": [],
+  "removed_characters": 547,
+  "retention_ratio": 0.998959
+}
