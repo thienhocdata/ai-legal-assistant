@@ -57,8 +57,17 @@ OUTPUT_MANIFEST_PATH = (
     / "vector_store_manifest.json"
 )
 
+PROMOTION_MANIFEST_PATH = (
+    ROOT
+    / "data"
+    / "processed"
+    / "promotion_manifest.json"
+)
+
 
 def main() -> None:
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
     if not EMBEDDINGS_PATH.exists():
         raise FileNotFoundError(
             f"Không tìm thấy: {EMBEDDINGS_PATH}"
@@ -133,13 +142,18 @@ def main() -> None:
         "model_name": embedding_manifest[
             "model_name"
         ],
-        "index_file": str(
-            OUTPUT_INDEX_PATH
-        ),
-        "metadata_file": str(
-            OUTPUT_METADATA_PATH
-        ),
+        "index_file": OUTPUT_INDEX_PATH.relative_to(ROOT).as_posix(),
+        "metadata_file": OUTPUT_METADATA_PATH.relative_to(ROOT).as_posix(),
     }
+    if PROMOTION_MANIFEST_PATH.exists():
+        promotion = json.loads(PROMOTION_MANIFEST_PATH.read_text(encoding="utf-8"))
+        vector_manifest.update(
+            {
+                "production_replaced": True,
+                "promoted_from": str(promotion.get("source_experiment", "")),
+                "promoted_at": promotion.get("promoted_at"),
+            }
+        )
 
     OUTPUT_MANIFEST_PATH.write_text(
         json.dumps(

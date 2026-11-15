@@ -5,7 +5,7 @@
 - `app/agent/`: query analysis, rewriting và clarification.
 - `app/citation/`: tạo citation và context.
 - `app/guardrails/`: input, evidence và output gates.
-- `app/llm_provider/`: extractive local, Gemini và factory.
+- `app/llm_provider/`: extractive local, Gemini, OpenAI-compatible/Qwen và factory.
 - `app/kb/`: downloader, parser, normalizer, legal parser, chunkers, embedding và validation.
 - `app/rag/`: FAISS vector store và retriever.
 - `app/evaluation/`: tính metric retrieval.

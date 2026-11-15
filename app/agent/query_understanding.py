@@ -52,6 +52,19 @@ class QueryAnalyzer:
         re.compile(r"\bnhư vậy\b", re.IGNORECASE),
         re.compile(r"^(?:tôi|mình) có được (?:làm|thực hiện) không\??$", re.IGNORECASE),
     )
+    CORPUS_GAP_PATTERNS = (
+        re.compile(r"\b(?:mẫu đơn|mẫu giấy).*(?:số mấy|nào)\b", re.IGNORECASE),
+        re.compile(r"\bbao nhiêu bản sao\b", re.IGNORECASE),
+        re.compile(r"\b(?:lệ phí trước bạ|thuế thu nhập cá nhân)\b", re.IGNORECASE),
+        re.compile(r"\btheo nghị định hướng dẫn\b", re.IGNORECASE),
+        re.compile(r"\bthửa (?:đất )?số\s+\d+\b", re.IGNORECASE),
+        re.compile(r"\btờ bản đồ\s+\d+\b", re.IGNORECASE),
+        re.compile(r"\b(?:quy hoạch|ngăn chặn giao dịch).*(?:thửa|đất của tôi)\b", re.IGNORECASE),
+        re.compile(
+            r"\b(?:diện tích tối thiểu|phí đo đạc|bảng giá đất).*(?:tỉnh|thành phố)\b",
+            re.IGNORECASE,
+        ),
+    )
 
     def __init__(self, rewriter: QueryRewriter | None = None) -> None:
         self.rewriter = rewriter or QueryRewriter()
@@ -84,6 +97,8 @@ class QueryAnalyzer:
             reasons.append("missing_context")
         if not in_scope:
             reasons.append("outside_land_law_scope")
+        if any(pattern.search(original) for pattern in self.CORPUS_GAP_PATTERNS):
+            reasons.append("requires_source_outside_current_corpus")
 
         tokens = [
             token.lower()

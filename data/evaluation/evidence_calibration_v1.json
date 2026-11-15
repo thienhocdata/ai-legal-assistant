@@ -1,0 +1,719 @@
+{
+  "evaluated_at": "2026-11-15T06:49:41.428158+00:00",
+  "label_status": "in_sample_diagnostic_not_legal_ground_truth",
+  "warning": "The threshold is selected and scored on the same diagnostic rows; it is not held-out validation. Missing-source labels require legal review before use.",
+  "positive_count": 30,
+  "negative_count": 30,
+  "positive_dense_scores": {
+    "min": 0.853728,
+    "median": 0.905956,
+    "mean": 0.902826,
+    "max": 0.929356
+  },
+  "negative_dense_scores": {
+    "min": 0.762238,
+    "median": 0.831825,
+    "mean": 0.834011,
+    "max": 0.88816
+  },
+  "recommended_dense_threshold": 0.890138,
+  "balanced_accuracy_at_recommendation": 0.9,
+  "balanced_accuracy_at_current_0_55": 0.5,
+  "groups_at_recommendation": {
+    "answerable_positive": {
+      "count": 30,
+      "expected_answerable": true,
+      "accuracy": 0.8,
+      "dense_scores": {
+        "min": 0.853728,
+        "median": 0.905956,
+        "mean": 0.902826,
+        "max": 0.929356
+      }
+    },
+    "missing_source": {
+      "count": 15,
+      "expected_answerable": false,
+      "accuracy": 1.0,
+      "dense_scores": {
+        "min": 0.831392,
+        "median": 0.861451,
+        "mean": 0.858363,
+        "max": 0.88816
+      }
+    },
+    "upstream_scope_rejection": {
+      "count": 15,
+      "expected_answerable": false,
+      "accuracy": 1.0,
+      "dense_scores": {
+        "min": 0.762238,
+        "median": 0.808588,
+        "mean": 0.809659,
+        "max": 0.841713
+      }
+    }
+  },
+  "rows": [
+    {
+      "question_id": "Q001",
+      "question": "Luật Đất đai năm 2024 điều chỉnh những vấn đề gì?",
+      "category": "direct_lookup",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 1,
+      "top_dense_score": 0.853728,
+      "top_combined_score": 1.086089,
+      "dense_margin_top_1_2": -0.039813
+    },
+    {
+      "question_id": "Q002",
+      "question": "Những đối tượng nào phải áp dụng Luật Đất đai?",
+      "category": "paraphrase",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 2,
+      "top_dense_score": 0.908859,
+      "top_combined_score": 1.083859,
+      "dense_margin_top_1_2": 0.023889
+    },
+    {
+      "question_id": "Q003",
+      "question": "Thửa đất được Luật Đất đai giải thích như thế nào?",
+      "category": "clause_lookup",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 3,
+      "top_dense_score": 0.892389,
+      "top_combined_score": 0.994472,
+      "dense_margin_top_1_2": 0.034469
+    },
+    {
+      "question_id": "Q004",
+      "question": "Các nguyên tắc sử dụng đất gồm những gì?",
+      "category": "direct_lookup",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 5,
+      "top_dense_score": 0.924136,
+      "top_combined_score": 1.119553,
+      "dense_margin_top_1_2": 0.031255
+    },
+    {
+      "question_id": "Q005",
+      "question": "Pháp luật nghiêm cấm những hành vi nào trong lĩnh vực đất đai?",
+      "category": "paraphrase",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 11,
+      "top_dense_score": 0.915081,
+      "top_combined_score": 1.103286,
+      "dense_margin_top_1_2": 0.036264
+    },
+    {
+      "question_id": "Q006",
+      "question": "Công dân có quyền tiếp cận thông tin đất đai không?",
+      "category": "natural_language",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 24,
+      "top_dense_score": 0.929356,
+      "top_combined_score": 1.12769,
+      "dense_margin_top_1_2": 0.0546
+    },
+    {
+      "question_id": "Q007",
+      "question": "Người sử dụng đất có những quyền chung nào?",
+      "category": "direct_lookup",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 26,
+      "top_dense_score": 0.917884,
+      "top_combined_score": 1.127884,
+      "dense_margin_top_1_2": 0.039929
+    },
+    {
+      "question_id": "Q008",
+      "question": "Nghĩa vụ chung của người sử dụng đất là gì?",
+      "category": "direct_lookup",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 31,
+      "top_dense_score": 0.901626,
+      "top_combined_score": 1.111626,
+      "dense_margin_top_1_2": -0.001222
+    },
+    {
+      "question_id": "Q009",
+      "question": "Muốn chuyển nhượng quyền sử dụng đất thì cần đáp ứng điều kiện nào?",
+      "category": "paraphrase",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 45,
+      "top_dense_score": 0.904378,
+      "top_combined_score": 1.152968,
+      "dense_margin_top_1_2": 0.017429
+    },
+    {
+      "question_id": "Q010",
+      "question": "Điều kiện chuyển đổi quyền sử dụng đất nông nghiệp là gì?",
+      "category": "direct_lookup",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 47,
+      "top_dense_score": 0.915884,
+      "top_combined_score": 1.265884,
+      "dense_margin_top_1_2": 0.029874
+    },
+    {
+      "question_id": "Q011",
+      "question": "Nhà nước thu hồi đất vì mục đích quốc phòng an ninh trong trường hợp nào?",
+      "category": "paraphrase",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 78,
+      "top_dense_score": 0.898622,
+      "top_combined_score": 1.231122,
+      "dense_margin_top_1_2": 0.004146
+    },
+    {
+      "question_id": "Q012",
+      "question": "Các trường hợp bị thu hồi đất do vi phạm pháp luật đất đai?",
+      "category": "direct_lookup",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 81,
+      "top_dense_score": 0.878075,
+      "top_combined_score": 1.2237,
+      "dense_margin_top_1_2": -0.007343
+    },
+    {
+      "question_id": "Q013",
+      "question": "Cơ quan nào có thẩm quyền ra quyết định thu hồi đất?",
+      "category": "natural_language",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 83,
+      "top_dense_score": 0.88234,
+      "top_combined_score": 1.115673,
+      "dense_margin_top_1_2": 0.009003
+    },
+    {
+      "question_id": "Q014",
+      "question": "Nguyên tắc bồi thường hỗ trợ tái định cư khi thu hồi đất là gì?",
+      "category": "direct_lookup",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 91,
+      "top_dense_score": 0.923978,
+      "top_combined_score": 1.256478,
+      "dense_margin_top_1_2": 0.028995
+    },
+    {
+      "question_id": "Q015",
+      "question": "Điều kiện để được bồi thường về đất khi Nhà nước thu hồi đất?",
+      "category": "paraphrase",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 98,
+      "top_dense_score": 0.916286,
+      "top_combined_score": 1.181968,
+      "dense_margin_top_1_2": 0.008506
+    },
+    {
+      "question_id": "Q016",
+      "question": "Việc bố trí tái định cư được quy định như thế nào?",
+      "category": "direct_lookup",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 111,
+      "top_dense_score": 0.908423,
+      "top_combined_score": 1.240923,
+      "dense_margin_top_1_2": 0.00182
+    },
+    {
+      "question_id": "Q017",
+      "question": "Trường hợp nào Nhà nước giao đất không thu tiền sử dụng đất?",
+      "category": "direct_lookup",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 118,
+      "top_dense_score": 0.877448,
+      "top_combined_score": 1.206448,
+      "dense_margin_top_1_2": -0.007201
+    },
+    {
+      "question_id": "Q018",
+      "question": "Những trường hợp nào được Nhà nước cho thuê đất?",
+      "category": "paraphrase",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 120,
+      "top_dense_score": 0.883779,
+      "top_combined_score": 1.198779,
+      "dense_margin_top_1_2": 0.006706
+    },
+    {
+      "question_id": "Q019",
+      "question": "Các trường hợp phải xin phép chuyển mục đích sử dụng đất?",
+      "category": "natural_language",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 121,
+      "top_dense_score": 0.907382,
+      "top_combined_score": 1.233519,
+      "dense_margin_top_1_2": 0.00325
+    },
+    {
+      "question_id": "Q020",
+      "question": "Ai có thẩm quyền giao đất cho thuê đất và cho phép chuyển mục đích sử dụng đất?",
+      "category": "paraphrase",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 123,
+      "top_dense_score": 0.90391,
+      "top_combined_score": 1.246619,
+      "dense_margin_top_1_2": 0.014826
+    },
+    {
+      "question_id": "Q021",
+      "question": "Những trường hợp nào phải đăng ký đất đai lần đầu?",
+      "category": "direct_lookup",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 132,
+      "top_dense_score": 0.920953,
+      "top_combined_score": 1.097897,
+      "dense_margin_top_1_2": 0.024734
+    },
+    {
+      "question_id": "Q022",
+      "question": "Khi nào người sử dụng đất phải đăng ký biến động?",
+      "category": "paraphrase",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 133,
+      "top_dense_score": 0.910925,
+      "top_combined_score": 1.229425,
+      "dense_margin_top_1_2": 0.05483
+    },
+    {
+      "question_id": "Q023",
+      "question": "Nguyên tắc cấp sổ đỏ được quy định ra sao?",
+      "category": "colloquial",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 135,
+      "top_dense_score": 0.876077,
+      "top_combined_score": 0.935195,
+      "dense_margin_top_1_2": 0.00219
+    },
+    {
+      "question_id": "Q024",
+      "question": "Đất không có giấy tờ có được cấp Giấy chứng nhận quyền sử dụng đất không?",
+      "category": "natural_language",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 138,
+      "top_dense_score": 0.912208,
+      "top_combined_score": 1.171208,
+      "dense_margin_top_1_2": 0.001182
+    },
+    {
+      "question_id": "Q025",
+      "question": "Những trường hợp nào không được cấp Giấy chứng nhận quyền sử dụng đất?",
+      "category": "direct_lookup",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 151,
+      "top_dense_score": 0.903331,
+      "top_combined_score": 1.20289,
+      "dense_margin_top_1_2": 0.009355
+    },
+    {
+      "question_id": "Q026",
+      "question": "Việc định giá đất phải tuân theo nguyên tắc và phương pháp nào?",
+      "category": "paraphrase",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 158,
+      "top_dense_score": 0.916621,
+      "top_combined_score": 1.218496,
+      "dense_margin_top_1_2": 0.024209
+    },
+    {
+      "question_id": "Q027",
+      "question": "Bảng giá đất được xây dựng và áp dụng như thế nào?",
+      "category": "direct_lookup",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 159,
+      "top_dense_score": 0.90453,
+      "top_combined_score": 1.22453,
+      "dense_margin_top_1_2": 0.030732
+    },
+    {
+      "question_id": "Q028",
+      "question": "Điều kiện và nguyên tắc tách thửa, hợp thửa đất là gì?",
+      "category": "natural_language",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 220,
+      "top_dense_score": 0.895451,
+      "top_combined_score": 1.219201,
+      "dense_margin_top_1_2": 0.02907
+    },
+    {
+      "question_id": "Q029",
+      "question": "Tranh chấp đất đai có bắt buộc hòa giải tại xã không?",
+      "category": "colloquial",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 235,
+      "top_dense_score": 0.909004,
+      "top_combined_score": 1.231004,
+      "dense_margin_top_1_2": 0.035779
+    },
+    {
+      "question_id": "Q030",
+      "question": "Cơ quan nào có thẩm quyền giải quyết tranh chấp đất đai?",
+      "category": "paraphrase",
+      "evaluation_group": "answerable_positive",
+      "expected_answerable": true,
+      "top_article": 236,
+      "top_dense_score": 0.892115,
+      "top_combined_score": 1.228115,
+      "dense_margin_top_1_2": 0.009178
+    },
+    {
+      "question_id": "N001",
+      "question": "Cách nấu phở bò ngon tại nhà?",
+      "category": "outside_scope",
+      "evaluation_group": "upstream_scope_rejection",
+      "expected_answerable": false,
+      "top_article": 91,
+      "top_dense_score": 0.793165,
+      "top_combined_score": 0.819415,
+      "dense_margin_top_1_2": -6.9e-05
+    },
+    {
+      "question_id": "N002",
+      "question": "Hôm nay thời tiết ở Thành phố Hồ Chí Minh thế nào?",
+      "category": "outside_scope",
+      "evaluation_group": "upstream_scope_rejection",
+      "expected_answerable": false,
+      "top_article": 188,
+      "top_dense_score": 0.803566,
+      "top_combined_score": 0.841483,
+      "dense_margin_top_1_2": 0.01743
+    },
+    {
+      "question_id": "N003",
+      "question": "Python khác JavaScript ở điểm nào?",
+      "category": "outside_scope",
+      "evaluation_group": "upstream_scope_rejection",
+      "expected_answerable": false,
+      "top_article": 260,
+      "top_dense_score": 0.793045,
+      "top_combined_score": 0.83242,
+      "dense_margin_top_1_2": 0.008482
+    },
+    {
+      "question_id": "N004",
+      "question": "Viết cho tôi một bài thơ về mùa thu.",
+      "category": "outside_scope",
+      "evaluation_group": "upstream_scope_rejection",
+      "expected_answerable": false,
+      "top_article": 33,
+      "top_dense_score": 0.787986,
+      "top_combined_score": 0.825236,
+      "dense_margin_top_1_2": -0.004873
+    },
+    {
+      "question_id": "N005",
+      "question": "Tôi nên mua điện thoại nào để chụp ảnh?",
+      "category": "outside_scope",
+      "evaluation_group": "upstream_scope_rejection",
+      "expected_answerable": false,
+      "top_article": 233,
+      "top_dense_score": 0.805553,
+      "top_combined_score": 0.818678,
+      "dense_margin_top_1_2": 0.001956
+    },
+    {
+      "question_id": "N006",
+      "question": "Luật giao thông quy định tốc độ xe máy bao nhiêu?",
+      "category": "other_legal_domain",
+      "evaluation_group": "upstream_scope_rejection",
+      "expected_answerable": false,
+      "top_article": 125,
+      "top_dense_score": 0.822762,
+      "top_combined_score": 0.874484,
+      "dense_margin_top_1_2": -0.01099
+    },
+    {
+      "question_id": "N007",
+      "question": "Người lao động được nghỉ phép năm bao nhiêu ngày?",
+      "category": "other_legal_domain",
+      "evaluation_group": "upstream_scope_rejection",
+      "expected_answerable": false,
+      "top_article": 4,
+      "top_dense_score": 0.830754,
+      "top_combined_score": 0.87499,
+      "dense_margin_top_1_2": 0.003944
+    },
+    {
+      "question_id": "N008",
+      "question": "Điều kiện đăng ký kết hôn là gì?",
+      "category": "other_legal_domain",
+      "evaluation_group": "upstream_scope_rejection",
+      "expected_answerable": false,
+      "top_article": 133,
+      "top_dense_score": 0.81568,
+      "top_combined_score": 0.917763,
+      "dense_margin_top_1_2": 0.01084
+    },
+    {
+      "question_id": "N009",
+      "question": "Doanh nghiệp phải nộp thuế thu nhập như thế nào?",
+      "category": "other_legal_domain",
+      "evaluation_group": "upstream_scope_rejection",
+      "expected_answerable": false,
+      "top_article": 202,
+      "top_dense_score": 0.83407,
+      "top_combined_score": 0.89107,
+      "dense_margin_top_1_2": -0.003342
+    },
+    {
+      "question_id": "N010",
+      "question": "Thủ tục khởi kiện một vụ án hình sự ra sao?",
+      "category": "other_legal_domain",
+      "evaluation_group": "upstream_scope_rejection",
+      "expected_answerable": false,
+      "top_article": 246,
+      "top_dense_score": 0.841713,
+      "top_combined_score": 0.881009,
+      "dense_margin_top_1_2": 0.014684
+    },
+    {
+      "question_id": "N011",
+      "question": "Bác sĩ kê đơn thuốc này có đúng không?",
+      "category": "outside_scope",
+      "evaluation_group": "upstream_scope_rejection",
+      "expected_answerable": false,
+      "top_article": 49,
+      "top_dense_score": 0.808588,
+      "top_combined_score": 0.846505,
+      "dense_margin_top_1_2": -0.00239
+    },
+    {
+      "question_id": "N012",
+      "question": "Lãi suất gửi tiết kiệm ngân hàng nào cao nhất?",
+      "category": "outside_scope",
+      "evaluation_group": "upstream_scope_rejection",
+      "expected_answerable": false,
+      "top_article": 158,
+      "top_dense_score": 0.817498,
+      "top_combined_score": 0.852498,
+      "dense_margin_top_1_2": 0.022793
+    },
+    {
+      "question_id": "N013",
+      "question": "Hướng dẫn sửa máy lạnh không hoạt động.",
+      "category": "outside_scope",
+      "evaluation_group": "upstream_scope_rejection",
+      "expected_answerable": false,
+      "top_article": 190,
+      "top_dense_score": 0.798923,
+      "top_combined_score": 0.895173,
+      "dense_margin_top_1_2": -0.023591
+    },
+    {
+      "question_id": "N014",
+      "question": "Ai là người phát minh ra bóng đèn?",
+      "category": "outside_scope",
+      "evaluation_group": "upstream_scope_rejection",
+      "expected_answerable": false,
+      "top_article": 79,
+      "top_dense_score": 0.762238,
+      "top_combined_score": 0.781944,
+      "dense_margin_top_1_2": 0.002275
+    },
+    {
+      "question_id": "N015",
+      "question": "Giải phương trình bậc hai này giúp tôi.",
+      "category": "outside_scope",
+      "evaluation_group": "upstream_scope_rejection",
+      "expected_answerable": false,
+      "top_article": 158,
+      "top_dense_score": 0.829348,
+      "top_combined_score": 0.864348,
+      "dense_margin_top_1_2": 0.016786
+    },
+    {
+      "question_id": "N016",
+      "question": "Hồ sơ sang tên sổ đỏ cần chính xác bao nhiêu bản sao và dùng mẫu đơn số mấy?",
+      "category": "missing_procedure_source",
+      "evaluation_group": "missing_source",
+      "expected_answerable": false,
+      "top_article": 129,
+      "top_dense_score": 0.861451,
+      "top_combined_score": 0.979576,
+      "dense_margin_top_1_2": 0.003848
+    },
+    {
+      "question_id": "N017",
+      "question": "Nộp hồ sơ tách thửa trực tuyến tại cổng dịch vụ công theo các bước nào?",
+      "category": "missing_procedure_source",
+      "evaluation_group": "missing_source",
+      "expected_answerable": false,
+      "top_article": 220,
+      "top_dense_score": 0.843264,
+      "top_combined_score": 1.06336,
+      "dense_margin_top_1_2": -0.012322
+    },
+    {
+      "question_id": "N018",
+      "question": "Phí đo đạc tách thửa hiện nay tại tỉnh Đồng Nai là bao nhiêu tiền?",
+      "category": "missing_local_source",
+      "evaluation_group": "missing_source",
+      "expected_answerable": false,
+      "top_article": 220,
+      "top_dense_score": 0.831392,
+      "top_combined_score": 1.057642,
+      "dense_margin_top_1_2": 0.010968
+    },
+    {
+      "question_id": "N019",
+      "question": "Diện tích tối thiểu được tách thửa tại Thành phố Hồ Chí Minh năm nay là bao nhiêu?",
+      "category": "missing_local_source",
+      "evaluation_group": "missing_source",
+      "expected_answerable": false,
+      "top_article": 220,
+      "top_dense_score": 0.83181,
+      "top_combined_score": 1.054935,
+      "dense_margin_top_1_2": 0.003253
+    },
+    {
+      "question_id": "N020",
+      "question": "Ủy ban nhân dân tỉnh Bình Dương đang áp dụng bảng giá đất cụ thể nào cho tuyến đường này?",
+      "category": "missing_local_source",
+      "evaluation_group": "missing_source",
+      "expected_answerable": false,
+      "top_article": 159,
+      "top_dense_score": 0.867796,
+      "top_combined_score": 1.162379,
+      "dense_margin_top_1_2": 0.005872
+    },
+    {
+      "question_id": "N021",
+      "question": "Lệ phí trước bạ khi sang tên quyền sử dụng đất được tính chính xác ra sao?",
+      "category": "missing_tax_source",
+      "evaluation_group": "missing_source",
+      "expected_answerable": false,
+      "top_article": 28,
+      "top_dense_score": 0.845519,
+      "top_combined_score": 0.967581,
+      "dense_margin_top_1_2": -0.011215
+    },
+    {
+      "question_id": "N022",
+      "question": "Thuế thu nhập cá nhân khi tặng cho đất giữa anh em ruột có được miễn không?",
+      "category": "missing_tax_source",
+      "evaluation_group": "missing_source",
+      "expected_answerable": false,
+      "top_article": 27,
+      "top_dense_score": 0.855225,
+      "top_combined_score": 1.029383,
+      "dense_margin_top_1_2": 0.008507
+    },
+    {
+      "question_id": "N023",
+      "question": "Văn phòng đăng ký đất đai phải giải quyết hồ sơ sang tên trong bao nhiêu ngày làm việc?",
+      "category": "missing_procedure_source",
+      "evaluation_group": "missing_source",
+      "expected_answerable": false,
+      "top_article": 256,
+      "top_dense_score": 0.87837,
+      "top_combined_score": 0.974773,
+      "dense_margin_top_1_2": 0.003803
+    },
+    {
+      "question_id": "N024",
+      "question": "Mẫu giấy ủy quyền làm thủ tục cấp sổ đỏ phải công chứng ở đâu?",
+      "category": "missing_procedure_source",
+      "evaluation_group": "missing_source",
+      "expected_answerable": false,
+      "top_article": 137,
+      "top_dense_score": 0.88816,
+      "top_combined_score": 0.946308,
+      "dense_margin_top_1_2": 0.013459
+    },
+    {
+      "question_id": "N025",
+      "question": "Hồ sơ xin chuyển đất trồng lúa sang đất ở cần những giấy tờ nào theo nghị định hướng dẫn?",
+      "category": "missing_decree_source",
+      "evaluation_group": "missing_source",
+      "expected_answerable": false,
+      "top_article": 182,
+      "top_dense_score": 0.883563,
+      "top_combined_score": 1.032313,
+      "dense_margin_top_1_2": 0.004513
+    },
+    {
+      "question_id": "N026",
+      "question": "Tiền sử dụng đất phải nộp khi chuyển mục đích tại địa chỉ của tôi là bao nhiêu?",
+      "category": "missing_case_data",
+      "evaluation_group": "missing_source",
+      "expected_answerable": false,
+      "top_article": 121,
+      "top_dense_score": 0.880748,
+      "top_combined_score": 1.189186,
+      "dense_margin_top_1_2": -0.007825
+    },
+    {
+      "question_id": "N027",
+      "question": "Quy hoạch sử dụng đất của thửa số 125 tờ bản đồ 10 hiện tại là gì?",
+      "category": "missing_case_data",
+      "evaluation_group": "missing_source",
+      "expected_answerable": false,
+      "top_article": 65,
+      "top_dense_score": 0.834527,
+      "top_combined_score": 0.953886,
+      "dense_margin_top_1_2": 0.006391
+    },
+    {
+      "question_id": "N028",
+      "question": "Thửa đất của tôi có đang bị ngăn chặn giao dịch tại cơ quan thi hành án không?",
+      "category": "missing_case_data",
+      "evaluation_group": "missing_source",
+      "expected_answerable": false,
+      "top_article": 220,
+      "top_dense_score": 0.83184,
+      "top_combined_score": 0.925756,
+      "dense_margin_top_1_2": -0.006047
+    },
+    {
+      "question_id": "N029",
+      "question": "Cơ quan nào đang giữ hồ sơ địa chính cụ thể của gia đình tôi?",
+      "category": "missing_case_data",
+      "evaluation_group": "missing_source",
+      "expected_answerable": false,
+      "top_article": 129,
+      "top_dense_score": 0.879835,
+      "top_combined_score": 1.040027,
+      "dense_margin_top_1_2": 0.010823
+    },
+    {
+      "question_id": "N030",
+      "question": "Văn bản địa phương mới nhất sửa diện tích tách thửa tại tỉnh tôi có hiệu lực ngày nào?",
+      "category": "missing_local_source",
+      "evaluation_group": "missing_source",
+      "expected_answerable": false,
+      "top_article": 220,
+      "top_dense_score": 0.861941,
+      "top_combined_score": 1.089956,
+      "dense_margin_top_1_2": -0.02144
+    }
+  ]
+}

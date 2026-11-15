@@ -34,6 +34,18 @@ class ClarificationEngine:
                 reason="Câu hỏi chưa thể hiện nội dung thuộc pháp luật đất đai.",
                 questions=["Bạn có thể nêu rõ vấn đề liên quan đến đất đai cần tra cứu không?"],
             )
+        if "requires_source_outside_current_corpus" in analysis.reasons:
+            return ClarificationResult(
+                status="insufficient_coverage",
+                reason=(
+                    "Câu hỏi cần dữ liệu thủ tục, thuế, hồ sơ vụ việc hoặc quy định "
+                    "địa phương chưa có trong kho hiện tại. Hệ thống không nên suy đoán "
+                    "chỉ từ Văn bản hợp nhất Luật Đất đai."
+                ),
+                questions=[
+                    "Bạn có thể cung cấp văn bản hướng dẫn hoặc địa phương cần tra cứu để đối chiếu không?"
+                ],
+            )
         if not analysis.requires_clarification:
             return ClarificationResult(status="ready")
         questions = self.INTENT_QUESTIONS.get(

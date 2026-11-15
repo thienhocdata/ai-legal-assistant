@@ -8,7 +8,7 @@ Script điều phối chính: `scripts/run_pipeline.py`. Artifact sinh ra nằm 
 
 ## Luồng trả lời
 
-FastAPI `/api/chat` → `LegalAssistantService` → input guardrail → query analysis/rewriting → clarification → hybrid retriever → citation engine → evidence guardrail → extractive hoặc Gemini provider → output citation guardrail → JSONL event log.
+FastAPI `/api/chat` → `LegalAssistantService` → input guardrail → query analysis/rewriting → clarification → hybrid retriever → citation engine → evidence guardrail → extractive, Gemini hoặc Qwen provider → output citation guardrail → JSONL event log.
 
 ## Ranh giới tin cậy
 

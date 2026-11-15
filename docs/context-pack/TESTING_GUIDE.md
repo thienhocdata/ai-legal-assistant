@@ -6,7 +6,9 @@
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-Baseline sau promotion ngày 08/08/2026: 38 test đạt; pytest cảnh báo không ghi được `.pytest_cache`, không phải test failure.
+Baseline sau promotion ngày 08/08/2026: 38 test đạt. Sau quality hardening ngày
+15/11/2026: 54 test đạt. Pytest vẫn cảnh báo không ghi được `.pytest_cache`,
+không phải test failure.
 
 ## Theo loại thay đổi
 
@@ -43,3 +45,14 @@ $env:HF_HUB_OFFLINE='1'
 Không diễn giải Hit@k, Recall@k hoặc MRR trên 30 câu như độ chính xác pháp lý tổng quát. Mọi tuyên bố chất lượng pháp lý cần tập dữ liệu đại diện và chuyên gia duyệt.
 
 Kết quả production VBHN 133 ngày 08/08/2026 trên 30 câu, hybrid: Hit@1 `0,9667`, Recall@3/5 `1,0`, MRR `0,9778`. API chat thử nghiệm trả về citation `vbhn_133_2025_luat_dat_dai`, Điều 159.
+
+## Evidence calibration diagnostic
+
+```powershell
+.\.venv\Scripts\python.exe scripts\calibrate_evidence_threshold.py
+```
+
+Báo cáo sinh tại `data/evaluation/evidence_calibration_v1.json`. Đây là
+in-sample diagnostic, không phải held-out validation; không tự động thay đổi
+`MINIMUM_DENSE_SCORE`. Xem cách diễn giải và giới hạn tại
+`docs/evaluation/QUALITY_HARDENING_2026-11-15.md`.

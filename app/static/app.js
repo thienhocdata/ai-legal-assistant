@@ -20,8 +20,9 @@ function addLoading() {
 function renderResponse(data) {
   document.querySelector("#loading")?.remove();
   const clarification = (data.clarification_questions || []).map((q) => `<p>• ${escapeHtml(q)}</p>`).join("");
-  const citations = (data.citations || []).map((item) => `<div class="citation"><strong>${escapeHtml(item.citation_id)} Điều ${item.article_no}</strong> · ${escapeHtml(item.article_title)}</div>`).join("");
-  messages.insertAdjacentHTML("beforeend", `<article class="message assistant"><div class="avatar">ML</div><div class="bubble"><p>${escapeHtml(data.answer || "Không có câu trả lời.").replace(/\n/g, "<br>")}</p>${clarification}<div class="citation-list">${citations}</div></div></article>`);
+  const citations = (data.citations || []).map((item) => `<details class="citation"><summary><strong>${escapeHtml(item.citation_id)} Điều ${item.article_no}</strong> · ${escapeHtml(item.article_title)}</summary><p>${escapeHtml(item.quote || "Không có đoạn trích.")}</p></details>`).join("");
+  const provider = data.provider ? `<p class="response-meta">Chế độ trả lời: ${escapeHtml(data.provider)} · ${escapeHtml(data.model || "")}</p>` : "";
+  messages.insertAdjacentHTML("beforeend", `<article class="message assistant"><div class="avatar">ML</div><div class="bubble"><p>${escapeHtml(data.answer || "Không có câu trả lời.").replace(/\n/g, "<br>")}</p>${clarification}<div class="citation-list">${citations}</div>${provider}</div></article>`);
   messages.scrollTop = messages.scrollHeight;
 }
 

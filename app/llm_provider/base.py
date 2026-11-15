@@ -5,6 +5,18 @@ from dataclasses import dataclass, field
 from typing import Any
 
 
+class ProviderError(RuntimeError):
+    """Expected hosted-provider failure that may safely use local fallback."""
+
+
+class ProviderRequestError(ProviderError):
+    """Network, timeout, rate-limit, authentication, or upstream failure."""
+
+
+class ProviderResponseError(ProviderError):
+    """Provider returned an empty or malformed response."""
+
+
 @dataclass(slots=True)
 class LLMResponse:
     text: str

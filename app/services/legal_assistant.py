@@ -3,12 +3,18 @@ from __future__ import annotations
 from dataclasses import asdict
 from time import perf_counter
 from typing import Any
+import re
 
 from app.agent import ClarificationEngine, QueryAnalyzer
 from app.citation import CitationEngine
 from app.core.config import Settings
 from app.guardrails import GuardrailEngine
-from app.llm_provider import BaseLLMProvider, ExtractiveProvider, create_llm_provider
+from app.llm_provider import (
+    BaseLLMProvider,
+    ExtractiveProvider,
+    ProviderError,
+    create_llm_provider,
+)
 from app.observability import JsonlEventLogger
 from app.rag.retriever import LegalRetriever
 
@@ -21,6 +27,10 @@ tiếng Việt, phân biệt quy định pháp luật với khuyến nghị ngư
 
 
 class LegalAssistantService:
+    SMALLTALK_RE = re.compile(
+        r"^(?:xin chào|chào|hello|hi|bạn là ai|bạn làm được gì)[!.?\s]*$",
+        re.IGNORECASE,
+    )
     def __init__(
         self,
         *,
@@ -62,6 +72,20 @@ class LegalAssistantService:
                 },
             )
 
+        if self.SMALLTALK_RE.fullmatch(question.strip()):
+            return self._finish(
+                started,
+                {
+                    "status": "smalltalk",
+                    "answer": (
+                        "Mình là trợ lý tra cứu pháp luật đất đai của Minh Long. "
+                        "Mình tìm căn cứ Điều–Khoản–Điểm trong kho hiện có; "
+                        "kết quả chỉ phục vụ tham khảo."
+                    ),
+                    "citations": [],
+                },
+            )
+
         analysis = self.query_analyzer.analyze(question)
         clarification = self.clarification.clarify(analysis)
         if clarification.status != "ready":
@@ -98,11 +122,27 @@ class LegalAssistantService:
         prompt = (
             f"CÂU HỎI: {analysis.original_question}\n\n"
             f"CĂN CỨ TRUY XUẤT:\n{context}\n\n"
-            "Hãy trả lời ngắn gọn, nêu điều kiện hoặc ngoại lệ quan trọng và gắn [n]."
+            "Trả lời theo cấu trúc: Kết luận ngắn; Điều kiện áp dụng; "
+            "Ngoại lệ hoặc thông tin cần xác minh; Căn cứ. "
+            "Mỗi nhận định pháp lý phải gắn [n]. Không lặp lại mục không có dữ liệu."
         )
-        response = self.provider.generate(system_prompt=SYSTEM_PROMPT, user_prompt=prompt)
+        generation_fallback_reason = None
+        try:
+            response = self.provider.generate(
+                system_prompt=SYSTEM_PROMPT,
+                user_prompt=prompt,
+            )
+        except ProviderError as exc:
+            if isinstance(self.provider, ExtractiveProvider):
+                raise
+            generation_fallback_reason = type(exc).__name__
+            response = ExtractiveProvider().generate(
+                system_prompt=SYSTEM_PROMPT,
+                user_prompt=prompt,
+            )
         output_decision = self.guardrails.check_output(response.text, len(citations))
         if not output_decision.allowed and not isinstance(self.provider, ExtractiveProvider):
+            generation_fallback_reason = output_decision.code
             response = ExtractiveProvider().generate(
                 system_prompt=SYSTEM_PROMPT,
                 user_prompt=prompt,
@@ -125,6 +165,8 @@ class LegalAssistantService:
                 },
                 "provider": response.provider,
                 "model": response.model,
+                "usage": response.metadata.get("usage", {}),
+                "generation_fallback_reason": generation_fallback_reason,
                 "disclaimer": (
                     "Thông tin chỉ phục vụ tham khảo và cần đối chiếu văn bản đang có hiệu lực "
                     "cũng như tình tiết cụ thể trước khi áp dụng."
@@ -145,6 +187,9 @@ class LegalAssistantService:
                 "latency_ms": payload["latency_ms"],
                 "citation_count": len(payload.get("citations", [])),
                 "provider": payload.get("provider"),
+                "generation_fallback_reason": payload.get(
+                    "generation_fallback_reason"
+                ),
             },
         )
         return payload

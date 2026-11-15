@@ -1,0 +1,15 @@
+[
+  {
+    "question_id": "REPLACE_ME",
+    "question": "Câu hỏi đã dùng để chạy hệ thống",
+    "answer": "Câu trả lời cần đánh giá",
+    "citations": [],
+    "expected_behavior": "answer",
+    "review_status": "pending",
+    "citation_correct": null,
+    "faithful": null,
+    "complete": null,
+    "refusal_correct": null,
+    "notes": "Không đưa dữ liệu cá nhân hoặc hồ sơ vụ việc thật vào file commit."
+  }
+]

@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from typing import Any
 
-from .base import BaseLLMProvider, LLMResponse
+from .base import BaseLLMProvider, LLMResponse, ProviderRequestError, ProviderResponseError
 
 
 class GeminiProvider(BaseLLMProvider):
@@ -26,14 +26,17 @@ class GeminiProvider(BaseLLMProvider):
         self._client: Any = genai.Client(api_key=key)
 
     def generate(self, *, system_prompt: str, user_prompt: str) -> LLMResponse:
-        interaction = self._client.interactions.create(
-            model=self.model,
-            input=f"{system_prompt}\n\nYÊU CẦU NGƯỜI DÙNG:\n{user_prompt}",
-            store=False,
-        )
+        try:
+            interaction = self._client.interactions.create(
+                model=self.model,
+                input=f"{system_prompt}\n\nYÊU CẦU NGƯỜI DÙNG:\n{user_prompt}",
+                store=False,
+            )
+        except Exception as exc:
+            raise ProviderRequestError("Không thể gọi Gemini.") from exc
         text = str(getattr(interaction, "output_text", "") or "").strip()
         if not text:
-            raise RuntimeError("Gemini không trả về nội dung văn bản.")
+            raise ProviderResponseError("Gemini không trả về nội dung văn bản.")
         return LLMResponse(
             text=text,
             provider="gemini",

@@ -20,7 +20,8 @@ def main() -> None:
     assert health.json()["active_document_id"] == "vbhn_133_2025_luat_dat_dai"
     page = client.get("/")
     assert page.status_code == 200
-    assert "Minh Luật" in page.text
+    assert "Minh Long" in page.text
+    assert "không phải độ chính xác pháp lý tổng quát" in page.text
     invalid = client.post("/api/chat", json={"question": ""})
     assert invalid.status_code == 422
     print("API & WEB UI: SUCCESS")

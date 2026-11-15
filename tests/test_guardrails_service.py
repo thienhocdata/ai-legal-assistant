@@ -9,6 +9,35 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from app.guardrails import GuardrailEngine
+from app.core.config import Settings
+from app.llm_provider import BaseLLMProvider, ProviderRequestError
+from app.services.legal_assistant import LegalAssistantService
+
+
+class _FailingProvider(BaseLLMProvider):
+    def generate(self, *, system_prompt: str, user_prompt: str):
+        raise ProviderRequestError("hosted provider timeout")
+
+
+class _StaticRetriever:
+    def retrieve_hybrid(self, question: str, *, top_k: int = 5):
+        return [
+            {
+                "rank": 1,
+                "score": 0.95,
+                "dense_score": 0.90,
+                "lexical_score": 0.05,
+                "chunk_id": "c1",
+                "document_id": "doc",
+                "document_name": "Văn bản mẫu",
+                "article_no": 45,
+                "article_title": "Điều kiện thực hiện quyền",
+                "clause_nos": [1],
+                "point_nos": [],
+                "text": "Điều 45. Người sử dụng đất được chuyển nhượng khi đủ điều kiện.",
+                "clean_text": "Điều 45. Người sử dụng đất được chuyển nhượng khi đủ điều kiện.",
+            }
+        ]
 
 
 def test_prompt_injection_is_blocked() -> None:
@@ -23,6 +52,31 @@ def test_invalid_citation_is_rejected() -> None:
     decision = GuardrailEngine().check_output("Căn cứ [9]", citation_count=2)
     assert not decision.allowed
     assert decision.code == "invalid_citation"
+
+
+def test_hosted_provider_failure_falls_back_to_extractive(tmp_path: Path) -> None:
+    service = LegalAssistantService(
+        settings=Settings(project_root=tmp_path, llm_provider="none"),
+        provider=_FailingProvider(),
+        retriever=_StaticRetriever(),
+    )
+    result = service.answer("Điều kiện chuyển nhượng đất là gì?")
+    assert result["status"] == "success"
+    assert result["provider"] == "extractive"
+    assert result["generation_fallback_reason"] == "ProviderRequestError"
+    assert "[1]" in result["answer"]
+
+
+def test_smalltalk_does_not_call_retrieval(tmp_path: Path) -> None:
+    service = LegalAssistantService(
+        settings=Settings(project_root=tmp_path, llm_provider="none"),
+        provider=_FailingProvider(),
+        retriever=_StaticRetriever(),
+    )
+    result = service.answer("Bạn là ai?")
+    assert result["status"] == "smalltalk"
+    assert result["citations"] == []
+    assert "Minh Long" in result["answer"]
 
 
 def main() -> None:
