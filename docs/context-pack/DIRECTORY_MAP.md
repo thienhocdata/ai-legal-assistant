@@ -8,7 +8,7 @@
 - `app/llm_provider/`: extractive local, Gemini, OpenAI-compatible/Qwen và factory.
 - `app/kb/`: downloader, parser, normalizer, legal parser, chunkers, embedding và validation.
 - `app/rag/`: FAISS vector store và retriever.
-- `app/evaluation/`: tính metric retrieval.
+- `app/evaluation/`: metric retrieval, system behavior và provider comparison.
 - `app/observability/`: JSONL event logging.
 - `app/static/`: giao diện web.
 - `scripts/`: build pipeline, validation, search và evaluation.

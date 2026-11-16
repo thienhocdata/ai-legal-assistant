@@ -1,6 +1,6 @@
 # Cổng tài liệu dự án
 
-Ngày rà soát gần nhất: 08/08/2026.
+Ngày rà soát gần nhất: 16/11/2026.
 
 ## Đọc nhanh
 
@@ -13,7 +13,10 @@ Ngày rà soát gần nhất: 08/08/2026.
 
 - API, orchestration hoặc UI: `PROJECT_OVERVIEW.md`, `ARCHITECTURE_MAP.md`, `SYSTEM_REGISTRY.md`.
 - Ingest, parser, chunking, embedding hoặc FAISS: `DATA_AND_LEGAL_SOURCES.md`, `ARCHITECTURE_MAP.md`, `TESTING_GUIDE.md`.
-- Retrieval, query understanding hoặc evaluation: `ARCHITECTURE_MAP.md`, `KNOWN_ISSUES.md`, `TESTING_GUIDE.md`.
+- Retrieval, query understanding hoặc evaluation: `ARCHITECTURE_MAP.md`,
+  `KNOWN_ISSUES.md`, `TESTING_GUIDE.md`; kết quả V2 tại
+  `evaluation/EVALUATION_V2_2026-11-16.md`, so sánh provider tại
+  `evaluation/PROVIDER_COMPARISON.md`.
 - Citation, LLM hoặc guardrails: `SECURITY_AND_PRIVACY.md`, `DATA_AND_LEGAL_SOURCES.md`, `TESTING_GUIDE.md`.
 - Lập kế hoạch: `CURRENT_PRIORITIES.md`, `KNOWN_ISSUES.md`.
 - Kiểm tra tài liệu cũ: `DOCUMENT_AUDIT_REPORT.md`, `context-pack/DOCUMENT_STATUS.md`.

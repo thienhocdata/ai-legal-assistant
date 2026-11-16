@@ -1,0 +1,34 @@
+{
+  "dataset": "data/evaluation/candidate_questions_v2_blind.json",
+  "dataset_sha256": "fc892269eae03256ce8a2808c444c89a98af7ac3a16d62a97fabb452e8bef363",
+  "question_count": 60,
+  "baseline_commit": "73d3a141e51c7348763ead7379bf56bf36b54586",
+  "frozen_at": "2026-11-15T19:51:12.045867+00:00",
+  "label_status_counts": {
+    "ai_generated_candidate_pending_human_review": 60
+  },
+  "expected_behavior_counts": {
+    "answer": 50,
+    "refuse": 10
+  },
+  "dataset_metadata": {
+    "dataset_id": "candidate_questions_v2_blind",
+    "version": "2.0-candidate-blind",
+    "created_on": "2026-11-16",
+    "language": "vi",
+    "domain": "Vietnamese land-law retrieval",
+    "question_count": 60,
+    "source_scope": "Article-number and article-title inventory from data/processed/legal_chunks.json for Văn bản hợp nhất 133/VBHN-VPQH.",
+    "construction_method": "Generated after the baseline was established, without consulting protected baseline questions, retrieval reports, query-understanding or retriever implementation, or existing tests. Expected article labels were grounded in the processed legal corpus only.",
+    "independent_expert_validation": false,
+    "review_notice": "This is an AI-generated candidate set pending human legal review. It is not independent expert validation and must not be represented as a legally validated benchmark.",
+    "refusal_semantics": "refuse means not giving a case-specific legal conclusion when material facts or a current authoritative source are missing; the assistant should ask for clarification or direct the user to verification.",
+    "minimum_quotas": {
+      "colloquial_paraphrase": 15,
+      "multi_condition": 10,
+      "ambiguous_refusal": 10
+    }
+  },
+  "policy": "Do not tune retrieval/query rules on this dataset after inspecting its results. Any label correction requires a new dataset version and manifest. Freezing alone does not make the dataset independent expert-held-out evaluation.",
+  "independence_warning": "A frozen AI-generated candidate set is post-baseline but is not independent expert validation."
+}

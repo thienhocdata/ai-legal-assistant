@@ -10,6 +10,11 @@
 - Diagnostic ngày 15/11/2026 cho thấy ngưỡng dense `0,55` không phân biệt được
   nhóm answerable với missing-source; chưa nâng ngưỡng vì ngưỡng in-sample tốt
   nhất từ chối nhầm 20% câu dương và chưa có held-out validation.
+- Candidate v2 khóa sau baseline có 60 câu tổng hợp chờ human review. Kết quả
+  extractive offline đạt answer success `98%`, expected-article Hit@1 `76%`,
+  Hit@k `90%`, MRR `0,825`, refusal correctness chỉ `30%` và grounded behavior
+  `68,33%`. Đây là tín hiệu lỗi xếp hạng/routing/refusal, không phải đánh giá
+  pháp lý độc lập và không được dùng để tune rồi chấm lại cùng dataset.
 
 ## Kỹ thuật và vận hành
 
@@ -20,3 +25,5 @@
 - Event log production chưa có chính sách retention/redaction được tài liệu hóa.
 - API/UI chưa có tài liệu triển khai production về auth, rate limit và CORS.
 - Pytest có thể cảnh báo permission khi ghi `.pytest_cache` trong môi trường hiện tại.
+- Chưa có API key cục bộ để chạy so sánh live Gemini/Qwen; mock test chỉ xác
+  minh tích hợp, không chứng minh chất lượng câu trả lời.

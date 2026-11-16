@@ -1,0 +1,622 @@
+{
+  "dataset_metadata": {
+    "dataset_id": "candidate_questions_v2_blind",
+    "version": "2.0-candidate-blind",
+    "created_on": "2026-11-16",
+    "language": "vi",
+    "domain": "Vietnamese land-law retrieval",
+    "question_count": 60,
+    "source_scope": "Article-number and article-title inventory from data/processed/legal_chunks.json for Văn bản hợp nhất 133/VBHN-VPQH.",
+    "construction_method": "Generated after the baseline was established, without consulting protected baseline questions, retrieval reports, query-understanding or retriever implementation, or existing tests. Expected article labels were grounded in the processed legal corpus only.",
+    "independent_expert_validation": false,
+    "review_notice": "This is an AI-generated candidate set pending human legal review. It is not independent expert validation and must not be represented as a legally validated benchmark.",
+    "refusal_semantics": "refuse means not giving a case-specific legal conclusion when material facts or a current authoritative source are missing; the assistant should ask for clarification or direct the user to verification.",
+    "minimum_quotas": {
+      "colloquial_paraphrase": 15,
+      "multi_condition": 10,
+      "ambiguous_refusal": 10
+    }
+  },
+  "questions": [
+    {
+      "question_id": "V2Q001",
+      "question": "Luật quy định những nguyên tắc nào phải tuân thủ khi quản lý và sử dụng đất?",
+      "question_type": "direct",
+      "difficulty": "easy",
+      "expected_article_numbers": [5],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Nhãn theo Điều 5 về nguyên tắc sử dụng đất."
+    },
+    {
+      "question_id": "V2Q002",
+      "question": "Đất đai được phân thành những nhóm và loại đất nào?",
+      "question_type": "direct",
+      "difficulty": "easy",
+      "expected_article_numbers": [9],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Nhãn theo Điều 9 về phân loại đất."
+    },
+    {
+      "question_id": "V2Q003",
+      "question": "Những hành vi nào bị nghiêm cấm trong lĩnh vực đất đai?",
+      "question_type": "direct",
+      "difficulty": "easy",
+      "expected_article_numbers": [11],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Nhãn theo Điều 11 về các hành vi bị nghiêm cấm."
+    },
+    {
+      "question_id": "V2Q004",
+      "question": "Công dân có quyền tiếp cận những thông tin đất đai nào?",
+      "question_type": "direct",
+      "difficulty": "easy",
+      "expected_article_numbers": [24],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Nhãn theo Điều 24 về quyền tiếp cận thông tin đất đai."
+    },
+    {
+      "question_id": "V2Q005",
+      "question": "Người sử dụng đất có những nghĩa vụ chung nào đối với Nhà nước và thửa đất?",
+      "question_type": "direct",
+      "difficulty": "easy",
+      "expected_article_numbers": [31],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Nhãn theo Điều 31 về nghĩa vụ chung của người sử dụng đất."
+    },
+    {
+      "question_id": "V2Q006",
+      "question": "Cá nhân muốn chuyển đổi quyền sử dụng đất nông nghiệp cho cá nhân khác phải đáp ứng điều kiện gì?",
+      "question_type": "direct",
+      "difficulty": "medium",
+      "expected_article_numbers": [47],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Nhãn theo Điều 47 về điều kiện chuyển đổi quyền sử dụng đất nông nghiệp."
+    },
+    {
+      "question_id": "V2Q007",
+      "question": "Quy hoạch, kế hoạch sử dụng đất phải được công bố công khai như thế nào?",
+      "question_type": "direct",
+      "difficulty": "medium",
+      "expected_article_numbers": [75],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Nhãn theo Điều 75 về công bố công khai quy hoạch, kế hoạch sử dụng đất."
+    },
+    {
+      "question_id": "V2Q008",
+      "question": "Nhà nước thu hồi đất do vi phạm pháp luật về đất đai trong những trường hợp nào?",
+      "question_type": "direct",
+      "difficulty": "medium",
+      "expected_article_numbers": [81],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Nhãn theo Điều 81 về các trường hợp thu hồi đất do vi phạm."
+    },
+    {
+      "question_id": "V2Q009",
+      "question": "Điều kiện và trình tự cưỡng chế thực hiện quyết định thu hồi đất được quy định ra sao?",
+      "question_type": "direct",
+      "difficulty": "medium",
+      "expected_article_numbers": [89],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Nhãn theo Điều 89 về cưỡng chế thực hiện quyết định thu hồi đất."
+    },
+    {
+      "question_id": "V2Q010",
+      "question": "Các nguyên tắc bồi thường, hỗ trợ và tái định cư khi Nhà nước thu hồi đất là gì?",
+      "question_type": "direct",
+      "difficulty": "medium",
+      "expected_article_numbers": [91],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Nhãn theo Điều 91 về nguyên tắc bồi thường, hỗ trợ, tái định cư."
+    },
+    {
+      "question_id": "V2Q011",
+      "question": "Khi Nhà nước thu hồi đất ở, người đủ điều kiện được bồi thường có thể được bồi thường bằng những hình thức nào?",
+      "question_type": "direct",
+      "difficulty": "medium",
+      "expected_article_numbers": [98],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Nhãn theo Điều 98 về bồi thường đối với đất ở."
+    },
+    {
+      "question_id": "V2Q012",
+      "question": "Hỗ trợ đào tạo, chuyển đổi nghề và tìm kiếm việc làm khi thu hồi đất được áp dụng cho ai?",
+      "question_type": "direct",
+      "difficulty": "medium",
+      "expected_article_numbers": [109],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Nhãn theo Điều 109 về hỗ trợ đào tạo, chuyển đổi nghề và việc làm."
+    },
+    {
+      "question_id": "V2Q013",
+      "question": "Những trường hợp chuyển mục đích sử dụng đất nào phải được cơ quan nhà nước có thẩm quyền cho phép?",
+      "question_type": "direct",
+      "difficulty": "medium",
+      "expected_article_numbers": [121],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Nhãn theo Điều 121 về chuyển mục đích sử dụng đất."
+    },
+    {
+      "question_id": "V2Q014",
+      "question": "Việc đăng ký đất đai và tài sản gắn liền với đất phải tuân theo những nguyên tắc nào?",
+      "question_type": "direct",
+      "difficulty": "medium",
+      "expected_article_numbers": [131],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Nhãn theo Điều 131 về nguyên tắc đăng ký đất đai, tài sản gắn liền với đất."
+    },
+    {
+      "question_id": "V2Q015",
+      "question": "Những trường hợp nào phải thực hiện đăng ký đất đai lần đầu?",
+      "question_type": "direct",
+      "difficulty": "easy",
+      "expected_article_numbers": [132],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Nhãn theo Điều 132 về đăng ký lần đầu."
+    },
+    {
+      "question_id": "V2Q016",
+      "question": "Cơ quan nào có thẩm quyền cấp Giấy chứng nhận quyền sử dụng đất, quyền sở hữu tài sản gắn liền với đất?",
+      "question_type": "direct",
+      "difficulty": "medium",
+      "expected_article_numbers": [136],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Nhãn theo Điều 136 về thẩm quyền cấp Giấy chứng nhận."
+    },
+    {
+      "question_id": "V2Q017",
+      "question": "Hộ gia đình sử dụng đất ổn định, không có giấy tờ, không vi phạm và không được giao trái thẩm quyền được xem xét cấp Giấy chứng nhận theo quy định nào?",
+      "question_type": "direct",
+      "difficulty": "medium",
+      "expected_article_numbers": [138],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Nhãn theo Điều 138; câu hỏi nêu rõ các điều kiện phân biệt với Điều 139 và 140."
+    },
+    {
+      "question_id": "V2Q018",
+      "question": "Bảng giá đất được áp dụng trong những trường hợp nào và được xây dựng, điều chỉnh ra sao?",
+      "question_type": "direct",
+      "difficulty": "medium",
+      "expected_article_numbers": [159],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Nhãn theo Điều 159 về bảng giá đất."
+    },
+    {
+      "question_id": "V2Q019",
+      "question": "Những loại đất nào được sử dụng ổn định lâu dài?",
+      "question_type": "direct",
+      "difficulty": "easy",
+      "expected_article_numbers": [171],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Nhãn theo Điều 171 về đất sử dụng ổn định lâu dài."
+    },
+    {
+      "question_id": "V2Q020",
+      "question": "Việc tách thửa hoặc hợp thửa đất phải đáp ứng các nguyên tắc và điều kiện nào?",
+      "question_type": "direct",
+      "difficulty": "medium",
+      "expected_article_numbers": [220],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Nhãn theo Điều 220 về tách thửa, hợp thửa đất."
+    },
+    {
+      "question_id": "V2Q021",
+      "question": "Sổ đỏ nhà tôi bị ghi sai tên và sai thông tin thửa đất thì xử lý kiểu gì?",
+      "question_type": "colloquial_paraphrase",
+      "difficulty": "medium",
+      "expected_article_numbers": [152],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Cách nói đời thường về đính chính Giấy chứng nhận tại Điều 152."
+    },
+    {
+      "question_id": "V2Q022",
+      "question": "Nhà phía trong bị hàng xóm chặn lối ra đường thì quyền đi nhờ qua thửa bên cạnh nằm ở quy định nào?",
+      "question_type": "colloquial_paraphrase",
+      "difficulty": "medium",
+      "expected_article_numbers": [29],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Tình huống lối đi qua thửa liền kề thuộc Điều 29."
+    },
+    {
+      "question_id": "V2Q023",
+      "question": "Không rõ miếng đất nhà mình được tính là đất ở hay đất nông nghiệp thì dựa vào đâu để xác định?",
+      "question_type": "colloquial_paraphrase",
+      "difficulty": "medium",
+      "expected_article_numbers": [10],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Cách hỏi dân dụng về căn cứ xác định loại đất tại Điều 10."
+    },
+    {
+      "question_id": "V2Q024",
+      "question": "Tôi muốn cho con miếng đất thì trước khi làm giấy tặng cho cần coi đất có đủ điều kiện gì?",
+      "question_type": "colloquial_paraphrase",
+      "difficulty": "medium",
+      "expected_article_numbers": [45],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Tặng cho quyền sử dụng đất và các điều kiện chung được quy định tại Điều 45."
+    },
+    {
+      "question_id": "V2Q025",
+      "question": "Người dân muốn xin xem hoặc lấy thông tin hồ sơ đất đai thì có quyền không?",
+      "question_type": "colloquial_paraphrase",
+      "difficulty": "easy",
+      "expected_article_numbers": [24],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Diễn đạt thông dụng của quyền tiếp cận thông tin đất đai tại Điều 24."
+    },
+    {
+      "question_id": "V2Q026",
+      "question": "Ruộng của hộ gia đình bị thu hồi thì thường được đền bằng đất, tiền hay nhà?",
+      "question_type": "colloquial_paraphrase",
+      "difficulty": "medium",
+      "expected_article_numbers": [96],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Cách nói đền bù về đất nông nghiệp của hộ gia đình, cá nhân tại Điều 96."
+    },
+    {
+      "question_id": "V2Q027",
+      "question": "Bị thu hồi đất mà phải tháo máy móc, chở đồ và lắp lại ở chỗ mới thì tiền di dời tính thế nào?",
+      "question_type": "colloquial_paraphrase",
+      "difficulty": "medium",
+      "expected_article_numbers": [104],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Tình huống bồi thường chi phí di chuyển tài sản thuộc Điều 104."
+    },
+    {
+      "question_id": "V2Q028",
+      "question": "Ngoài tiền bồi thường, người bị lấy đất còn có thể được hỗ trợ những khoản gì?",
+      "question_type": "colloquial_paraphrase",
+      "difficulty": "medium",
+      "expected_article_numbers": [108],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Câu hỏi khẩu ngữ về các nhóm hỗ trợ khi Nhà nước thu hồi đất tại Điều 108."
+    },
+    {
+      "question_id": "V2Q029",
+      "question": "Nhà nước định thu hồi ruộng hoặc đất ở thì phải báo cho dân trước bao lâu?",
+      "question_type": "colloquial_paraphrase",
+      "difficulty": "medium",
+      "expected_article_numbers": [85],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Mốc thông báo đối với đất nông nghiệp và phi nông nghiệp nằm tại Điều 85."
+    },
+    {
+      "question_id": "V2Q030",
+      "question": "Gia đình ở ổn định lâu rồi nhưng chẳng còn giấy tờ đất, cũng không lấn chiếm, vậy quy định cấp sổ nằm ở đâu?",
+      "question_type": "colloquial_paraphrase",
+      "difficulty": "medium",
+      "expected_article_numbers": [138],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Paraphrase trường hợp không có giấy tờ nhưng không vi phạm tại Điều 138; vẫn cần kiểm tra đủ dữ kiện khi trả lời thực tế."
+    },
+    {
+      "question_id": "V2Q031",
+      "question": "Đang thuê đất của Nhà nước và trả tiền từng năm, tôi có được đổi sang trả một lần cho thời gian còn lại không?",
+      "question_type": "colloquial_paraphrase",
+      "difficulty": "medium",
+      "expected_article_numbers": [30],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Câu hỏi thực tế về quyền lựa chọn hình thức trả tiền thuê đất tại Điều 30."
+    },
+    {
+      "question_id": "V2Q032",
+      "question": "Hai mảnh sát nhau muốn gộp thành một thửa thì cần cùng mục đích và cùng thời hạn sử dụng không?",
+      "question_type": "colloquial_paraphrase",
+      "difficulty": "medium",
+      "expected_article_numbers": [220],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Paraphrase điều kiện hợp thửa tại Điều 220."
+    },
+    {
+      "question_id": "V2Q033",
+      "question": "Hai nhà cãi nhau ranh đất thì có phải lên xã hòa giải trước không?",
+      "question_type": "colloquial_paraphrase",
+      "difficulty": "medium",
+      "expected_article_numbers": [235],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Tình huống hòa giải tranh chấp đất đai tại Điều 235."
+    },
+    {
+      "question_id": "V2Q034",
+      "question": "Tranh chấp đất thì vụ nào ra Tòa, vụ nào có thể nhờ Ủy ban giải quyết?",
+      "question_type": "colloquial_paraphrase",
+      "difficulty": "hard",
+      "expected_article_numbers": [236],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Cách hỏi thông dụng về thẩm quyền và lựa chọn giải quyết tại Điều 236."
+    },
+    {
+      "question_id": "V2Q035",
+      "question": "Đất ở có phải cứ dùng lâu dài, không ghi hạn mấy chục năm không?",
+      "question_type": "colloquial_paraphrase",
+      "difficulty": "easy",
+      "expected_article_numbers": [171],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Paraphrase quy định đất ở thuộc nhóm sử dụng ổn định lâu dài tại Điều 171."
+    },
+    {
+      "question_id": "V2Q036",
+      "question": "Ruộng đang cấy lúa mà muốn chuyển sang làm xưởng thì phải xin phép và còn vướng quy định bảo vệ đất lúa nào?",
+      "question_type": "colloquial_paraphrase",
+      "difficulty": "hard",
+      "expected_article_numbers": [121, 182],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Cần truy xuất cả Điều 121 về chuyển mục đích và Điều 182 về đất trồng lúa."
+    },
+    {
+      "question_id": "V2Q037",
+      "question": "Bảng giá đất của tỉnh được đem ra tính những khoản nào?",
+      "question_type": "colloquial_paraphrase",
+      "difficulty": "medium",
+      "expected_article_numbers": [159],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Câu hỏi ngắn gọn về phạm vi áp dụng bảng giá đất tại Điều 159."
+    },
+    {
+      "question_id": "V2Q038",
+      "question": "Mua bán đất xong muốn sang tên thì đó có phải đăng ký biến động không?",
+      "question_type": "colloquial_paraphrase",
+      "difficulty": "medium",
+      "expected_article_numbers": [133],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Sang tên sau chuyển nhượng là cách gọi phổ biến của trường hợp đăng ký biến động tại Điều 133."
+    },
+    {
+      "question_id": "V2Q039",
+      "question": "Hộ gia đình có Giấy chứng nhận, đang trực tiếp sử dụng đất nông nghiệp và bị thu hồi để làm công trình công cộng thì cần kiểm tra điều kiện được bồi thường nào và có thể nhận bồi thường về đất bằng các hình thức gì?",
+      "question_type": "multi_condition",
+      "difficulty": "hard",
+      "expected_article_numbers": [95, 96],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Kết hợp điều kiện được bồi thường tại Điều 95 với hình thức bồi thường đất nông nghiệp cho hộ gia đình, cá nhân tại Điều 96."
+    },
+    {
+      "question_id": "V2Q040",
+      "question": "Một hộ đủ điều kiện bồi thường bị thu hồi toàn bộ đất ở, căn nhà phải phá dỡ và gia đình phải chuyển chỗ ở thì cần đối chiếu quy định nào về bồi thường đất, bồi thường nhà và bố trí tái định cư?",
+      "question_type": "multi_condition",
+      "difficulty": "hard",
+      "expected_article_numbers": [98, 102, 111],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Ba cấu phần tương ứng Điều 98, Điều 102 và Điều 111."
+    },
+    {
+      "question_id": "V2Q041",
+      "question": "Người sử dụng đất đã có Giấy chứng nhận, đất không tranh chấp, còn thời hạn và không bị kê biên thì có đủ nhóm điều kiện chung để chuyển nhượng hay còn phải kiểm tra gì khác?",
+      "question_type": "multi_condition",
+      "difficulty": "hard",
+      "expected_article_numbers": [45],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Nhiều điều kiện hội tụ trong Điều 45; câu trả lời cần rà cả biện pháp khẩn cấp và điều kiện riêng theo trường hợp."
+    },
+    {
+      "question_id": "V2Q042",
+      "question": "Tổ chức kinh tế thuê đất của Nhà nước trả tiền hằng năm muốn bán tài sản đã xây hợp pháp trên đất kèm quyền thuê còn lại thì phải có quyền gì và đáp ứng những điều kiện nào?",
+      "question_type": "multi_condition",
+      "difficulty": "hard",
+      "expected_article_numbers": [34, 46],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Điều 34 xác định quyền của tổ chức thuê đất hằng năm; Điều 46 quy định điều kiện bán tài sản và quyền thuê."
+    },
+    {
+      "question_id": "V2Q043",
+      "question": "Tổ chức kinh tế có vốn đầu tư nước ngoài thuê lại đất trong khu công nghiệp cần phân biệt quyền và nghĩa vụ thế nào giữa trường hợp trả tiền một lần và trả tiền hằng năm?",
+      "question_type": "multi_condition",
+      "difficulty": "hard",
+      "expected_article_numbers": [33, 34, 43],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Điều 43 là điều khoản trung tâm và dẫn chiếu hai chế độ quyền, nghĩa vụ tại Điều 33 và Điều 34."
+    },
+    {
+      "question_id": "V2Q044",
+      "question": "Một hộ đang dùng hai phần đất từ trước tháng 7 năm 2014: một phần do xã giao không đúng thẩm quyền, phần còn lại lấn vào hành lang công trình; việc xem xét cấp Giấy chứng nhận cho từng phần phải tra cứu các quy định nào?",
+      "question_type": "multi_condition",
+      "difficulty": "hard",
+      "expected_article_numbers": [139, 140],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Tách hai nguồn gốc: vi phạm trước ngày 01/07/2014 tại Điều 139 và giao không đúng thẩm quyền tại Điều 140."
+    },
+    {
+      "question_id": "V2Q045",
+      "question": "Giấy chứng nhận đang ghi sai diện tích, đồng thời chủ đất chuẩn bị tặng cho quyền sử dụng đất cho con, thì cần xử lý việc đính chính và đăng ký thay đổi theo các quy định nào?",
+      "question_type": "multi_condition",
+      "difficulty": "hard",
+      "expected_article_numbers": [133, 152],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Kết hợp đăng ký biến động tại Điều 133 và đính chính Giấy chứng nhận tại Điều 152; thứ tự thực tế cần reviewer pháp lý xác nhận."
+    },
+    {
+      "question_id": "V2Q046",
+      "question": "Đối với dự án công cộng dự kiến thu hồi đất, cần kiểm tra đồng thời căn cứ và điều kiện thu hồi, thời hạn thông báo cho người dân, cùng trình tự bồi thường, hỗ trợ, tái định cư ở những điều nào?",
+      "question_type": "multi_condition",
+      "difficulty": "hard",
+      "expected_article_numbers": [80, 85, 87],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Ba lớp kiểm tra được gắn lần lượt với Điều 80, Điều 85 và Điều 87."
+    },
+    {
+      "question_id": "V2Q047",
+      "question": "Cá nhân muốn chuyển đất nông nghiệp sang đất ở thì phải xác định trường hợp cần xin phép, đúng cơ quan có thẩm quyền và thực hiện trình tự hồ sơ nào?",
+      "question_type": "multi_condition",
+      "difficulty": "hard",
+      "expected_article_numbers": [121, 123, 227],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Kết hợp Điều 121 về trường hợp chuyển mục đích, Điều 123 về thẩm quyền và Điều 227 về thủ tục."
+    },
+    {
+      "question_id": "V2Q048",
+      "question": "Một khu đất dự kiến giao thông qua đấu giá đã giải phóng mặt bằng và có trong kế hoạch sử dụng đất: cần kiểm tra điều kiện tổ chức đấu giá và các bước từ phê duyệt phương án đến giao đất ở đâu?",
+      "question_type": "multi_condition",
+      "difficulty": "hard",
+      "expected_article_numbers": [125, 229],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Điều 125 quy định trường hợp, điều kiện; Điều 229 quy định trình tự, thủ tục đấu giá."
+    },
+    {
+      "question_id": "V2Q049",
+      "question": "Khi thu hồi một trang trại làm thiệt hại vườn cây lâu năm và buộc di chuyển dây chuyền tưới, các khoản bồi thường cho cây trồng và chi phí tháo dỡ, vận chuyển được tra cứu tại đâu?",
+      "question_type": "multi_condition",
+      "difficulty": "hard",
+      "expected_article_numbers": [103, 104],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Hai loại thiệt hại tương ứng Điều 103 và Điều 104."
+    },
+    {
+      "question_id": "V2Q050",
+      "question": "Hai cá nhân tranh chấp ranh đất, hòa giải tại xã không thành và cả hai đều không có Giấy chứng nhận hay giấy tờ về quyền sử dụng đất thì bước hòa giải và các lựa chọn cơ quan giải quyết tiếp theo nằm ở điều nào?",
+      "question_type": "multi_condition",
+      "difficulty": "hard",
+      "expected_article_numbers": [235, 236],
+      "expected_behavior": "answer",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Điều 235 điều chỉnh hòa giải tại xã; Điều 236 quy định lựa chọn giải quyết khi không có Giấy chứng nhận hoặc giấy tờ."
+    },
+    {
+      "question_id": "V2Q051",
+      "question": "Miếng đất này có làm sổ được không?",
+      "question_type": "ambiguous_refusal",
+      "difficulty": "medium",
+      "expected_article_numbers": [],
+      "expected_behavior": "refuse",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Không đủ dữ kiện về người sử dụng, nguồn gốc, thời điểm, giấy tờ, vi phạm và tranh chấp; không kết luận, cần hỏi lại."
+    },
+    {
+      "question_id": "V2Q052",
+      "question": "Nhà nước thu đất của tôi thì đền bao nhiêu tiền?",
+      "question_type": "ambiguous_refusal",
+      "difficulty": "medium",
+      "expected_article_numbers": [],
+      "expected_behavior": "refuse",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Thiếu loại đất, địa phương, diện tích, điều kiện bồi thường, tài sản và quyết định thu hồi; cần làm rõ và kiểm tra giá hiện hành."
+    },
+    {
+      "question_id": "V2Q053",
+      "question": "Tôi có được chuyển đất không?",
+      "question_type": "ambiguous_refusal",
+      "difficulty": "medium",
+      "expected_article_numbers": [],
+      "expected_behavior": "refuse",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Từ chuyển đất có thể chỉ chuyển nhượng, chuyển đổi hoặc chuyển mục đích; phải hỏi rõ hành vi và loại đất trước khi gán điều."
+    },
+    {
+      "question_id": "V2Q054",
+      "question": "Sổ đất của tôi có vấn đề, cơ quan nào phải chịu trách nhiệm?",
+      "question_type": "ambiguous_refusal",
+      "difficulty": "hard",
+      "expected_article_numbers": [],
+      "expected_behavior": "refuse",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Chưa biết đó là sai sót, cấp sai, mất sổ, tranh chấp hay hành vi hành chính; cần yêu cầu mô tả và tài liệu liên quan."
+    },
+    {
+      "question_id": "V2Q055",
+      "question": "Tranh chấp đất nhà tôi thì bên nào chắc chắn thắng?",
+      "question_type": "ambiguous_refusal",
+      "difficulty": "hard",
+      "expected_article_numbers": [],
+      "expected_behavior": "refuse",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Không dự đoán kết quả vụ việc khi thiếu hồ sơ và chứng cứ; có thể hỏi dữ kiện để cung cấp thông tin thủ tục chung."
+    },
+    {
+      "question_id": "V2Q056",
+      "question": "Quy hoạch chỗ tôi còn hiệu lực hay bị bỏ rồi?",
+      "question_type": "ambiguous_refusal",
+      "difficulty": "hard",
+      "expected_article_numbers": [],
+      "expected_behavior": "refuse",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Thiếu địa điểm, tên và kỳ quy hoạch; trạng thái quy hoạch địa phương cần nguồn hiện hành ngoài corpus tĩnh, nên yêu cầu định danh và xác minh."
+    },
+    {
+      "question_id": "V2Q057",
+      "question": "Nghe nói ngày mai huyện xuống lấy đất, như vậy có đúng luật không?",
+      "question_type": "ambiguous_refusal",
+      "difficulty": "hard",
+      "expected_article_numbers": [],
+      "expected_behavior": "refuse",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Tin truyền miệng không đủ để đánh giá; cần quyết định, thông báo, lý do, loại đất và diễn biến thủ tục."
+    },
+    {
+      "question_id": "V2Q058",
+      "question": "Tôi mua đất bằng giấy viết tay năm 2010 thì chắc chắn sang tên được chứ?",
+      "question_type": "ambiguous_refusal",
+      "difficulty": "hard",
+      "expected_article_numbers": [],
+      "expected_behavior": "refuse",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Không thể bảo đảm kết quả chỉ từ năm và hình thức giấy; cần nguồn gốc, giấy tờ, tình trạng đăng ký, tranh chấp và pháp luật liên quan."
+    },
+    {
+      "question_id": "V2Q059",
+      "question": "Tôi xây nhà trên mảnh này thì có bị phạt không?",
+      "question_type": "ambiguous_refusal",
+      "difficulty": "hard",
+      "expected_article_numbers": [],
+      "expected_behavior": "refuse",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Thiếu loại đất, mục đích được công nhận, quy hoạch, giấy phép và hành vi cụ thể; chế tài còn có thể nằm ngoài corpus Luật Đất đai."
+    },
+    {
+      "question_id": "V2Q060",
+      "question": "Giá đất năm nay ở đây là bao nhiêu một mét vuông?",
+      "question_type": "ambiguous_refusal",
+      "difficulty": "medium",
+      "expected_article_numbers": [],
+      "expected_behavior": "refuse",
+      "label_status": "ai_generated_candidate_pending_human_review",
+      "notes": "Thiếu địa điểm, vị trí, loại đất và mục đích định giá; con số hiện hành phải được tra từ bảng giá hoặc quyết định cụ thể của địa phương."
+    }
+  ]
+}

@@ -33,6 +33,9 @@ python -m pip install -r requirements.txt
 Copy-Item .env.example .env
 ```
 
+Ứng dụng tự nạp `.env` cục bộ nhưng không ghi đè biến môi trường đã được đặt
+trong tiến trình. `.env` nằm trong `.gitignore`; không gửi hoặc commit file này.
+
 Mặc định `LLM_PROVIDER=none`, hệ thống chạy local và trả đoạn căn cứ gần nhất.
 Để dùng Gemini, đặt:
 
@@ -94,6 +97,30 @@ Dataset retrieval: `data/evaluation/test_questions_v1.json`. Bộ câu âm tại
 `data/evaluation/evidence_negative_queries_v1.json` chỉ phục vụ diagnostic.
 Calibration chọn và chấm ngưỡng trên cùng dữ liệu nên không phải held-out
 validation và không được dùng như bằng chứng pháp lý.
+
+Bộ candidate v2 tại `data/evaluation/candidate_questions_v2_blind.json` được
+tạo sau baseline `73d3a14` rồi khóa bằng manifest SHA-256. Bộ này có 60 câu
+tổng hợp, toàn bộ nhãn đang chờ người rà soát và không phải independent/expert
+held-out evaluation. Kết quả extractive offline hiện tại là: answer success
+`98%`, expected-article Hit@1 `76%`, Hit@k `90%`, MRR `0,825`, refusal
+correctness `30%` và grounded behavior `68,33%`. Hit@k không được diễn giải
+thành độ đúng của câu trả lời. Không dùng kết quả này để chỉnh rule rồi chấm lại
+trên cùng phiên bản.
+
+```powershell
+.\.venv\Scripts\python.exe scripts\validate_candidate_questions_v2_blind.py
+.\.venv\Scripts\python.exe scripts\evaluate_system_behavior.py `
+  --questions data\evaluation\candidate_questions_v2_blind.json `
+  --manifest data\evaluation\candidate_questions_v2_blind_manifest.json `
+  --output data\evaluation\runs\system_behavior_v2_recheck.json
+.\.venv\Scripts\python.exe scripts\compare_answer_providers.py `
+  --questions data\evaluation\candidate_questions_v2_blind.json `
+  --providers extractive
+```
+
+So sánh Gemini/Qwen chỉ có ý nghĩa runtime khi cấu hình key cục bộ; độ đúng
+pháp lý vẫn cần human review. Output so sánh nằm trong
+`data/evaluation/runs/` và không được commit.
 
 ## Cấu trúc chính
 

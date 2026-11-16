@@ -7,8 +7,8 @@
 ```
 
 Baseline sau promotion ngày 08/08/2026: 38 test đạt. Sau quality hardening ngày
-15/11/2026: 54 test đạt. Pytest vẫn cảnh báo không ghi được `.pytest_cache`,
-không phải test failure.
+15/11/2026: 54 test đạt. Ngày 16/11/2026, bộ test đầy đủ đạt 70 test. Pytest
+vẫn cảnh báo không ghi được `.pytest_cache`; đây không phải test failure.
 
 ## Theo loại thay đổi
 
@@ -45,6 +45,35 @@ $env:HF_HUB_OFFLINE='1'
 Không diễn giải Hit@k, Recall@k hoặc MRR trên 30 câu như độ chính xác pháp lý tổng quát. Mọi tuyên bố chất lượng pháp lý cần tập dữ liệu đại diện và chuyên gia duyệt.
 
 Kết quả production VBHN 133 ngày 08/08/2026 trên 30 câu, hybrid: Hit@1 `0,9667`, Recall@3/5 `1,0`, MRR `0,9778`. API chat thử nghiệm trả về citation `vbhn_133_2025_luat_dat_dai`, Điều 159.
+
+## Đánh giá V2 hậu baseline
+
+Bộ `candidate_questions_v2_blind.json` gồm 60 câu ứng viên do AI sinh và đang
+chờ người duyệt: 50 câu kỳ vọng trả lời, 10 câu kỳ vọng từ chối/làm rõ. Manifest
+khóa dataset ghi baseline commit
+`73d3a141e51c7348763ead7379bf56bf36b54586` và SHA-256
+`fc892269eae03256ce8a2808c444c89a98af7ac3a16d62a97fabb452e8bef363` trước
+khi chạy evaluator.
+
+Lần chạy `extractive_offline` đạt answer success `98%` (49/50),
+expected-article Hit@1 `76%` (38/50), Hit@k `90%` (45/50), MRR `0,825`, refusal
+correctness `30%` (3/10) và grounded behavior `68,33%` (41/60). Hit@k chỉ cho
+biết Điều kỳ vọng xuất hiện trong danh sách citation; vì extractive dùng evidence
+`[1]`, grounded behavior yêu cầu Hit@1. Không điều chỉnh rule retrieval/query
+sau khi xem kết quả này; sửa nhãn phải tạo phiên bản dataset và manifest mới.
+
+Đây không phải đánh giá độc lập, không phải expert-held-out và không xác nhận độ
+đúng pháp lý. Xem giao thức, provenance và giới hạn diễn giải tại
+`docs/evaluation/EVALUATION_V2_2026-11-16.md`.
+
+```powershell
+.\.venv\Scripts\python.exe scripts\evaluate_system_behavior.py `
+  --questions data\evaluation\candidate_questions_v2_blind.json `
+  --manifest data\evaluation\candidate_questions_v2_blind_manifest.json `
+  --output data\evaluation\runs\system_behavior_v2_recheck.json
+```
+
+Evaluator kiểm tra SHA/path với manifest và mặc định không ghi đè output.
 
 ## Evidence calibration diagnostic
 
