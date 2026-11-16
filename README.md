@@ -1,5 +1,7 @@
 # Minh Long — AI Legal Assistant
 
+[Báo cáo kỹ thuật: thay đổi so với baseline và sản phẩm hiện tại](docs/BAO_CAO_TONG_QUAN_DU_AN_AI_LUAT.md).
+
 Trợ lý tra cứu pháp luật đất đai Việt Nam theo kiến trúc RAG, ưu tiên căn cứ
 pháp luật và trích dẫn Điều–Khoản–Điểm. Phiên bản hiện tại tập trung Luật Đất
 đai Việt Nam. Corpus production hiện là Văn bản hợp nhất 133/VBHN-VPQH và sản

@@ -5,6 +5,7 @@
 | `AGENTS.md` | ACTIVE | Quy tắc làm việc cấp repository |
 | `README.md` | ACTIVE | Cài đặt, chạy và tổng quan người dùng |
 | `docs/INDEX.md` | ACTIVE | Cổng định tuyến tài liệu |
+| `docs/BAO_CAO_TONG_QUAN_DU_AN_AI_LUAT.md` | ACTIVE | Báo cáo kỹ thuật tổng quan và so sánh các mốc |
 | `docs/architecture/system.md` | ACTIVE | Kiến trúc khái quát; đối chiếu source khi sửa |
 | `docs/context-pack/*` | ACTIVE | Context đã cập nhật và kiểm tra ngày 16/11/2026 |
 | `docs/evaluation/EVALUATION_V2_2026-11-16.md` | ACTIVE | Giao thức, provenance, kết quả và giới hạn V2 |

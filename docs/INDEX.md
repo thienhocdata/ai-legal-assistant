@@ -8,6 +8,8 @@ Ngày rà soát gần nhất: 16/11/2026.
 2. `context-pack/ARCHITECTURE_MAP.md` — luồng dữ liệu và luồng trả lời.
 3. `context-pack/DIRECTORY_MAP.md` — tìm code, dữ liệu và test.
 4. `context-pack/DOCUMENT_STATUS.md` — tài liệu nào đang được tin cậy.
+5. `BAO_CAO_TONG_QUAN_DU_AN_AI_LUAT.md` — so sánh baseline với các thay đổi
+   mới, tổng quan sản phẩm hiện tại, kết quả và hạn chế có bằng chứng.
 
 ## Định tuyến theo công việc
 
