@@ -79,6 +79,19 @@ def test_smalltalk_does_not_call_retrieval(tmp_path: Path) -> None:
     assert "Minh Long" in result["answer"]
 
 
+def test_evidence_metadata_and_disclaimer_are_explicit(tmp_path: Path) -> None:
+    service = LegalAssistantService(
+        settings=Settings(project_root=tmp_path, llm_provider="none"),
+        retriever=_StaticRetriever(),
+    )
+    result = service.answer("Điều kiện chuyển nhượng đất là gì?")
+    assert result["status"] == "success"
+    assert result["answer_citation_labels"] == [1]
+    assert result["retrieval"]["top1_top2_score_margin"] is None
+    assert result["retrieval"]["margin_interpretation"] == "diagnostic_only_not_calibrated"
+    assert "Chưa kiểm tra hiệu lực" in result["disclaimer"]
+
+
 def main() -> None:
     test_prompt_injection_is_blocked()
     test_invalid_citation_is_rejected()

@@ -22,7 +22,8 @@ function renderResponse(data) {
   const clarification = (data.clarification_questions || []).map((q) => `<p>• ${escapeHtml(q)}</p>`).join("");
   const citations = (data.citations || []).map((item) => `<details class="citation"><summary><strong>${escapeHtml(item.citation_id)} Điều ${item.article_no}</strong> · ${escapeHtml(item.article_title)}</summary><p>${escapeHtml(item.quote || "Không có đoạn trích.")}</p></details>`).join("");
   const provider = data.provider ? `<p class="response-meta">Chế độ trả lời: ${escapeHtml(data.provider)} · ${escapeHtml(data.model || "")}</p>` : "";
-  messages.insertAdjacentHTML("beforeend", `<article class="message assistant"><div class="avatar">ML</div><div class="bubble"><p>${escapeHtml(data.answer || "Không có câu trả lời.").replace(/\n/g, "<br>")}</p>${clarification}<div class="citation-list">${citations}</div>${provider}</div></article>`);
+  const disclaimer = data.disclaimer ? `<p class="response-meta">${escapeHtml(data.disclaimer)}</p>` : "";
+  messages.insertAdjacentHTML("beforeend", `<article class="message assistant"><div class="avatar">ML</div><div class="bubble"><p>${escapeHtml(data.answer || "Không có câu trả lời.").replace(/\n/g, "<br>")}</p>${clarification}<div class="citation-list">${citations}</div>${provider}${disclaimer}</div></article>`);
   messages.scrollTop = messages.scrollHeight;
 }
 

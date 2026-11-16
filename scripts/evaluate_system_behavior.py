@@ -31,6 +31,16 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--device", default="cpu")
     parser.add_argument("--allow-code-drift", action="store_true")
     parser.add_argument("--allow-overwrite", action="store_true")
+    parser.add_argument(
+        "--dataset-role",
+        choices=("development_observed", "candidate_unreviewed"),
+        default="development_observed",
+    )
+    parser.add_argument(
+        "--require-clean",
+        action="store_true",
+        help="Refuse relevant source/artifact worktree changes before or during evaluation.",
+    )
     return parser.parse_args()
 
 
@@ -80,6 +90,45 @@ def _verify_frozen_dataset(
     return dataset_sha256
 
 
+def _relevant_worktree_status() -> str:
+    return _git(
+        "status", "--porcelain", "--untracked-files=all", "--",
+        "app", "scripts", "requirements.txt", "data/processed", "data/vector_db",
+    )
+
+
+def _require_clean_worktree(status: str, *, enabled: bool) -> None:
+    if enabled and status:
+        raise RuntimeError(
+            "--require-clean: source/artifact worktree còn thay đổi chưa commit. "
+            "Hãy dùng clean checkout hoặc bỏ cờ này và giữ provenance dirty."
+        )
+
+
+def _fingerprint_paths() -> list[Path]:
+    # Include every application module: routing, rewriting, citation, guardrails,
+    # generation, embedding and vector loading all influence a system evaluation.
+    return sorted((ROOT / "app").rglob("*.py")) + [
+        ROOT / "scripts" / "evaluate_system_behavior.py",
+        ROOT / "requirements.txt",
+        ROOT / "data" / "processed" / "legal_chunks.json",
+        ROOT / "data" / "processed" / "legal_embeddings.npy",
+        ROOT / "data" / "processed" / "legal_embeddings_manifest.json",
+        ROOT / "data" / "vector_db" / "legal_chunks.faiss",
+        ROOT / "data" / "vector_db" / "legal_chunks_metadata.json",
+    ]
+
+
+def _verify_dataset_role(questions_path: Path, metadata: dict, role: str) -> None:
+    observed_names = {"test_questions_v1.json", "candidate_questions_v2_blind.json"}
+    observed_ids = {"candidate_questions_v2_blind"}
+    if role != "development_observed" and (
+        questions_path.name in observed_names
+        or metadata.get("dataset_id") in observed_ids
+    ):
+        raise ValueError("V1/V2 đã quan sát phải ghi dataset-role=development_observed.")
+
+
 def main() -> None:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
@@ -108,9 +157,13 @@ def main() -> None:
             "HEAD không khớp baseline_commit; checkout baseline hoặc dùng "
             "--allow-code-drift và lưu output phiên bản mới."
         )
+    dirty_before = _relevant_worktree_status()
+    _require_clean_worktree(dirty_before, enabled=args.require_clean)
+    fingerprints_before = [_artifact_fingerprint(path) for path in _fingerprint_paths()]
     questions, dataset_metadata = extract_questions(
         json.loads(questions_bytes.decode("utf-8"))
     )
+    _verify_dataset_role(questions_path, dataset_metadata, args.dataset_role)
     settings = Settings(project_root=ROOT, llm_provider="none")
     retriever = LegalRetriever(
         index_path=ROOT / "data" / "vector_db" / "legal_chunks.faiss",
@@ -125,25 +178,24 @@ def main() -> None:
         retriever=retriever,
     )
     report = SystemBehaviorEvaluator(service).evaluate(questions)
-    fingerprint_paths = [
-        ROOT / "app" / "core" / "config.py",
-        ROOT / "app" / "evaluation" / "system_behavior_evaluator.py",
-        ROOT / "app" / "rag" / "retriever.py",
-        ROOT / "app" / "services" / "legal_assistant.py",
-        ROOT / "scripts" / "evaluate_system_behavior.py",
-        ROOT / "data" / "processed" / "legal_chunks.json",
-        ROOT / "data" / "processed" / "legal_embeddings_manifest.json",
-        ROOT / "data" / "vector_db" / "legal_chunks.faiss",
-        ROOT / "data" / "vector_db" / "legal_chunks_metadata.json",
-    ]
-    dirty_output = _git(
-        "status", "--porcelain", "--", "app", "scripts/evaluate_system_behavior.py"
-    )
+    dirty_output = _relevant_worktree_status()
+    _require_clean_worktree(dirty_output, enabled=args.require_clean)
+    fingerprints_after = [_artifact_fingerprint(path) for path in _fingerprint_paths()]
+    if fingerprints_before != fingerprints_after:
+        raise RuntimeError(
+            "Source/artifact thay đổi trong lúc chạy; không ghi report lẫn phiên bản."
+        )
     report.update(
         {
             "evaluated_at": datetime.now(timezone.utc).isoformat(),
             "questions_file": questions_path.relative_to(ROOT).as_posix(),
             "provider_mode": "extractive_offline",
+            "dataset_role": args.dataset_role,
+            "evaluation_role_notice": (
+                "V1/V2 have been observed during development. Re-runs are development "
+                "diagnostics, not independent held-out validation. Dataset freeze "
+                "does not provide human legal review or independence."
+            ),
             "dataset_metadata": dataset_metadata,
             "provenance": {
                 "dataset_sha256": dataset_sha256,
@@ -156,15 +208,15 @@ def main() -> None:
                 "evaluation_git_commit": current_git_commit,
                 "baseline_commit_matches_head": baseline_match,
                 "relevant_worktree_dirty": bool(dirty_output),
+                "require_clean_enforced": args.require_clean,
+                "relevant_worktree_dirty_before_evaluation": bool(dirty_before),
                 "relevant_worktree_status": dirty_output.splitlines(),
                 "runtime_config": {
                     "device": args.device,
                     "retrieval_top_k": settings.retrieval_top_k,
                     "minimum_dense_score": settings.minimum_dense_score,
                 },
-                "artifact_fingerprints": [
-                    _artifact_fingerprint(path) for path in fingerprint_paths
-                ],
+                "artifact_fingerprints": fingerprints_after,
             },
             "interpretation_warning": (
                 "Article ranking and routing behavior are technical metrics, not "

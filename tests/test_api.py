@@ -29,3 +29,38 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+def test_api_health_ui_and_chat_contracts_without_live_provider(tmp_path, monkeypatch):
+    from fastapi.testclient import TestClient
+    import app.main as api
+    from app.core.config import Settings
+    from app.services.legal_assistant import LegalAssistantService
+
+    class _Retriever:
+        def retrieve_hybrid(self, question, *, top_k=5):
+            return [{
+                "chunk_id": "test", "document_id": "test-law", "document_name": "Văn bản kiểm thử",
+                "article_no": 45, "article_title": "Điều kiện thực hiện quyền", "text": "Nội dung thử nghiệm.",
+                "score": .95, "dense_score": .9,
+            }]
+
+    service = LegalAssistantService(settings=Settings(project_root=tmp_path), retriever=_Retriever())
+    monkeypatch.setattr(api, "get_service", lambda: service)
+    with TestClient(api.app) as client:
+        health = client.get("/api/health")
+        assert health.status_code == 200
+        assert health.json()["active_document_id"] == "vbhn_133_2025_luat_dat_dai"
+        page = client.get("/")
+        assert "Baseline V2 trước sửa" in page.text
+        assert "V1 là dev set" in page.text
+        assert client.get("/api/chat").status_code == 405
+        response = client.post("/api/chat", json={"question": "Điều kiện chuyển nhượng đất là gì?"})
+        assert response.status_code == 200
+        result = response.json()
+        assert result["status"] == "success"
+        assert result["answer_citation_labels"] == [1]
+        assert "Chưa kiểm tra hiệu lực" in result["disclaimer"]
+        missing = client.post("/api/chat", json={"question": "Tôi chuyển đất được không?"}).json()
+        assert missing["status"] == "needs_clarification"
+        assert missing["analysis"]["missing_context_types"]

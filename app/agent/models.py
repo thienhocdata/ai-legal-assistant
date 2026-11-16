@@ -16,6 +16,8 @@ class QueryAnalysis:
     in_scope: bool = True
     requires_clarification: bool = False
     reasons: list[str] = field(default_factory=list)
+    missing_source_types: list[str] = field(default_factory=list)
+    missing_context_types: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

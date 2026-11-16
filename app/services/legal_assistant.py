@@ -122,6 +122,7 @@ class LegalAssistantService:
         prompt = (
             f"CÂU HỎI: {analysis.original_question}\n\n"
             f"CĂN CỨ TRUY XUẤT:\n{context}\n\n"
+            "YÊU CẦU TRẢ LỜI:\n"
             "Trả lời theo cấu trúc: Kết luận ngắn; Điều kiện áp dụng; "
             "Ngoại lệ hoặc thông tin cần xác minh; Căn cứ. "
             "Mỗi nhận định pháp lý phải gắn [n]. Không lặp lại mục không có dữ liệu."
@@ -162,14 +163,23 @@ class LegalAssistantService:
                     "top_k": len(results),
                     "top_dense_score": float(results[0]["dense_score"]),
                     "top_combined_score": float(results[0]["score"]),
+                    "top1_top2_score_margin": (
+                        round(float(results[0]["score"]) - float(results[1]["score"]), 6)
+                        if len(results) > 1 else None
+                    ),
+                    "margin_interpretation": "diagnostic_only_not_calibrated",
                 },
                 "provider": response.provider,
                 "model": response.model,
                 "usage": response.metadata.get("usage", {}),
                 "generation_fallback_reason": generation_fallback_reason,
+                "answer_citation_labels": sorted(
+                    {int(label) for label in re.findall(r"\[(\d+)\]", answer)}
+                ),
                 "disclaimer": (
-                    "Thông tin chỉ phục vụ tham khảo và cần đối chiếu văn bản đang có hiệu lực "
-                    "cũng như tình tiết cụ thể trước khi áp dụng."
+                    "Căn cứ là các văn bản trong citation. Chưa kiểm tra hiệu lực hiện hành "
+                    "và văn bản sửa đổi. Thông tin chỉ phục vụ tham khảo; cần đối chiếu "
+                    "toàn văn và tình tiết cụ thể trước khi áp dụng."
                 ),
             },
         )

@@ -9,6 +9,7 @@ from typing import Any
 
 from app.kb.embedding import SentenceTransformerEmbedder
 from app.rag.vector_store import FaissVectorStore
+from app.rag.ranking import diverse_article_rows
 
 
 class LegalRetriever:
@@ -385,10 +386,13 @@ class LegalRetriever:
         *,
         top_k: int = 5,
         lexical_weight: float = 0.35,
+        diversify_articles: bool = False,
     ) -> list[dict[str, Any]]:
         """Dense retrieval with a deterministic legal-title lexical boost."""
         if not 0.0 <= lexical_weight <= 1.0:
             raise ValueError("lexical_weight phải nằm trong [0, 1].")
+        if top_k <= 0:
+            raise ValueError("top_k phải lớn hơn 0.")
         if not self._loaded:
             self.load()
         if self._embedder is None:
@@ -410,9 +414,12 @@ class LegalRetriever:
             ranked.append((combined_score, dense_score, lexical_score, chunk))
 
         ranked.sort(key=lambda row: (row[0], row[1]), reverse=True)
+        selected = (
+            diverse_article_rows(ranked, top_k) if diversify_articles else ranked[:top_k]
+        )
         results: list[dict[str, Any]] = []
         for rank, (score, dense_score, lexical_score, chunk) in enumerate(
-            ranked[:top_k], start=1
+            selected, start=1
         ):
             results.append(
                 {
