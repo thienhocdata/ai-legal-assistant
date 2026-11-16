@@ -1,5 +1,10 @@
 # Đánh giá V2 hậu baseline — 16/11/2026
 
+> Báo cáo lịch sử của phép đo gốc. Vòng sửa tiếp theo đã chuyển V1/V2 sang dev
+> đã quan sát theo `DATASET_ROLES.md`. Kết quả mới nằm trong
+> `data/evaluation/system_behavior_v2_dev_after_fixes.json`; không thay số gốc
+> bên dưới thành kết quả độc lập sau khi tune.
+
 ## Kết luận ngắn
 
 Bộ V2 gồm 60 câu hỏi ứng viên được sinh bằng AI sau khi baseline đã được xác

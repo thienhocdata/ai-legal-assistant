@@ -19,6 +19,8 @@ Ngày rà soát gần nhất: 16/11/2026.
   `KNOWN_ISSUES.md`, `TESTING_GUIDE.md`; kết quả V2 tại
   `evaluation/EVALUATION_V2_2026-11-16.md`, so sánh provider tại
   `evaluation/PROVIDER_COMPARISON.md`.
+- Vòng sửa sau V2: `evaluation/DATASET_ROLES.md` (dev/holdout và schema metric),
+  `evaluation/V2_FAILURE_AUDIT.md` (19 lỗi); kết quả trước/sau trong báo cáo tổng quan.
 - Citation, LLM hoặc guardrails: `SECURITY_AND_PRIVACY.md`, `DATA_AND_LEGAL_SOURCES.md`, `TESTING_GUIDE.md`.
 - Lập kế hoạch: `CURRENT_PRIORITIES.md`, `KNOWN_ISSUES.md`.
 - Kiểm tra tài liệu cũ: `DOCUMENT_AUDIT_REPORT.md`, `context-pack/DOCUMENT_STATUS.md`.

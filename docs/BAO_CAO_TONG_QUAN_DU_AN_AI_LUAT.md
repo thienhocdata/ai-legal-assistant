@@ -2,7 +2,7 @@
 
 > Trạng thái xác minh: 16/11/2026
 >
-> Mốc code được phân tích: `255adb7`
+> Mốc code mới nhất được đo: `3506bab` (sau `ec2fd78`)
 >
 > Phạm vi: trợ lý tra cứu pháp luật đất đai Việt Nam phục vụ demo/nghiên cứu
 
@@ -20,14 +20,111 @@ routing và quality gates; `255adb7` bổ sung evaluation V2 cùng provenance. C
 chunks, vector index và artifact V1 30 câu không đổi giữa ba mốc, nên báo cáo
 không tuyên bố retrieval đã được cải thiện qua chuỗi commit này.
 
-Hiện tại toàn bộ suite đạt **70 passed**. V2 có 60 câu do AI tạo và đang chờ
+Tại mốc `255adb7`, suite đạt **70 passed**. V2 có 60 câu do AI tạo và đang chờ
 người duyệt; extractive offline đạt answer success 98%, Hit@1 76%, Hit@k 90%,
 MRR 0,825, refusal correctness 30% và grounded behavior 68,33%. Đây là metric kỹ
 thuật trên candidate dataset, không phải bằng chứng về độ đúng pháp lý.
 
+Vòng sửa mới nhất đạt **116 passed**. Từ vòng này V1/V2 là dev đã quan sát.
+Kết quả mới, những thay đổi đã giữ và những thử nghiệm bị loại nằm ngay bên
+dưới; phần so sánh ba commit cũ vẫn giữ làm lịch sử kỹ thuật.
+
+## Những gì vừa sửa và kết quả hiện tại
+
+### So với bản trước vòng sửa
+
+| Hạng mục | Bản trước | Bản đã sửa |
+|---|---|---|
+| Baseline | Run gốc ghi worktree dirty | Run lại `2cafc54` từ checkout sạch, số gốc tái lập |
+| Audit | Chưa phân tích từng lỗi | Đủ 19 câu riêng biệt; AI audit, chưa có chuyên gia duyệt |
+| Missing context/source | Rule corpus-gap gộp rộng | Tách nguồn thiếu và dữ kiện thiếu, câu hỏi làm rõ cụ thể |
+| False refusal | Chặn câu hỏi nguyên tắc bảng giá đất cấp tỉnh | Cho phép tra cứu câu hỏi chung đó |
+| Refusal dev | 7/10 câu cần không kết luận vẫn trả success | 8 làm rõ + 2 thiếu nguồn trên 10 câu dev |
+| Extractive | Chỉ trích `[1]` | Trích tối đa 3 block, tách question/instructions khỏi evidence |
+| Metric | Tên success/grounded dễ bị hiểu thành độ đúng | Schema 2: tên status/rank/marker, mẫu số, cohort, Wilson |
+| Provenance | Có commit/hash nhưng khó chặn dirty run | `--require-clean`, snapshot trước/sau, hash code/artifact |
+| UI | Đặt Recall@5 100% lên đầu | Hiển thị baseline V2 trước sửa và trạng thái nhãn; V1 ghi dev |
+| Pytest cache | Không ghi được cache root | Cache nằm trong thư mục runtime đã gitignore |
+| Kiểm thử | 70 test | 116 test; thêm API POST và UI contract thực sự được pytest chạy |
+
+Audit chi tiết: `docs/evaluation/V2_FAILURE_AUDIT.md`. 12 câu trượt hạng 1 đã
+bao gồm 5 câu trượt top-k; cộng 7 refusal failure là **19**, không phải 24.
+Câu V2Q030 có diễn đạt/nhãn mơ hồ; chưa tự sửa nhãn và chưa tạo V2.1.
+
+### Kết quả end-to-end trước và sau
+
+Baseline clean tại `2cafc54`:
+`data/evaluation/system_behavior_v2_clean_baseline.json`.
+Run sau sửa tại `3506bab`, có `require_clean_enforced=true` và
+`relevant_worktree_dirty=false`:
+`data/evaluation/system_behavior_v2_dev_after_fixes.json`.
+
+| Phép đo | Baseline trước sửa | Sau sửa trên V2 dev |
+|---|---:|---:|
+| Status success trên câu kỳ vọng answer | 49/50 (98%) | 50/50 (100%) |
+| Expected-article Hit@1 | 38/50 (76%) | 39/50 (78%) |
+| Expected-article Hit@k | 45/50 (90%) | 46/50 (92%) |
+| Khớp nhóm status không trả lời trên câu refuse | 3/10 (30%) | 10/10 (100%) |
+| Answer cần success+Hit@1, refuse cần status phù hợp | 41/60 (68,33%) | 49/60 (81,67%) |
+
+Hit@1/Hit@k tăng một câu nhờ bỏ chặn nhầm Q037; không có thay đổi index hay
+thuật toán hybrid mặc định để nhận công cho mức tăng này. 10/10 routing chỉ là
+khớp nhãn broad-refusal trên tập đã dùng sửa rule; Wilson 95% vẫn rộng
+`72,25%–100%`. Chưa chứng minh chất lượng trên câu mới.
+
+Sau sửa còn **11/50 câu trượt hạng 1 và 4/50 trượt top-k**. MRR mới là `0,845`
+theo hạng citation thực tế. MRR gốc `0,825` dùng schema bỏ trùng Điều, nên không
+ghép hai số thành một mức tăng mà không chấm lại cùng evaluator.
+
+Marker trong câu trả lời trỏ tới ít nhất một Điều kỳ vọng ở 45/50 câu (90%).
+Marker trỏ tới toàn bộ các Điều liệt kê trong nhãn ở 35/50 câu (70%). Đây là
+khớp marker/nhãn; chưa chấm nội dung, faithfulness hay completeness pháp lý.
+
+### Theo nhóm câu hỏi sau sửa
+
+| Nhóm | Mẫu | Phép đo | Tỷ lệ | Wilson 95% |
+|---|---:|---|---:|---:|
+| Direct | 20 | Hit@1 | 18/20 = 90% | 69,90%–97,21% |
+| Colloquial/paraphrase | 18 | Hit@1 | 11/18 = 61,11% | 38,62%–79,69% |
+| Multi-condition | 12 | Hit@1 | 10/12 = 83,33% | 55,20%–95,30% |
+| Refusal/clarification | 10 | Broad route match | 10/10 = 100% | 72,25%–100% |
+
+Khoảng Wilson chỉ mô tả bất định lấy mẫu dưới giả định nhị thức; không xử lý
+lỗi nhãn AI, các câu phụ thuộc nhau hoặc thiên lệch tạo bộ câu. Nhóm paraphrase
+vẫn là vùng retrieval yếu rõ nhất trong tập dev này.
+
+### Thử nghiệm xếp hạng đã làm nhưng chưa promote
+
+Artifact: `data/evaluation/retrieval_development_variants_v1.json`, chạy từ
+clean checkout `ec2fd78`, có source/config fingerprints. Thí nghiệm bypass
+router để tách riêng ranking nên baseline V2 ở đây là 78%/92%.
+
+| Phương án | V1 Hit@1 / Hit@5 | V2 answer Hit@1 / Hit@5 |
+|---|---|---|
+| Hybrid đang dùng | 96,67% / 100% | 78% / 92% |
+| Mỗi Điều giữ chunk tốt nhất | 96,67% / 100% | 78% / 96% |
+| Dense + BM25 binary-presence/RRF thử nghiệm | 50% / 76,67% | 62% / 88% |
+
+RRF thử nghiệm giảm điểm nên không đưa vào runtime. Article diversity cải thiện
+top-k nhưng ở truy vấn chi tiết Điều 138 có thể giữ chunk giới thiệu và loại
+các chunk chứa điều kiện. Vì thế diversity **chỉ opt-in**, mặc định vẫn giữ
+nhiều chunk cùng Điều. Điểm article-hit không đủ để duyệt thay đổi làm mất
+evidence; đã thêm regression bảo vệ việc này.
+
+### Những việc chưa hoàn thành
+
+- Chưa có human/expert label review, V3 độc lập hoặc live Qwen/Gemini run.
+- Chưa sửa hết ranking/paraphrase và chưa kết luận nhãn V2Q030 đúng hay sai.
+- Chưa calibrate một ngưỡng margin mới; margin chỉ được ghi để phân tích.
+- Chưa ingest thêm văn bản, thay model/index hoặc hoàn thiện public production.
+- Hội thoại nhiều lượt, quản lý hiệu lực, bảo mật/operations vẫn theo mục hạn chế.
+
+Giao thức V3 và vai trò dev: `docs/evaluation/DATASET_ROLES.md`. Không tự tạo
+candidate bằng AI rồi gọi là bộ do người độc lập viết.
+
 ---
 
-## Phần I. So sánh các mốc kỹ thuật
+## Phần I. Lịch sử ba mốc trước vòng sửa mới
 
 ### 1.1. Bảng so sánh
 
@@ -87,7 +184,7 @@ không tạo bằng chứng live về chất lượng Qwen hoặc Gemini.
 
 ### 1.4. Mốc `255adb7`: evaluation V2 và provenance
 
-Mốc hiện hành thêm một candidate dataset hậu baseline và đóng băng bằng manifest:
+Mốc `255adb7` thêm một candidate dataset hậu baseline và đóng băng bằng manifest:
 
 - 60 câu: 50 `answer`, 10 `refuse`/clarify;
 - nhãn `ai_generated_candidate_pending_human_review`;
@@ -103,8 +200,9 @@ có. Nhãn Điều được suy ra từ inventory số/tên Điều của corpus
 nguy cơ trùng trực tiếp với V1, nhưng không biến V2 thành benchmark độc lập hoặc
 đã được chuyên gia xác nhận.
 
-Mốc này còn thêm system-behavior evaluator và provider comparison harness. Không
-có thay đổi retrieval/query tuning sau khi xem V2. Suite tăng lên 70 test.
+Mốc này còn thêm system-behavior evaluator và provider comparison harness. Tới
+commit này chưa có thay đổi retrieval/query tuning sau khi xem V2. Suite tăng
+lên 70 test; vòng sửa mới sau đó đã chuyển V2 sang vai trò dev như phần đầu.
 
 Artifact V2 ghi baseline `73d3a14`, đồng thời ghi worktree còn dirty và
 fingerprint các file thực tế lúc chạy. Vì vậy kết quả này chưa phải một lần đo
@@ -256,11 +354,12 @@ Lệnh xác minh:
 Kết quả chạy ngày 16/11/2026:
 
 ```text
-70 passed, 1 warning
+116 passed, 1 warning
 ```
 
-Warning duy nhất là pytest không ghi được `.pytest_cache`; không phải test
-failure. Test bao phủ pipeline dữ liệu, artifact integrity, retrieval, query,
+Warning hiện tại là Starlette deprecates cách TestClient dùng HTTPX; không phải
+test failure. Lỗi quyền cache cũ đã xử lý bằng cache_dir trong `pytest.ini`.
+Test bao phủ pipeline dữ liệu, artifact integrity, retrieval, query,
 routing, citation, providers, guardrails, API/UI contracts, V2 freeze/evaluator
 và provider-comparison privacy/configuration.
 
@@ -292,7 +391,7 @@ Ngưỡng production `0,55` có balanced accuracy `0,5` trên 30 positive + 15
 missing-source. Ngưỡng in-sample `0,890138` đạt `0,9` nhưng từ chối nhầm 20%
 positive. Vì vậy ngưỡng production không được đổi máy móc từ diagnostic này.
 
-### 4.4. V2: frozen post-baseline candidate
+### 4.4. V2: kết quả baseline gốc (lịch sử)
 
 Kết quả extractive offline trên 60 câu:
 
@@ -348,7 +447,9 @@ contract, không chứng minh faithfulness, completeness hay chất lượng ti�
   chưa ingest cùng nghị định/thông tư/quy định địa phương.
 - Metadata hiệu lực, sửa đổi, thay thế và phạm vi áp dụng chưa đầy đủ.
 - Embedding manifest vẫn chứa đường dẫn tuyệt đối, chưa portable hoàn toàn.
-- V2 chưa được người độc lập/chuyên gia duyệt; refusal correctness chỉ 30%.
+- V2 chưa được người độc lập/chuyên gia duyệt. Broad-refusal baseline gốc là
+  30%; sau sửa đạt 10/10 broad route match trên dev đã quan sát, chưa chứng
+  minh khả năng khái quát sang câu mới.
 - Chưa có human metrics về citation correctness, faithfulness, completeness.
 - Chưa có live Qwen/Gemini comparison, token/cost/latency hosted thực tế.
 - Output citation guardrail chưa kiểm tra semantic entailment từng nhận định.
@@ -365,8 +466,8 @@ contract, không chứng minh faithfulness, completeness hay chất lượng ti�
 3. Audit 19 câu riêng biệt: 12 miss rank1 (trong đó có 5 miss top-k) và 7 refusal
    failures. Đọc câu hỏi, expected article, rewrite và top-k trước khi kết luận
    lỗi retrieval, lỗi rewrite, nhãn sai hoặc nhiều Điều cùng hợp lý.
-4. Phát triển fix trên development set riêng.
-5. Chấm thay đổi bằng fresh V3 hoặc expert-held-out set.
+4. Tiếp tục phát triển trên V1/V2 dev đã quan sát, giữ baseline và từng artifact.
+5. Chấm thay đổi bằng V3 mới do người độc lập soạn hoặc tập được chuyên gia duyệt.
 
 **P0 — Human answer review**
 
@@ -398,13 +499,13 @@ contract, không chứng minh faithfulness, completeness hay chất lượng ti�
 
 | Hạng mục | Công việc cụ thể | Điều kiện xác nhận hoàn thành |
 |---|---|---|
-| Clean baseline | Chạy lại evaluator từ clean checkout đã commit, lưu artifact riêng | Commit/config/hash có thể đối chiếu, metric tái lập hoặc ghi rõ sai khác |
-| Audit lỗi V2 | Phân loại 19 câu, tách clarification/corpus-gap/out-of-scope | Có từng câu, căn cứ và lý do; nhãn chưa có chuyên gia vẫn ghi chờ duyệt |
-| Refusal routing | Phân loại nguồn thiếu và dữ kiện thiếu; kiểm thử từng nhánh | Có regression test, đo false refusal trên câu hợp lệ cùng với refusal đúng |
-| Metric | Đổi tên status success, phân biệt rank-hit và chất lượng nội dung | Báo cáo không gọi status/citation hit là accuracy câu trả lời |
-| Phân nhóm và bất định | Báo cáo direct/paraphrase/multi-condition/refusal; Wilson cho các tỷ lệ | Có tử số/mẫu số và khoảng tin cậy; MRR dùng phương pháp phù hợp riêng |
-| Vai trò dataset | V1 là dev; nếu dùng V2 sửa rule thì đánh dấu V2 là dev đã quan sát | Giữ nguyên baseline gốc; có V3 mới trước vòng đo cuối |
-| UI metric | Gắn nhãn dev set cho số V1, hiển thị V2 kèm ngày/mẫu số/giới hạn | Không tạo ấn tượng 100% chính xác pháp lý |
+| Clean baseline | Đã chạy sạch baseline và bản sau sửa, lưu artifact riêng | Có commit/config/hash và trạng thái clean |
+| Audit lỗi V2 | Đã audit kỹ thuật 19 câu | Nhãn vẫn chờ người có chuyên môn; chưa tự tạo V2.1 |
+| Refusal routing | Đã tách nguồn thiếu/dữ kiện thiếu và thêm regression | Dev có 8 clarification + 2 coverage; cần V3 để kiểm tra khái quát |
+| Metric | Đã đổi tên status success và proxy rank/status | Chưa có metric độ đúng nội dung do người chấm |
+| Phân nhóm và bất định | Đã có cohort và Wilson cho các tỷ lệ | MRR không gắn Wilson; nhãn và mẫu nhỏ còn giới hạn |
+| Vai trò dataset | Đã ghi V1/V2 là dev đã quan sát | V3 mới chưa được người độc lập cung cấp |
+| UI metric | Đã hiển thị baseline V2 trước sửa và ghi V1 là dev | Có ngày/mẫu số/trạng thái nhãn |
 
 Các phần kỹ thuật trên có thể triển khai và kiểm thử bằng repository. AI có thể
 hỗ trợ audit nhãn hoặc tạo candidate mới, nhưng không được tự ghi kết quả đó
@@ -426,7 +527,7 @@ cần credential cục bộ hợp lệ và lần gọi thực tế; hiện chưa
 | Calibration | `evidence_calibration_v1.json` | 30 positive + 15 missing-source; scope riêng |
 | V2 schema/hash/baseline | V2 dataset và blind manifest | AI-generated, pending review |
 | V2 exact metrics | `system_behavior_v2_blind_extractive.json` | Extractive offline, không phải legal accuracy |
-| 70 passed | pytest output ngày 16/11/2026 | Cache warning không phải failure |
+| 116 passed hiện tại; 70 tại mốc trước | pytest output ngày 16/11/2026 | Không chứng minh độ đúng pháp lý |
 | Qwen contract | provider source và mock tests | Không có live quality result |
 | Provider harness | script, docs và tests | Chưa có live Qwen/Gemini comparison |
 
@@ -437,8 +538,8 @@ retrieval, citation, provider fallback và evaluation có provenance ở mức
 demo/nghiên cứu. Tiến bộ giữa ba mốc chủ yếu là hardening và đo lường, không
 phải cải thiện core retrieval.
 
-V2 làm lộ hai vùng cần ưu tiên: ranking còn 12/50 miss ở rank 1, 5/50 miss trong
-top-k và routing chỉ từ chối đúng 3/10 câu. Bước tiếp theo hợp lệ là duyệt nhãn,
-phân tích lỗi, phát triển trên tập riêng và xác nhận bằng fresh evaluation. Cho
-đến khi có human/expert review và live provider runs, không có cơ sở để tuyên bố
-độ đúng pháp lý, provider tốt nhất hoặc mức sẵn sàng production.
+Baseline V2 làm lộ 19 lỗi đã được audit. Sau sửa, routing khớp broad-refusal
+10/10 trên dev; ranking còn 11/50 miss ở rank 1 và 4/50 miss trong top-k. Các
+số sau sửa chỉ đo trên V2 đã quan sát. Việc duyệt nhãn, giải quyết các lỗi còn
+lại và kiểm tra bằng V3 độc lập vẫn cần tiếp tục trước kết luận khái quát. Chưa
+có cơ sở để tuyên bố độ đúng pháp lý, provider tốt nhất hoặc production-ready.

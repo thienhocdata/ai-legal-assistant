@@ -24,6 +24,12 @@ Kết quả hybrid retrieval v1: Hit@1 `96,7%`, Recall@3 `100%`, Recall@5 `100%`
 MRR `0,978`. Đây là baseline kỹ thuật trên 30 câu hỏi, chưa phải đánh giá pháp lý
 bởi chuyên gia.
 
+Vòng sửa ngày 16/11/2026: routing tách dữ kiện thiếu/nguồn thiếu, extractive trả
+tối đa 3 block căn cứ, evaluator schema 2 có cohort và khoảng Wilson. V1/V2 hiện
+là dev đã quan sát; xem `docs/evaluation/DATASET_ROLES.md`. Trên V2 dev sau sửa:
+Hit@1 39/50, Hit@k 46/50, broad refusal-route match 10/10 (8 làm rõ, 2 thiếu
+nguồn). Nhãn AI chưa được người duyệt; số này chưa chứng minh hiệu quả trên câu mới.
+
 ## Cài đặt
 
 Yêu cầu Python 3.11+ trên Windows/Linux/macOS.
@@ -103,18 +109,20 @@ validation và không được dùng như bằng chứng pháp lý.
 Bộ candidate v2 tại `data/evaluation/candidate_questions_v2_blind.json` được
 tạo sau baseline `73d3a14` rồi khóa bằng manifest SHA-256. Bộ này có 60 câu
 tổng hợp, toàn bộ nhãn đang chờ người rà soát và không phải independent/expert
-held-out evaluation. Kết quả extractive offline hiện tại là: answer success
+held-out evaluation. Kết quả baseline extractive trước vòng sửa là: answer success
 `98%`, expected-article Hit@1 `76%`, Hit@k `90%`, MRR `0,825`, refusal
 correctness `30%` và grounded behavior `68,33%`. Hit@k không được diễn giải
 thành độ đúng của câu trả lời. Không dùng kết quả này để chỉnh rule rồi chấm lại
-trên cùng phiên bản.
+trên cùng phiên bản như một phép đo độc lập. Artifact baseline gốc giữ nguyên;
+vòng sửa hiện tại chuyển V2 thành dev theo `docs/evaluation/DATASET_ROLES.md`.
 
 ```powershell
 .\.venv\Scripts\python.exe scripts\validate_candidate_questions_v2_blind.py
 .\.venv\Scripts\python.exe scripts\evaluate_system_behavior.py `
   --questions data\evaluation\candidate_questions_v2_blind.json `
   --manifest data\evaluation\candidate_questions_v2_blind_manifest.json `
-  --output data\evaluation\runs\system_behavior_v2_recheck.json
+  --output data\evaluation\runs\system_behavior_v2_recheck.json `
+  --dataset-role development_observed --allow-code-drift --require-clean
 .\.venv\Scripts\python.exe scripts\compare_answer_providers.py `
   --questions data\evaluation\candidate_questions_v2_blind.json `
   --providers extractive
@@ -123,6 +131,12 @@ trên cùng phiên bản.
 So sánh Gemini/Qwen chỉ có ý nghĩa runtime khi cấu hình key cục bộ; độ đúng
 pháp lý vẫn cần human review. Output so sánh nằm trong
 `data/evaluation/runs/` và không được commit.
+
+`--require-clean` yêu cầu source/artifact đã commit và không thay đổi trong lúc
+đo. Kết quả gốc và sau sửa lưu ở path riêng trong `data/evaluation/`. BM25/RRF
+và article diversity chỉ là thí nghiệm; hybrid mặc định giữ nguyên vì các thử
+nghiệm có giảm điểm hoặc mất nội dung khoản. Bộ test hiện tại: 116 passed;
+pytest cache đã chuyển vào runtime dir.
 
 ## Cấu trúc chính
 

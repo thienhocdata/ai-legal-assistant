@@ -10,6 +10,8 @@
 | `docs/context-pack/*` | ACTIVE | Context đã cập nhật và kiểm tra ngày 16/11/2026 |
 | `docs/evaluation/EVALUATION_V2_2026-11-16.md` | ACTIVE | Giao thức, provenance, kết quả và giới hạn V2 |
 | `docs/evaluation/PROVIDER_COMPARISON.md` | ACTIVE | Cách chạy so sánh runtime provider an toàn |
+| `docs/evaluation/DATASET_ROLES.md` | ACTIVE | Vai trò dev, schema 2, giao thức V3 chưa thực hiện |
+| `docs/evaluation/V2_FAILURE_AUDIT.md` | ACTIVE | Audit AI hỗ trợ trên 19 lỗi, nhãn chờ người duyệt |
 | `app/kb/embedding/README_MODULE7.md` | NEEDS_REVIEW | Tham khảo module, không phải hướng dẫn cài đặt chính |
 | `app/rag/README_MODULE9.md` | STALE | Chỉ dẫn giai đoạn cũ |
 | Báo cáo Word ngày 10/07/2026 | STALE | Nhật ký lịch sử, không dùng làm trạng thái hiện hành |

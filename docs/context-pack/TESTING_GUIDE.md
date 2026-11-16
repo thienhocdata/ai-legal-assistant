@@ -7,8 +7,9 @@
 ```
 
 Baseline sau promotion ngày 08/08/2026: 38 test đạt. Sau quality hardening ngày
-15/11/2026: 54 test đạt. Ngày 16/11/2026, bộ test đầy đủ đạt 70 test. Pytest
-vẫn cảnh báo không ghi được `.pytest_cache`; đây không phải test failure.
+15/11/2026: 54 test đạt; sau evaluation V2: 70. Sau vòng sửa routing/evaluator:
+116 passed. Cache đã chuyển tới `data/evaluation/runs/pytest-cache` bằng
+`pytest.ini`. Warning còn lại là deprecation của Starlette TestClient/HTTPX.
 
 ## Theo loại thay đổi
 
@@ -46,7 +47,12 @@ Không diễn giải Hit@k, Recall@k hoặc MRR trên 30 câu như độ chính 
 
 Kết quả production VBHN 133 ngày 08/08/2026 trên 30 câu, hybrid: Hit@1 `0,9667`, Recall@3/5 `1,0`, MRR `0,9778`. API chat thử nghiệm trả về citation `vbhn_133_2025_luat_dat_dai`, Điều 159.
 
-## Đánh giá V2 hậu baseline
+## Đánh giá V2 hậu baseline (kết quả lịch sử)
+
+Vòng sửa hiện tại dùng V1/V2 làm dev đã quan sát, theo
+`docs/evaluation/DATASET_ROLES.md`; kết quả mới ở
+`data/evaluation/system_behavior_v2_dev_after_fixes.json`. Các số dưới đây là
+baseline trước sửa và phải được giữ riêng.
 
 Bộ `candidate_questions_v2_blind.json` gồm 60 câu ứng viên do AI sinh và đang
 chờ người duyệt: 50 câu kỳ vọng trả lời, 10 câu kỳ vọng từ chối/làm rõ. Manifest
@@ -58,9 +64,9 @@ khi chạy evaluator.
 Lần chạy `extractive_offline` đạt answer success `98%` (49/50),
 expected-article Hit@1 `76%` (38/50), Hit@k `90%` (45/50), MRR `0,825`, refusal
 correctness `30%` (3/10) và grounded behavior `68,33%` (41/60). Hit@k chỉ cho
-biết Điều kỳ vọng xuất hiện trong danh sách citation; vì extractive dùng evidence
-`[1]`, grounded behavior yêu cầu Hit@1. Không điều chỉnh rule retrieval/query
-sau khi xem kết quả này; sửa nhãn phải tạo phiên bản dataset và manifest mới.
+biết Điều kỳ vọng xuất hiện trong danh sách citation; ở baseline extractive chỉ
+dùng `[1]`. Giai đoạn đo gốc chưa chỉnh rule sau khi xem kết quả. Vòng sửa hiện
+tại dùng V2 làm dev; sửa nhãn vẫn phải tạo dataset/manifest phiên bản mới.
 
 Đây không phải đánh giá độc lập, không phải expert-held-out và không xác nhận độ
 đúng pháp lý. Xem giao thức, provenance và giới hạn diễn giải tại
@@ -70,7 +76,8 @@ sau khi xem kết quả này; sửa nhãn phải tạo phiên bản dataset và 
 .\.venv\Scripts\python.exe scripts\evaluate_system_behavior.py `
   --questions data\evaluation\candidate_questions_v2_blind.json `
   --manifest data\evaluation\candidate_questions_v2_blind_manifest.json `
-  --output data\evaluation\runs\system_behavior_v2_recheck.json
+  --output data\evaluation\runs\system_behavior_v2_recheck.json `
+  --dataset-role development_observed --allow-code-drift --require-clean
 ```
 
 Evaluator kiểm tra SHA/path với manifest và mặc định không ghi đè output.

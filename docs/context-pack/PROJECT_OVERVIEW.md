@@ -10,20 +10,21 @@
 - Query rewriting, clarification, citation, provider local/Gemini/Qwen và guardrails.
 - 30 câu ground truth; artifact hiện có báo cáo dense/hybrid.
 - Bộ V2 hậu baseline có 60 câu ứng viên AI sinh đang chờ người duyệt: 50 câu
-  answer và 10 câu refuse. Lần chạy extractive offline đạt 98% answer success,
-  76% expected-article Hit@1, 90% Hit@k, MRR 0,825, 30% refusal correctness và
-  68,33% grounded behavior.
+  answer và 10 câu refuse. Baseline gốc đạt Hit@1 76%, Hit@k 90%, broad-refusal
+  3/10. Sau sửa routing trên chính dev V2: Hit@1 78%, Hit@k 92%, broad route
+  match 10/10 (8 làm rõ, 2 thiếu nguồn); chưa đo trên V3 độc lập.
 - 441 legal chunks, embeddings 441 × 384 và FAISS IndexFlatIP 441 vectors.
 - Baseline sau promotion ngày 08/08/2026 là 38 test; quality hardening ngày
-  15/11/2026 nâng bộ test lên 54 test; ngày 16/11/2026 bộ test đầy đủ đạt 70
-  test, kèm cảnh báo không ghi được `.pytest_cache` nhưng không có test failure.
+  15/11/2026 nâng bộ test lên 54 test; sau V2 đạt 70; sau vòng sửa hiện tại đạt
+  116. Cache đã chuyển vào runtime dir; còn warning deprecation TestClient/HTTPX.
 
 Bộ V2 được khóa với baseline commit
 `73d3a141e51c7348763ead7379bf56bf36b54586` và dataset SHA-256
 `fc892269eae03256ce8a2808c444c89a98af7ac3a16d62a97fabb452e8bef363` trước
-khi đánh giá. Không có rule retrieval/query nào được điều chỉnh sau khi xem kết
-quả. Bộ này không độc lập, không phải expert-held-out và không phải xác nhận độ
-đúng pháp lý; chi tiết tại `docs/evaluation/EVALUATION_V2_2026-11-16.md`.
+khi đánh giá gốc. Vòng sửa mới đã dùng V1/V2 làm dev đã quan sát theo
+`docs/evaluation/DATASET_ROLES.md`. Baseline và run sau sửa được giữ riêng;
+không coi kết quả sau sửa là held-out hoặc xác nhận độ đúng pháp lý. Xem báo
+cáo tổng quan và audit 19 lỗi trong `docs/evaluation/V2_FAILURE_AUDIT.md`.
 
 ## Phạm vi dữ liệu
 
