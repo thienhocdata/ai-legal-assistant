@@ -2,6 +2,11 @@
 
 [Báo cáo kỹ thuật: thay đổi so với baseline và sản phẩm hiện tại](docs/BAO_CAO_TONG_QUAN_DU_AN_AI_LUAT.md).
 
+Vòng sửa chat 17/11/2026: nối tối đa 3 lượt làm rõ bằng context trong bộ nhớ
+tab, hỗ trợ một số cụm tiếng Việt không dấu, giữ nguyên quote, chống gửi chồng,
+probe retrieval khi startup và giữ answer khi log I/O lỗi. Local kiểm tra trích
+xuất khớp nguyên văn; hosted chưa được xác minh semantic support.
+
 Trợ lý tra cứu pháp luật đất đai Việt Nam theo kiến trúc RAG, ưu tiên căn cứ
 pháp luật và trích dẫn Điều–Khoản–Điểm. Phiên bản hiện tại tập trung Luật Đất
 đai Việt Nam. Corpus production hiện là Văn bản hợp nhất 133/VBHN-VPQH và sản
@@ -135,8 +140,21 @@ pháp lý vẫn cần human review. Output so sánh nằm trong
 `--require-clean` yêu cầu source/artifact đã commit và không thay đổi trong lúc
 đo. Kết quả gốc và sau sửa lưu ở path riêng trong `data/evaluation/`. BM25/RRF
 và article diversity chỉ là thí nghiệm; hybrid mặc định giữ nguyên vì các thử
-nghiệm có giảm điểm hoặc mất nội dung khoản. Bộ test hiện tại: 116 passed;
-pytest cache đã chuyển vào runtime dir.
+nghiệm có giảm điểm hoặc mất nội dung khoản. Vòng routing trước đạt 116 passed;
+pytest cache đã chuyển vào runtime dir. Vòng sửa chat hiện đạt 171 passed
+(bao gồm wrapper chạy 11 Node tests). Cần Node.js để chạy các test JS; nếu thiếu
+Node, pytest báo skip phần đó chứ không tính là đã xác minh UI.
+
+`GET /api/health` chỉ trả `ready` sau startup local-retrieval probe thành công;
+trong lúc nạp trả `warming_up`, thất bại trả `failed` hoặc `degraded`. Health
+không gọi hosted API và không xác nhận chất lượng pháp lý. UI polling có giới
+hạn, timeout phía trình duyệt 90 giây không bảo đảm hủy computation phía server.
+
+`POST /api/chat` vẫn nhận `question` như trước, thêm tùy chọn
+`clarification_context: {question, answers}` từ `continuation_context` của
+response trước. Mỗi chuỗi tối đa 2000 ký tự, tối đa 3 câu bổ sung, tổng 6000 ký
+tự. Không lưu history trên server hoặc localStorage. Dùng nút gợi ý hoặc tiền
+tố `Câu hỏi mới:` để bắt đầu chủ đề khác.
 
 ## Cấu trúc chính
 

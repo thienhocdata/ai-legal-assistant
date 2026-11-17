@@ -1,8 +1,8 @@
 # BÁO CÁO TỔNG QUAN KỸ THUẬT AI LEGAL ASSISTANT
 
-> Kết quả runtime: 16/11/2026; rà soát cách diễn giải: 17/11/2026
+> Kết quả routing baseline: 16/11/2026; vòng sửa độ tin cậy chat: 17/11/2026
 >
-> Mốc code mới nhất được đo: `3506bab` (sau `ec2fd78`)
+> Code vòng sửa chat: `4f744d3`; các phép đo routing cũ vẫn giữ commit gốc
 >
 > Phạm vi: trợ lý tra cứu pháp luật đất đai Việt Nam phục vụ demo/nghiên cứu
 
@@ -25,9 +25,58 @@ người duyệt; extractive offline đạt answer success 98%, Hit@1 76%, Hit@k
 MRR 0,825, refusal correctness 30% và grounded behavior 68,33%. Đây là metric kỹ
 thuật trên candidate dataset, không phải bằng chứng về độ đúng pháp lý.
 
-Vòng sửa mới nhất đạt **116 passed**. Từ vòng này V1/V2 là dev đã quan sát.
+Vòng sửa routing ngày 16/11/2026 đạt **116 passed**. Từ vòng này V1/V2 là dev đã quan sát.
 Kết quả mới, những thay đổi đã giữ và những thử nghiệm bị loại nằm ngay bên
 dưới; phần so sánh ba commit cũ vẫn giữ làm lịch sử kỹ thuật.
+
+## Vòng sửa độ tin cậy chat — 17/11/2026
+
+Đây là sửa các lỗi chức năng đã tái hiện bằng mock/source; không phải tuyên bố
+đã giải quyết toàn bộ chất lượng pháp lý hoặc ranking. Bộ test hiện đạt
+**171 passed**, gồm một pytest wrapper chạy **11 Node tests** cho luồng UI.
+Warning còn lại là deprecation của Starlette TestClient/HTTPX.
+
+| Hạn chế đã xác nhận | Thay đổi | Kiểm chứng và giới hạn |
+|---|---|---|
+| Mất câu hỏi trước khi trả lời làm rõ | Context do API trả về, client giữ trong bộ nhớ tab, gửi lại khi bổ sung | Có test địa phương, hành vi, giấy tờ, không lẫn người dùng; chỉ tối đa 3 lượt |
+| Cắt quote ở 1600 ký tự | Giữ nguyên quote, thêm hash/độ dài/cờ cắt; cap tùy chọn báo lỗi thay vì cắt ngầm | Test giữ phần ngoại lệ cuối; không đồng nghĩa lấy đủ toàn bộ Điều hoặc đủ căn cứ |
+| Câu không dấu bị out-of-scope | Fold để matching và dictionary cụm pháp luật có giới hạn | Không tự đoán tên riêng hay sửa mọi lỗi chính tả; `so do` mơ hồ không tự đổi thành sổ đỏ |
+| Marker hợp lệ che nội dung thêm vào ở local | Local phải khớp renderer trích xuất nguyên văn với citation đã giữ | Không xác minh áp dụng pháp lý; hosted chỉ kiểm tra cấu trúc/integrity |
+| Gửi chồng qua nút gợi ý | Single-flight guard, khóa tất cả nút, loading riêng, timeout client 90s | Node test mô phỏng gửi chồng/lỗi/timeout/context; không phải load test nhiều người |
+| Health chỉ nhìn file tồn tại | Startup background probe nạp model/index và truy hồi local, có warming/failed/ready | Không gọi live Gemini/Qwen; trạng thái mô tả probe local, không chứng minh hiệu lực luật |
+| Log I/O error làm mất answer | Bắt OSError khi ghi event, giữ answer và trả logging_status | Không ghi lỗi đường dẫn hay nội dung người dùng; không nuốt lỗi lập trình bất kỳ |
+
+API chấp nhận `clarification_context` gồm câu hỏi gốc và các câu bổ sung. Mỗi
+chuỗi tối đa 2000 ký tự, tối đa 3 câu bổ sung và tổng 6000 ký tự. Mọi phần đều
+là input không tin cậy, qua guardrail; không lưu câu hỏi/context vào event log
+hoặc session server. Bấm gợi ý bắt đầu chủ đề mới; cũng có thể nhập tiền tố
+`Câu hỏi mới:` để bỏ context. Đây là nối lượt làm rõ có giới hạn, chưa phải
+quản lý hồ sơ hay hội thoại dài tổng quát.
+
+Ví dụ đã có regression: hỏi số tiền bồi thường rồi bổ sung `Đồng Nai` vẫn giữ
+đúng vấn đề, chuyển sang thiếu nguồn địa phương thay vì out-of-scope hoặc bịa
+giá. Bổ sung hành vi chuyển mục đích cho câu hỏi mơ hồ có thể trở lại tra cứu;
+chỉ trả `Có` khi thiếu dữ kiện thì vẫn yêu cầu làm rõ. Một dữ kiện thiếu mới
+trong câu bổ sung không được xóa chỉ vì đã trả lời được câu hỏi trước.
+
+Citation hosted trả metadata `semantic_support_verified=false` và
+`validation_scope=citation_labels_and_quote_integrity_only`. Chưa có thành
+phần xác minh từng nhận định do LLM sinh có được luật hỗ trợ. V3, người duyệt
+nhãn và live hosted-provider test vẫn chưa có; không dùng vòng sửa này để
+khẳng định đã hoàn thành các phần đó.
+
+Regression V2 chạy từ clean checkout `4f744d3` với `--require-clean`, lưu tại
+`data/evaluation/system_behavior_v2_chat_reliability_dev.json`. Các tỷ lệ dev
+giữ nguyên so với vòng trước: Hit@1 39/50, Hit@k 46/50, broad-refusal match
+10/10, all-label marker coverage 35/50. Vì vậy vòng này không được báo cáo là
+tăng ranking hoặc chất lượng pháp lý.
+
+API thực tế tại localhost đã được kiểm tra ngày 17/11/2026: chuỗi câu hỏi bồi
+thường → `Đồng Nai` đi từ needs_clarification sang insufficient_coverage; câu
+`Toi muon tach thua dat` trả success với exact_extractive_rendering. Các quote
+trả về dài 3406/1218/559/1746/2361 ký tự, không cắt tại 1600. Health sau probe
+báo ready và hosted_provider_live_tested=false. Đây là smoke test chức năng,
+không phải kiểm định độ đúng câu trả lời.
 
 ## Những gì vừa sửa và kết quả hiện tại
 
@@ -398,10 +447,10 @@ Lệnh xác minh:
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-Kết quả chạy ngày 16/11/2026:
+Kết quả regression chạy ngày 17/11/2026:
 
 ```text
-116 passed, 1 warning
+171 passed, 1 warning
 ```
 
 Warning hiện tại là Starlette deprecates cách TestClient dùng HTTPX; không phải
@@ -503,7 +552,8 @@ contract, không chứng minh faithfulness, completeness hay chất lượng ti�
 - Output citation guardrail chưa kiểm tra semantic entailment từng nhận định.
 - Health check, auth, rate limit, CORS, retention, monitoring, CI/CD và load test
   chưa đủ cho public production.
-- Hội thoại nhiều lượt, case/session state và accessibility còn hạn chế.
+- Hội thoại mới nối tối đa 3 lượt làm rõ bằng context phía client; chưa có
+  case/session state dài hạn, khái quát mọi cách chuyển chủ đề hoặc đầy đủ accessibility.
 
 ### 5.3. Ưu tiên tiếp theo
 
@@ -552,8 +602,8 @@ contract, không chứng minh faithfulness, completeness hay chất lượng ti�
 
 **P2 — Runtime**
 
-- Bổ sung deep health check, auth/rate limit/CORS, log policy, CI/CD, monitoring
-  và load testing trước mọi cân nhắc public deployment.
+- Deep readiness probe local đã có; còn auth/rate limit/CORS, log policy,
+  CI/CD, monitoring và load testing trước mọi cân nhắc public deployment.
 
 ### 5.4. Phạm vi sửa tiếp theo có thể thực hiện
 
@@ -587,7 +637,7 @@ cần credential cục bộ hợp lệ và lần gọi thực tế; hiện chưa
 | Calibration | `evidence_calibration_v1.json` | 30 positive + 15 missing-source; scope riêng |
 | V2 schema/hash/baseline | V2 dataset và blind manifest | AI-generated, pending review |
 | V2 exact metrics | `system_behavior_v2_blind_extractive.json` | Extractive offline, không phải legal accuracy |
-| 116 passed hiện tại; 70 tại mốc trước | pytest output ngày 16/11/2026 | Không chứng minh độ đúng pháp lý |
+| 171 passed hiện tại; 116 ở vòng routing trước | pytest output ngày 17/11/2026 | Không chứng minh độ đúng pháp lý |
 | Qwen contract | provider source và mock tests | Không có live quality result |
 | Provider harness | script, docs và tests | Chưa có live Qwen/Gemini comparison |
 

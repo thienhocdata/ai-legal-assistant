@@ -16,7 +16,13 @@
 - 441 legal chunks, embeddings 441 × 384 và FAISS IndexFlatIP 441 vectors.
 - Baseline sau promotion ngày 08/08/2026 là 38 test; quality hardening ngày
   15/11/2026 nâng bộ test lên 54 test; sau V2 đạt 70; sau vòng sửa hiện tại đạt
-  116. Cache đã chuyển vào runtime dir; còn warning deprecation TestClient/HTTPX.
+  116; vòng sửa chat ngày 17/11/2026 đạt 171. Cache đã chuyển vào runtime dir;
+  còn warning deprecation TestClient/HTTPX.
+
+Chat hỗ trợ context làm rõ client-only có giới hạn, một số cụm không dấu,
+quote giữ nguyên với metadata integrity, UI single-flight và local readiness
+probe khi startup. Local output so khớp nguyên văn; hosted chưa có semantic
+entailment validation. Không coi 171 test là kiểm định pháp lý.
 
 Bộ V2 được khóa với baseline commit
 `73d3a141e51c7348763ead7379bf56bf36b54586` và dataset SHA-256

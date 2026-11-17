@@ -23,6 +23,10 @@
   biết hiệu quả trên câu chưa quan sát.
 - Extractive hiện trả tối đa ba evidence blocks. Việc có marker citation hoặc
   Điều kỳ vọng không chứng minh đầy đủ hay phù hợp cho vụ việc.
+- Vòng sửa chat đã bỏ cắt quote ngầm, hỗ trợ context làm rõ tối đa 3 lượt và
+  dictionary cụm không dấu. Chưa có hội thoại dài tổng quát, khôi phục dấu/tên
+  riêng tùy ý, hoặc chấm semantic entailment cho hosted output. UI timeout
+  chỉ hủy request phía client, không bảo đảm dừng computation đang chạy ở server.
 - Schema 2 giữ đúng vị trí citation kể cả chunk trùng Điều, có cohort và Wilson
   95% cho tỷ lệ. MRR schema 1 từng bỏ trùng Điều nên không so chéo hai schema
   như một cải thiện hệ thống.
@@ -37,6 +41,9 @@
 - Requirements Module 7 bị lặp ở hai vị trí.
 - README Module 9 chứa ràng buộc phát triển cũ.
 - Event log production chưa có chính sách retention/redaction được tài liệu hóa.
+- Log OSError không còn làm mất answer; lỗi lập trình khác không bị nuốt. Event
+  chỉ ghi metadata kỹ thuật, không question/context. Readiness đã probe local
+  model/index lúc startup, chưa phải live hosted-provider test hay load test.
 - API/UI chưa có tài liệu triển khai production về auth, rate limit và CORS.
 - `pytest.ini` đã chuyển cache sang `data/evaluation/runs/pytest-cache`; lỗi
   quyền ghi cache cũ đã được xử lý. Suite hiện còn cảnh báo deprecation của

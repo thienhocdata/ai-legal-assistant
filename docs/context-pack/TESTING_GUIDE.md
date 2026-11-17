@@ -8,8 +8,14 @@
 
 Baseline sau promotion ngày 08/08/2026: 38 test đạt. Sau quality hardening ngày
 15/11/2026: 54 test đạt; sau evaluation V2: 70. Sau vòng sửa routing/evaluator:
-116 passed. Cache đã chuyển tới `data/evaluation/runs/pytest-cache` bằng
+116 passed; vòng sửa chat 17/11/2026: 171 passed. Cache đã chuyển tới `data/evaluation/runs/pytest-cache` bằng
 `pytest.ini`. Warning còn lại là deprecation của Starlette TestClient/HTTPX.
+
+`tests/test_js_chat_flow.py` chạy 11 Node DOM/network mock tests. Cần Node.js;
+máy thiếu Node sẽ skip wrapper, không được mô tả là đã kiểm thử JS trên máy đó.
+Các test mới ở `test_chat_reliability.py`, `test_evidence_integrity.py` và
+`test_vietnamese_input.py` kiểm tra context, nguồn còn thiếu, tiếng Việt không
+dấu, long quote, startup readiness, log I/O và scope của citation validation.
 
 ## Theo loại thay đổi
 
