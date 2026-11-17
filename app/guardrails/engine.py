@@ -2,7 +2,12 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 import re
+from app.agent.query_understanding import fold_vietnamese
 from typing import Any
+from hashlib import sha256
+
+from app.citation import CitationEngine
+from app.citation.models import Citation
 
 
 @dataclass(slots=True)
@@ -10,6 +15,8 @@ class GuardrailDecision:
     allowed: bool
     code: str = "ok"
     message: str = ""
+    validation_scope: str = "structural"
+    semantic_support_verified: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -39,7 +46,16 @@ class GuardrailEngine:
             return GuardrailDecision(False, "empty_question", "Câu hỏi đang để trống.")
         if len(value) > self.max_question_chars:
             return GuardrailDecision(False, "question_too_long", "Câu hỏi vượt giới hạn độ dài.")
-        if any(pattern.search(value) for pattern in self.INJECTION_PATTERNS):
+        folded = fold_vietnamese(value)
+        folded_patterns = (
+            r"ignore (?:all |the )?previous instructions",
+            r"bo qua (?:moi |tat ca )?(?:chi dan|huong dan)",
+            r"(?:tiet lo|in ra).*(?:system prompt|chi dan he thong)",
+            r"hay bia",
+        )
+        if any(pattern.search(value) for pattern in self.INJECTION_PATTERNS) or any(
+            re.search(pattern, folded) for pattern in folded_patterns
+        ):
             return GuardrailDecision(
                 False,
                 "prompt_injection",
@@ -79,3 +95,57 @@ class GuardrailEngine:
                 "Câu trả lời tham chiếu trích dẫn không tồn tại.",
             )
         return GuardrailDecision(True)
+
+    def check_grounded_output(
+        self,
+        answer: str,
+        citations: list[Citation],
+        *,
+        extractive: bool = False,
+    ) -> GuardrailDecision:
+        """Verify retained quotes and, for extractive mode, exact rendering.
+
+        Hosted prose can only receive structural checks here. A valid marker or
+        a matching quote does not establish semantic entailment or legal truth.
+        """
+        structure = self.check_output(answer, len(citations))
+        if not structure.allowed:
+            return structure
+        for citation in citations:
+            if (
+                not citation.quote.strip()
+                or not citation.quote_sha256
+                or citation.quote_truncated
+                or citation.source_quote_chars != len(citation.quote)
+                or sha256(citation.quote.encode("utf-8")).hexdigest() != citation.quote_sha256
+            ):
+                return GuardrailDecision(
+                    False,
+                    "citation_integrity_mismatch",
+                    "Đoạn trích đã thay đổi hoặc bị cắt so với căn cứ đã giữ lại.",
+                    validation_scope="citation_integrity",
+                )
+        if extractive:
+            # Accept only verbatim canonical output for a prefix of available
+            # citations. No unsupported sentence can piggyback on a valid [n].
+            allowed_answers = {
+                CitationEngine.format_extractive_answer(citations, max_evidence_blocks=count)
+                for count in range(1, min(5, len(citations)) + 1)
+            }
+            if answer.strip() not in allowed_answers:
+                return GuardrailDecision(
+                    False,
+                    "extractive_content_mismatch",
+                    "Nội dung trích xuất không khớp nguyên văn các căn cứ đã cung cấp.",
+                    validation_scope="exact_extractive_rendering",
+                )
+            return GuardrailDecision(
+                True,
+                "exact_extractive_evidence",
+                validation_scope="exact_extractive_rendering",
+            )
+        return GuardrailDecision(
+            True,
+            "citation_structure_only",
+            validation_scope="citation_labels_and_quote_integrity_only",
+        )

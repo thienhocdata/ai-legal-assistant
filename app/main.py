@@ -1,35 +1,72 @@
 from __future__ import annotations
 
 from functools import lru_cache
+from contextlib import asynccontextmanager, suppress
+import asyncio
 import json
 from pathlib import Path
+from threading import Lock
+from typing import Annotated
 
 from fastapi import FastAPI, HTTPException
 from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, StringConstraints
 
 from app.services.legal_assistant import LegalAssistantService
+from app.services.runtime import RuntimeReadiness
 
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC_DIR = ROOT / "app" / "static"
 
 
+QuestionText = Annotated[str, StringConstraints(min_length=1, max_length=2000)]
+
+
+class ClarificationContext(BaseModel):
+    question: QuestionText
+    answers: list[QuestionText] = Field(default_factory=list, max_length=3)
+
+
 class ChatRequest(BaseModel):
-    question: str = Field(min_length=3, max_length=2000)
+    question: QuestionText
+    clarification_context: ClarificationContext | None = None
 
 
 @lru_cache(maxsize=1)
-def get_service() -> LegalAssistantService:
+def _cached_service() -> LegalAssistantService:
     return LegalAssistantService()
+
+
+_SERVICE_LOCK = Lock()
+
+
+def get_service() -> LegalAssistantService:
+    with _SERVICE_LOCK:
+        return _cached_service()
+
+
+@asynccontextmanager
+async def lifespan(application: FastAPI):
+    readiness = RuntimeReadiness()
+    application.state.runtime = readiness
+    warmup = asyncio.create_task(run_in_threadpool(readiness.probe, get_service))
+    try:
+        yield
+    finally:
+        if not warmup.done():
+            warmup.cancel()
+        with suppress(asyncio.CancelledError):
+            await warmup
 
 
 app = FastAPI(
     title="AI Legal Assistant - Pháp luật đất đai",
     version="0.1.0",
     description="Tra cứu pháp luật đất đai có truy hồi và trích dẫn căn cứ.",
+    lifespan=lifespan,
 )
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
@@ -45,24 +82,46 @@ async def health() -> dict:
         ROOT / "data" / "processed" / "legal_chunks.json",
         ROOT / "data" / "processed" / "legal_embeddings_manifest.json",
         ROOT / "data" / "vector_db" / "legal_chunks.faiss",
+        ROOT / "data" / "vector_db" / "legal_chunks_metadata.json",
     ]
     manifest_path = ROOT / "data" / "processed" / "legal_embeddings_manifest.json"
     active_document_id = None
-    if manifest_path.exists():
-        active_document_id = json.loads(
-            manifest_path.read_text(encoding="utf-8")
-        ).get("document_id")
+    metadata_readable = True
+    try:
+        if manifest_path.exists():
+            active_document_id = json.loads(
+                manifest_path.read_text(encoding="utf-8")
+            ).get("document_id")
+    except (OSError, ValueError, AttributeError):
+        metadata_readable = False
+    readiness = getattr(app.state, "runtime", None)
+    runtime = readiness.snapshot() if readiness else {
+        "status": "warming_up", "ready": False, "error_code": None,
+        "probe": "startup_not_run", "hosted_provider_live_tested": False,
+    }
+    artifacts_present = all(path.exists() for path in required)
+    if not artifacts_present or not metadata_readable:
+        status = "degraded"
+    else:
+        status = runtime["status"]
     return {
-        "status": "ready" if all(path.exists() for path in required) else "degraded",
+        "status": status,
         "artifacts": {path.name: path.exists() for path in required},
+        "metadata_readable": metadata_readable,
         "active_document_id": active_document_id,
+        "runtime": runtime,
     }
 
 
 @app.post("/api/chat")
 async def chat(request: ChatRequest) -> dict:
     try:
-        return await run_in_threadpool(get_service().answer, request.question)
+        service = await run_in_threadpool(get_service)
+        return await run_in_threadpool(
+            service.answer, request.question,
+            clarification_context=(request.clarification_context.model_dump()
+                                   if request.clarification_context else None),
+        )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except Exception as exc:

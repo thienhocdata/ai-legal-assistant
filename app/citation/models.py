@@ -16,6 +16,9 @@ class Citation:
     point_nos: list[str] = field(default_factory=list)
     quote: str = ""
     score: float = 0.0
+    quote_sha256: str = ""
+    source_quote_chars: int = 0
+    quote_truncated: bool = False
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

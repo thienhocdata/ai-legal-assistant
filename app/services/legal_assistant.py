@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 from dataclasses import asdict
+import logging
 from time import perf_counter
 from typing import Any
 import re
 
 from app.agent import ClarificationEngine, QueryAnalyzer
+from app.agent.conversation import apply_clarification_reply, fold_text, validate_clarification_context
 from app.citation import CitationEngine
 from app.core.config import Settings
 from app.guardrails import GuardrailEngine
@@ -58,8 +60,16 @@ class LegalAssistantService:
             root / "data" / "evaluation" / "runs" / "assistant_events.jsonl"
         )
 
-    def answer(self, question: str) -> dict[str, Any]:
+    def answer(
+        self,
+        question: str,
+        *,
+        clarification_context: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         started = perf_counter()
+        if fold_text(question.strip()).startswith("cau hoi moi:"):
+            question = question.split(":", 1)[1].strip()
+            clarification_context = None
         input_decision = self.guardrails.check_input(question)
         if not input_decision.allowed:
             return self._finish(
@@ -72,7 +82,10 @@ class LegalAssistantService:
                 },
             )
 
-        if self.SMALLTALK_RE.fullmatch(question.strip()):
+        if self.SMALLTALK_RE.fullmatch(question.strip()) or re.fullmatch(
+            r"(?:xin chao|chao|hello|hi|ban la ai|ban lam duoc gi)[!.?\s]*",
+            fold_text(question.strip()),
+        ):
             return self._finish(
                 started,
                 {
@@ -86,7 +99,38 @@ class LegalAssistantService:
                 },
             )
 
-        analysis = self.query_analyzer.analyze(question)
+        context = validate_clarification_context(clarification_context)
+        if context:
+            for earlier_input in [context["question"], *context["answers"]]:
+                decision = self.guardrails.check_input(earlier_input)
+                if not decision.allowed:
+                    return self._finish(started, {
+                        "status": "blocked", "answer": decision.message,
+                        "guardrail": decision.to_dict(), "citations": [],
+                    })
+        previous = self.query_analyzer.analyze(context["question"]) if context else None
+        if previous and self.clarification.clarify(previous).status not in {
+            "needs_clarification", "insufficient_coverage",
+        }:
+            context = None
+            previous = None
+        if context and previous:
+            if len(context["answers"]) >= 3:
+                return self._finish(started, {
+                    "status": "needs_clarification",
+                    "answer": "Đã đạt giới hạn lượt bổ sung. Bạn hãy đặt lại câu hỏi đầy đủ trong một lượt.",
+                    "clarification_questions": [], "citations": [],
+                })
+            replies = [*context["answers"], question.strip()]
+            if len(context["question"]) + sum(map(len, replies)) > 6000:
+                raise ValueError("Tổng câu hỏi và thông tin bổ sung vượt 6000 ký tự.")
+            effective_question = context["question"] + "\nThông tin người dùng bổ sung: " + " | ".join(replies)
+            analysis = self.query_analyzer.analyze(effective_question)
+            apply_clarification_reply(analysis, previous, replies)
+            next_context = {"question": context["question"], "answers": replies}
+        else:
+            analysis = self.query_analyzer.analyze(question)
+            next_context = {"question": question.strip(), "answers": []}
         clarification = self.clarification.clarify(analysis)
         if clarification.status != "ready":
             return self._finish(
@@ -97,6 +141,9 @@ class LegalAssistantService:
                     "clarification_questions": clarification.questions,
                     "analysis": analysis.to_dict(),
                     "citations": [],
+                    **({"continuation_context": next_context}
+                       if clarification.status in {"needs_clarification", "insufficient_coverage"}
+                       and len(next_context["answers"]) < 3 else {}),
                 },
             )
 
@@ -141,14 +188,18 @@ class LegalAssistantService:
                 system_prompt=SYSTEM_PROMPT,
                 user_prompt=prompt,
             )
-        output_decision = self.guardrails.check_output(response.text, len(citations))
+        output_decision = self.guardrails.check_grounded_output(
+            response.text, citations, extractive=response.provider == "extractive"
+        )
         if not output_decision.allowed and not isinstance(self.provider, ExtractiveProvider):
             generation_fallback_reason = output_decision.code
             response = ExtractiveProvider().generate(
                 system_prompt=SYSTEM_PROMPT,
                 user_prompt=prompt,
             )
-            output_decision = self.guardrails.check_output(response.text, len(citations))
+            output_decision = self.guardrails.check_grounded_output(
+                response.text, citations, extractive=True
+            )
 
         status = "success" if output_decision.allowed else "generation_rejected"
         answer = response.text if output_decision.allowed else output_decision.message
@@ -173,6 +224,7 @@ class LegalAssistantService:
                 "model": response.model,
                 "usage": response.metadata.get("usage", {}),
                 "generation_fallback_reason": generation_fallback_reason,
+                "answer_validation": output_decision.to_dict(),
                 "answer_citation_labels": sorted(
                     {int(label) for label in re.findall(r"\[(\d+)\]", answer)}
                 ),
@@ -180,9 +232,21 @@ class LegalAssistantService:
                     "Căn cứ là các văn bản trong citation. Chưa kiểm tra hiệu lực hiện hành "
                     "và văn bản sửa đổi. Thông tin chỉ phục vụ tham khảo; cần đối chiếu "
                     "toàn văn và tình tiết cụ thể trước khi áp dụng."
+                    + (" Nội dung do mô hình sinh mới qua kiểm tra cấu trúc citation, "
+                       "chưa xác minh mức hỗ trợ của từng nhận định."
+                       if response.provider != "extractive" else "")
                 ),
             },
         )
+
+    def warmup(self) -> None:
+        """Probe the local retrieval path, without calling a hosted answer API."""
+        results = self.retriever.retrieve_hybrid(
+            "Phạm vi điều chỉnh của Luật Đất đai", top_k=1
+        )
+        citations = self.citations.build(results)
+        if not results or not citations:
+            raise RuntimeError("Không có căn cứ để xác nhận retrieval sẵn sàng.")
 
     def _finish(
         self,
@@ -190,9 +254,8 @@ class LegalAssistantService:
         payload: dict[str, Any],
     ) -> dict[str, Any]:
         payload["latency_ms"] = round((perf_counter() - started) * 1000, 2)
-        self.logger.log(
-            "answer",
-            {
+        try:
+            self.logger.log("answer", {
                 "status": payload.get("status"),
                 "latency_ms": payload["latency_ms"],
                 "citation_count": len(payload.get("citations", [])),
@@ -200,6 +263,11 @@ class LegalAssistantService:
                 "generation_fallback_reason": payload.get(
                     "generation_fallback_reason"
                 ),
-            },
-        )
+            })
+            payload["logging_status"] = "ok"
+        except OSError:
+            # Diagnostics must not discard a completed response. Never include
+            # question/context or the possibly sensitive filesystem path in logs.
+            logging.getLogger(__name__).warning("Technical event log write failed (OSError).")
+            payload["logging_status"] = "unavailable"
         return payload

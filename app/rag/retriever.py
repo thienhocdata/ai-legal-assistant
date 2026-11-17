@@ -5,6 +5,7 @@ from hashlib import sha256
 import json
 import re
 import unicodedata
+from threading import Lock
 from typing import Any
 
 from app.kb.embedding import SentenceTransformerEmbedder
@@ -43,6 +44,7 @@ class LegalRetriever:
         self._embedder: SentenceTransformerEmbedder | None = None
         self._chunks_by_id: dict[str, dict[str, Any]] = {}
         self._loaded = False
+        self._load_lock = Lock()
 
     @staticmethod
     def _load_json(
@@ -58,6 +60,12 @@ class LegalRetriever:
         )
 
     def load(self) -> None:
+        with self._load_lock:
+            if self._loaded:
+                return
+            self._load_artifacts()
+
+    def _load_artifacts(self) -> None:
         embedding_manifest = self._load_json(
             self.embedding_manifest_path
         )

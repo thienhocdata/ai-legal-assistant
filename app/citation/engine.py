@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 from typing import Any
+from hashlib import sha256
 
 from .models import Citation
 
 
 class CitationEngine:
-    def __init__(self, *, max_quote_chars: int = 1600) -> None:
-        if max_quote_chars < 200:
+    def __init__(self, *, max_quote_chars: int | None = None) -> None:
+        if max_quote_chars is not None and max_quote_chars < 200:
             raise ValueError("max_quote_chars quá nhỏ.")
         self.max_quote_chars = max_quote_chars
 
@@ -17,6 +18,8 @@ class CitationEngine:
         *,
         max_citations: int = 5,
     ) -> list[Citation]:
+        if max_citations <= 0:
+            raise ValueError("max_citations phải lớn hơn 0.")
         citations: list[Citation] = []
         seen: set[str] = set()
         for result in results:
@@ -25,8 +28,11 @@ class CitationEngine:
                 continue
             seen.add(chunk_id)
             quote = str(result.get("text") or result.get("clean_text") or "").strip()
-            if len(quote) > self.max_quote_chars:
-                quote = quote[: self.max_quote_chars].rstrip() + "…"
+            if self.max_quote_chars is not None and len(quote) > self.max_quote_chars:
+                raise ValueError(
+                    "Đoạn căn cứ vượt max_quote_chars; không cắt ngầm điều kiện/ngoại lệ. "
+                    "Tăng ngân sách hoặc chọn chunk phù hợp trước khi tạo citation."
+                )
             citations.append(
                 Citation(
                     citation_id=f"[{len(citations) + 1}]",
@@ -39,6 +45,9 @@ class CitationEngine:
                     point_nos=[str(value) for value in result.get("point_nos", [])],
                     quote=quote,
                     score=float(result.get("score", 0.0)),
+                    quote_sha256=sha256(quote.encode("utf-8")).hexdigest(),
+                    source_quote_chars=len(quote),
+                    quote_truncated=False,
                 )
             )
             if len(citations) >= max_citations:
@@ -59,3 +68,25 @@ class CitationEngine:
                 f"{citation.article_title}\n{citation.quote}"
             )
         return "\n\n".join(blocks)
+
+    @classmethod
+    def format_extractive_answer(
+        cls,
+        citations: list[Citation],
+        *,
+        max_evidence_blocks: int = 3,
+    ) -> str:
+        """Canonical verbatim renderer; this makes no legal inference."""
+        if not 1 <= max_evidence_blocks <= 5:
+            raise ValueError("max_evidence_blocks phải từ 1 đến 5.")
+        context = cls.format_context(citations[:max_evidence_blocks])
+        if not context:
+            return "Không tìm thấy căn cứ đủ rõ để trả lời."
+        return (
+            "Hệ thống đang chạy ở chế độ trích xuất cục bộ. "
+            "Các đoạn căn cứ dưới đây được truy hồi để bạn đối chiếu; "
+            "hệ thống chưa kết luận áp dụng cho vụ việc:\n\n"
+            f"{context}\n\n"
+            "Chưa kiểm tra hiệu lực hiện hành và văn bản sửa đổi. "
+            "Vui lòng đối chiếu toàn văn trước khi áp dụng."
+        )

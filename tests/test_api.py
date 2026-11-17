@@ -48,6 +48,7 @@ def test_api_health_ui_and_chat_contracts_without_live_provider(tmp_path, monkey
     service = LegalAssistantService(settings=Settings(project_root=tmp_path), retriever=_Retriever())
     monkeypatch.setattr(api, "get_service", lambda: service)
     with TestClient(api.app) as client:
+        assert api.app.state.runtime.completed.wait(5)
         health = client.get("/api/health")
         assert health.status_code == 200
         assert health.json()["active_document_id"] == "vbhn_133_2025_luat_dat_dai"
