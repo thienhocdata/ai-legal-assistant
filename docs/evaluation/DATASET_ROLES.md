@@ -21,6 +21,12 @@ manifest cũ mô tả giai đoạn đo hậu baseline trước đây; tài liệ
 việc sử dụng tiếp V2 làm dev đã được yêu cầu rõ. Không sửa lịch sử thành một
 benchmark độc lập.
 
+Nhãn AI, audit AI và sửa rule bởi AI có thể cùng lặp lại thiên lệch. Freeze,
+clean checkout hoặc thêm agent không tạo ra người kiểm chứng độc lập. Mẫu
+review bởi người thật phải ghi người/role, câu đã duyệt, lý do bất đồng và căn
+cứ; chưa gọi là legal-expert review nếu chưa có chuyên môn tương ứng. Review
+trên dev đã quan sát cũng không biến dataset đó thành held-out.
+
 ## Metric schema 2.0
 
 Evaluator mới không viết đè báo cáo schema cũ. Cần dùng output path mới.

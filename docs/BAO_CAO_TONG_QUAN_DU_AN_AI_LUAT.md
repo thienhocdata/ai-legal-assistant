@@ -1,6 +1,6 @@
 # BÁO CÁO TỔNG QUAN KỸ THUẬT AI LEGAL ASSISTANT
 
-> Trạng thái xác minh: 16/11/2026
+> Kết quả runtime: 16/11/2026; rà soát cách diễn giải: 17/11/2026
 >
 > Mốc code mới nhất được đo: `3506bab` (sau `ec2fd78`)
 >
@@ -51,7 +51,7 @@ Audit chi tiết: `docs/evaluation/V2_FAILURE_AUDIT.md`. 12 câu trượt hạng
 bao gồm 5 câu trượt top-k; cộng 7 refusal failure là **19**, không phải 24.
 Câu V2Q030 có diễn đạt/nhãn mơ hồ; chưa tự sửa nhãn và chưa tạo V2.1.
 
-### Kết quả end-to-end trước và sau
+### So sánh hồi quy trên V2 dev đã quan sát
 
 Baseline clean tại `2cafc54`:
 `data/evaluation/system_behavior_v2_clean_baseline.json`.
@@ -59,18 +59,29 @@ Run sau sửa tại `3506bab`, có `require_clean_enforced=true` và
 `relevant_worktree_dirty=false`:
 `data/evaluation/system_behavior_v2_dev_after_fixes.json`.
 
-| Phép đo | Baseline trước sửa | Sau sửa trên V2 dev |
+| Phép đo | Trước sửa — V2 dev đã quan sát | Sau sửa — cùng V2 dev đã dùng chỉnh rule |
 |---|---:|---:|
 | Status success trên câu kỳ vọng answer | 49/50 (98%) | 50/50 (100%) |
 | Expected-article Hit@1 | 38/50 (76%) | 39/50 (78%) |
 | Expected-article Hit@k | 45/50 (90%) | 46/50 (92%) |
 | Khớp nhóm status không trả lời trên câu refuse | 3/10 (30%) | 10/10 (100%) |
-| Answer cần success+Hit@1, refuse cần status phù hợp | 41/60 (68,33%) | 49/60 (81,67%) |
+
+Đây là kiểm tra hồi quy trên dữ liệu đã quan sát; đặc biệt 10 câu refusal đã
+được đọc trước khi sửa rule. Bảng không ước lượng hiệu quả trên câu mới.
+Proxy gộp `routing_and_top1_article_match_rate` vẫn lưu trong artifact để truy
+vết (49/60, 81,67%), nhưng không dùng làm chỉ số chất lượng tổng quát hoặc tiêu
+chí chấp nhận sản phẩm.
 
 Hit@1/Hit@k tăng một câu nhờ bỏ chặn nhầm Q037; không có thay đổi index hay
-thuật toán hybrid mặc định để nhận công cho mức tăng này. 10/10 routing chỉ là
+thuật toán hybrid mặc định để nhận công cho mức tăng này. Đối chiếu từng cặp
+trước/sau cho thấy Q037 là câu answer duy nhất đổi Hit@1. Đây là sửa được một
+false refusal cụ thể; mức tăng 2 điểm phần trăm chưa chứng minh cải thiện
+retrieval khái quát. Không suy từ khoảng Wilson rộng rằng lỗi đã sửa chỉ là
+nhiễu. 10/10 routing chỉ là
 khớp nhãn broad-refusal trên tập đã dùng sửa rule; Wilson 95% vẫn rộng
-`72,25%–100%`. Chưa chứng minh chất lượng trên câu mới.
+`72,25%–100%`. Việc dùng lại dev tạo nguy cơ overfit lớn; chưa có dữ liệu chưa
+quan sát để xác nhận mức overfit hoặc chất lượng trên câu mới. Khoảng Wilson
+không khắc phục việc dùng tập này để chỉnh rule.
 
 Sau sửa còn **11/50 câu trượt hạng 1 và 4/50 trượt top-k**. MRR mới là `0,845`
 theo hạng citation thực tế. MRR gốc `0,825` dùng schema bỏ trùng Điều, nên không
@@ -79,6 +90,29 @@ ghép hai số thành một mức tăng mà không chấm lại cùng evaluator.
 Marker trong câu trả lời trỏ tới ít nhất một Điều kỳ vọng ở 45/50 câu (90%).
 Marker trỏ tới toàn bộ các Điều liệt kê trong nhãn ở 35/50 câu (70%). Đây là
 khớp marker/nhãn; chưa chấm nội dung, faithfulness hay completeness pháp lý.
+15/50 câu chưa phủ mọi nhãn không tự động có nghĩa là 15 câu trả lời thiếu ý:
+nhãn có thể bao gồm các Điều thay thế nhau, thiếu nhãn hoặc chưa được duyệt.
+Cần tách Điều vắng ngay ở top-k khỏi Điều đã truy hồi nhưng chưa được trích.
+
+Đối chiếu danh sách Điều theo từng câu cho 15 coverage miss:
+
+| Tình trạng thiếu theo nhãn | Số câu (nhóm không trùng nhau) |
+|---|---:|
+| Chỉ có nhãn thiếu ngay ở top-k | 10 |
+| Mọi nhãn đã có trong top-k nhưng answer không trích hết | 4 |
+| Vừa có nhãn thiếu ở top-k, vừa có nhãn tìm được nhưng chưa trích | 1 |
+
+Nếu đếm không loại trùng: 11 câu thiếu ít nhất một Điều ở top-k và 5 câu có ít
+nhất một Điều tìm thấy nhưng chưa trích; giao nhau 1 câu. Top-k phủ mọi nhãn ở
+39/50 câu, còn answer phủ mọi nhãn ở 35/50. Chỉ tăng số block được trích lên
+toàn bộ top-5 cũng chỉ có thể giải quyết thêm tối đa 4 câu theo metric này.
+Vì vậy cần xử lý cả retrieval lẫn lựa chọn evidence, thay vì quy mọi coverage
+miss cho giới hạn 3 block của extractive.
+
+Độ phủ mọi nhãn theo cohort là direct 20/20, paraphrase 12/18 và
+multi-condition 3/12. Đây là dấu hiệu ưu tiên đọc lại câu/nhãn và kiểm tra đủ
+căn cứ cho nhóm nhiều điều kiện; chưa được gọi là 9/12 câu thiếu ý khi các
+nhãn nhiều Điều vẫn chưa được người có chuyên môn rà soát.
 
 ### Theo nhóm câu hỏi sau sửa
 
@@ -92,6 +126,19 @@ khớp marker/nhãn; chưa chấm nội dung, faithfulness hay completeness phá
 Khoảng Wilson chỉ mô tả bất định lấy mẫu dưới giả định nhị thức; không xử lý
 lỗi nhãn AI, các câu phụ thuộc nhau hoặc thiên lệch tạo bộ câu. Nhóm paraphrase
 vẫn là vùng retrieval yếu rõ nhất trong tập dev này.
+
+### Rủi ro chuỗi đánh giá khép kín bởi AI
+
+Nhãn V2 do AI tạo; audit 19 lỗi, sửa rule và đánh giá lại cũng được AI hỗ trợ.
+Các bước này có thể lặp lại cùng một cách hiểu sai hoặc cùng thiên lệch. Thêm
+agent, freeze bằng hash và kiểm thử nhiều lần đều chưa tạo được kiểm chứng bởi
+người thật độc lập.
+
+Ưu tiên một người thật đọc khoảng 20 câu có chủ đích, gồm câu đúng/sai, diễn
+đạt đời thường, nhiều điều kiện, refusal và nhãn mơ hồ. Ghi câu nào được duyệt,
+ai duyệt, lý do đồng ý/bất đồng và căn cứ. Đây là một lớp kiểm tra bên ngoài;
+chỉ gọi là legal-expert review nếu người duyệt thực sự có chuyên môn, và chưa
+thay thế được đánh giá độc lập trên V3 mới.
 
 ### Thử nghiệm xếp hạng đã làm nhưng chưa promote
 
@@ -128,7 +175,7 @@ candidate bằng AI rồi gọi là bộ do người độc lập viết.
 
 ### 1.1. Bảng so sánh
 
-| Thành phần | `47eae78` | `73d3a14` | `255adb7` / hiện tại |
+| Thành phần | `47eae78` | `73d3a14` | `255adb7` / mốc lịch sử |
 |---|---|---|---|
 | Vai trò | Checkpoint sản phẩm end-to-end | Quality hardening | Evaluation và provenance hardening |
 | Corpus | VBHN 133, 260 Điều, 441 chunks | Không đổi | Không đổi |
@@ -397,22 +444,23 @@ Kết quả extractive offline trên 60 câu:
 
 | Metric | Kết quả | Đếm tương ứng |
 |---|---:|---:|
-| Answer success | 98% | 49/50 answer questions |
+| Status success — key cũ `answer_success_rate` | 98% | 49/50 answer questions |
 | Expected-article Hit@1 | 76% | 38/50; 12 miss rank 1 |
 | Expected-article Hit@k | 90% | 45/50; 5 miss top-k |
 | Article MRR | 0,825 | trên 50 answer questions |
-| Refusal correctness | 30% | 3/10; 7/10 bị trả lời sai hành vi |
-| Grounded behavior | 68,33% | 41/60 |
+| Broad-refusal route match — key cũ `refusal_correctness_rate` | 30% | 3/10; 7/10 trả success |
+| Proxy routing + top1 — key cũ `overall_grounded_behavior_accuracy` | 68,33% | 41/60; phép đo trên dev |
 
 V2 là tín hiệu post-baseline nhưng nhãn vẫn do AI tạo và chờ human review. V1
 và V2 là hai dataset khác nhau; không diễn giải chênh lệch Hit@1 như mức giảm
 chất lượng tuyệt đối hoặc bằng chứng chắc chắn V1 bị tune theo. Không được tune trực tiếp trên V2 rồi báo lại V2 như test
 độc lập. Sửa nhãn phải tạo version/manifest mới.
 
-`Answer success` chỉ đếm `status=success`. `Grounded behavior` là phép đo kỹ
-thuật gồm success + expected-article Hit@1 ở nhóm answer và routing ở nhóm
-refuse. Cả hai đều chưa chấm độ đúng nội dung. Vòng evaluator tiếp theo nên dùng
-tên tường minh hơn và giữ schema/artifact cũ để truy vết.
+`answer_success_rate` trong artifact lịch sử chỉ đếm `status=success`.
+`overall_grounded_behavior_accuracy` gộp success + expected-article Hit@1 ở
+nhóm answer với routing ở nhóm refuse. Schema 2 hiện đã dùng tên tường minh
+`answer_status_success_rate` và `routing_and_top1_article_match_rate`. Giữ
+nguyên key/artifact cũ để truy vết; cả hai schema chưa chấm độ đúng nội dung.
 
 ### 4.5. Provider status
 
@@ -461,13 +509,27 @@ contract, không chứng minh faithfulness, completeness hay chất lượng ti�
 
 **P0 — Evaluation độc lập**
 
-1. Cho người độc lập/chuyên gia duyệt 60 nhãn V2.
-2. Sửa nhãn bằng V2.1 + manifest/hash mới, không ghi đè.
-3. Audit 19 câu riêng biệt: 12 miss rank1 (trong đó có 5 miss top-k) và 7 refusal
-   failures. Đọc câu hỏi, expected article, rewrite và top-k trước khi kết luận
-   lỗi retrieval, lỗi rewrite, nhãn sai hoặc nhiều Điều cùng hợp lý.
-4. Tiếp tục phát triển trên V1/V2 dev đã quan sát, giữ baseline và từng artifact.
-5. Chấm thay đổi bằng V3 mới do người độc lập soạn hoặc tập được chuyên gia duyệt.
+1. Nhờ người thật rà soát mẫu khoảng 20 câu có cả đúng/sai, paraphrase,
+   multi-condition, refusal và trường hợp nhãn mơ hồ; sau đó mở rộng duyệt 60
+   nhãn nếu có điều kiện. Ghi rõ vai trò và chuyên môn thật của người duyệt.
+2. Audit kỹ thuật 19 câu đã xong. Việc còn thiếu là người rà soát độc lập kiểm
+   tra các nhận định AI trong `V2_FAILURE_AUDIT.md`, không làm lại audit AI rồi
+   coi đó là xác nhận bên ngoài.
+3. Chỉ sửa nhãn đã có lý do và bằng chứng bằng V2.1 + manifest/hash mới; chưa
+   tự động đổi nhãn cho khớp kết quả.
+4. Chốt V3 do người độc lập soạn và duyệt, giữ khỏi vòng chỉnh rule, rồi mới
+   đo cuối sau khi đóng băng code/config/corpus. Một nhãn được chuyên gia duyệt
+   không tự làm tập dev đã quan sát trở thành held-out.
+
+**P0 — Paraphrase và coverage trên dev**
+
+1. Ưu tiên 7/18 câu paraphrase trượt hạng 1, sau khi kiểm tra lại nhãn và cách
+   hiểu câu. Thử synonym/rewrite có giới hạn, đo riêng từng thay đổi trên dev.
+2. Theo dõi cả Hit@1 và độ phủ nhãn trong căn cứ thực sự được trích; phân loại
+   nhãn và nội dung của 15 coverage miss, với phân rã kỹ thuật đã có ở phần
+   đầu (10 retrieval-only, 4 selection-only, 1 cả hai). Không dùng any-hit để
+   đại diện câu trả lời đủ ý.
+3. Giữ baseline và các phương án bị loại; chỉ kết luận khái quát sau V3.
 
 **P0 — Human answer review**
 
@@ -488,10 +550,8 @@ contract, không chứng minh faithfulness, completeness hay chất lượng ti�
 2. Chạy cùng synthetic dataset qua extractive/Gemini/Qwen.
 3. Human-review output trước khi kết luận provider nào tốt hơn.
 
-**P2 — Retrieval/runtime**
+**P2 — Runtime**
 
-- Thử dedup/diversification, BM25 + RRF hoặc reranker chỉ sau khi có evaluation
-  sạch; đo trên development set rồi xác nhận bằng fresh set.
 - Bổ sung deep health check, auth/rate limit/CORS, log policy, CI/CD, monitoring
   và load testing trước mọi cân nhắc public deployment.
 

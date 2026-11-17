@@ -1,10 +1,11 @@
 # Ưu tiên hiện tại
 
-1. Lưu và đối chiếu kết quả từ clean checkout sau vòng sửa routing/extractive,
-   dùng evaluator schema 2 với cùng dữ liệu/cấu hình cho phép so sánh.
-2. Tiếp tục audit nhãn V2 bằng nguồn và người có chuyên môn. V1/V2 hiện là dev
-   đã quan sát theo `docs/evaluation/DATASET_ROLES.md`; sửa nhãn phải tạo V2.1
-   và manifest mới, giữ nguyên dataset/baseline cũ.
+1. Clean baseline và audit kỹ thuật 19 lỗi đã xong. Ưu tiên người thật review
+   mẫu khoảng 20 câu đa dạng, kiểm tra cả nhãn AI lẫn nhận định audit AI; ghi
+   câu được duyệt và chuyên môn thật của người duyệt.
+2. Ưu tiên paraphrase (11/18 Hit@1) và coverage evidence (35/50 khớp mọi nhãn),
+   sau khi rà nhãn; tách thiếu ở retrieval khỏi thiếu ở bước chọn căn cứ. V1/V2
+   là dev đã quan sát, sửa nhãn cần V2.1 và manifest mới, giữ baseline cũ.
 3. Tổ chức V3 do người độc lập viết và duyệt theo giao thức đã ghi. Hiện chưa có
    V3 độc lập; không gọi số sau sửa trên V2 là phép đo held-out.
 4. Dùng framework human review để đo citation correctness, faithfulness,
