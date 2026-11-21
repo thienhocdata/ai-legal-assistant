@@ -144,14 +144,21 @@ test("uses only bounded server continuation context without duplicating current 
   await pending;
   pending = page.submit("Đồng Nai");
   assert.deepEqual(page.requests[1].payload, {
-    question: "Đồng Nai", clarification_context: { question: original, answers: [] }
+    question: "Đồng Nai", clarification_context: { question: original, answers: [] },
+    conversation_history: [
+      { role: "user", content: original }, { role: "assistant", content: "Địa phương nào?" }
+    ]
   });
   page.requests[1].resolve({ ...answer("Bạn cần thêm nguồn địa phương", "insufficient_coverage"),
     continuation_context: { question: original, answers: ["Đồng Nai"] } });
   await pending;
   pending = page.submit("Đất trồng lúa");
   assert.deepEqual(page.requests[2].payload, {
-    question: "Đất trồng lúa", clarification_context: { question: original, answers: ["Đồng Nai"] }
+    question: "Đất trồng lúa", clarification_context: { question: original, answers: ["Đồng Nai"] },
+    conversation_history: [
+      { role: "user", content: original }, { role: "assistant", content: "Địa phương nào?" },
+      { role: "user", content: "Đồng Nai" }, { role: "assistant", content: "Bạn cần thêm nguồn địa phương" }
+    ]
   });
   page.requests[2].resolve(answer());
   await pending;
@@ -169,8 +176,52 @@ test("new-topic suggestions omit pending clarification context", async () => {
   await pending;
   pending = page.suggestions[0].emit("click");
   assert.equal("clarification_context" in page.requests[1].payload, false);
+  assert.equal("conversation_history" in page.requests[1].payload, false);
   page.requests[1].resolve(answer());
   await pending;
+});
+
+test("feedback preserves pending clarification without appending a case fact", async () => {
+  const page = createPage();
+  const context = { question: "Tôi chuyển đất được không?", answers: [] };
+  let pending = page.submit(context.question);
+  page.requests[0].resolve({ ...answer("Cần làm rõ", "needs_clarification"), continuation_context: context });
+  await pending;
+  pending = page.submit("Mình chưa hiểu");
+  page.requests[1].resolve({ ...answer("Bạn muốn làm rõ phần nào?", "smalltalk"),
+    conversation_intent: "rephrase_request", continuation_context: context });
+  await pending;
+  pending = page.submit("Chuyển mục đích sử dụng đất");
+  assert.deepEqual(page.requests[2].payload, {
+    question: "Chuyển mục đích sử dụng đất", clarification_context: context,
+    conversation_history: [
+      { role: "user", content: context.question }, { role: "assistant", content: "Cần làm rõ" },
+      { role: "user", content: "Mình chưa hiểu" }, { role: "assistant", content: "Bạn muốn làm rõ phần nào?" }
+    ]
+  });
+  page.requests[2].resolve(answer());
+  await pending;
+});
+
+test("an API fallback is disclosed without displaying internal error details", async () => {
+  const page = createPage();
+  const pending = page.submit("Điều kiện chuyển nhượng đất?");
+  page.requests[0].resolve({ ...answer("Căn cứ để đối chiếu [1]"),
+    provider: "extractive", generation_fallback_reason: "ProviderRequestError" });
+  await pending;
+  assert.match(page.html(), /Lượt này chưa tổng hợp được câu trả lời/);
+  assert.doesNotMatch(page.html(), /ProviderRequestError/);
+  assert.doesNotMatch(page.html(), /Câu trả lời được mô hình tổng hợp/);
+});
+
+test("nonlegal hosted conversation does not claim to have cited legal evidence", async () => {
+  const page = createPage();
+  const pending = page.submit("Bạn có trò chuyện được không?");
+  page.requests[0].resolve({ ...answer("Bạn cứ nhắn điều muốn trao đổi nhé.", "smalltalk"),
+    provider: "qwen", conversation_mode: "hosted" });
+  await pending;
+  assert.match(page.html(), /Bạn cứ nhắn/);
+  assert.doesNotMatch(page.html(), /tổng hợp từ các căn cứ/);
 });
 
 test("terminal statuses clear context even if a response includes a context-shaped value", async () => {
@@ -216,6 +267,97 @@ test("request failure does not overwrite a new draft typed while waiting", async
   page.requests[0].reject();
   await pending;
   assert.equal(page.input.value, "Bản nháp mới cần giữ");
+});
+
+test("history sends completed prior turns only and keeps response text separate from HTML", async () => {
+  const page = createPage();
+  let pending = page.submit("Câu đầu");
+  assert.equal("conversation_history" in page.requests[0].payload, false);
+  page.requests[0].resolve(answer("Một câu <b>nguyên văn</b>."));
+  await pending;
+  pending = page.submit("Giải thích thêm nhé");
+  assert.deepEqual(page.requests[1].payload.conversation_history, [
+    { role: "user", content: "Câu đầu" },
+    { role: "assistant", content: "Một câu <b>nguyên văn</b>." }
+  ]);
+  assert.equal(page.requests[1].payload.conversation_history.some((turn) => turn.content === "Giải thích thêm nhé"), false);
+  assert.match(page.html(), /&lt;b&gt;nguyên văn&lt;\/b&gt;/);
+  page.requests[1].resolve(answer());
+  await pending;
+});
+
+test("long source replies are omitted whole while retaining their question", async () => {
+  const page = createPage();
+  const longSource = "Điều kiện và ngoại lệ cần giữ nguyên. ".repeat(150);
+  assert.ok(longSource.length > 4000);
+  let pending = page.submit("Câu hỏi có nguồn dài");
+  page.requests[0].resolve(answer(longSource));
+  await pending;
+  pending = page.submit("Nói gọn lại giúp mình");
+  assert.deepEqual(page.requests[1].payload.conversation_history, [
+    { role: "user", content: "Câu hỏi có nguồn dài" }
+  ]);
+  assert.ok(page.html().includes(longSource));
+  page.requests[1].resolve(answer());
+  await pending;
+});
+
+test("history evicts old complete turns to obey message and total budgets", async () => {
+  for (const responseChars of [20, 3500]) {
+    const page = createPage();
+    for (let index = 0; index < 6; index += 1) {
+      const pending = page.submit(`Câu ${index}`);
+      page.requests[index].resolve(answer(`${index}`.repeat(responseChars)));
+      await pending;
+    }
+    const pending = page.submit("Câu tiếp theo");
+    const history = page.requests[6].payload.conversation_history;
+    assert.ok(history.length <= 8);
+    assert.ok(history.reduce((sum, turn) => sum + turn.content.length, 0) <= 12000);
+    assert.ok(history.every((turn) => turn.content.length <= 4000));
+    assert.equal(history[0].role, "user");
+    assert.equal(history.some((turn) => turn.content === "Câu 0"), false);
+    assert.equal(history.some((turn) => turn.content === "Câu 5"), true);
+    assert.equal(history.at(-1).content.length, responseChars);
+    page.requests[6].resolve(answer());
+    await pending;
+  }
+});
+
+test("failed requests and blocked turns do not enter later history", async () => {
+  const page = createPage();
+  let pending = page.submit("Câu được trả lời");
+  page.requests[0].resolve(answer("Phản hồi trước"));
+  await pending;
+  pending = page.submit("Câu bị lỗi mạng");
+  page.requests[1].reject();
+  await pending;
+  pending = page.submit("Yêu cầu bị chặn");
+  assert.deepEqual(page.requests[2].payload.conversation_history, page.requests[1].payload.conversation_history);
+  page.requests[2].resolve(answer("Yêu cầu bị chặn", "blocked"));
+  await pending;
+  pending = page.submit("Câu tiếp tục");
+  assert.deepEqual(page.requests[3].payload.conversation_history, [
+    { role: "user", content: "Câu được trả lời" }, { role: "assistant", content: "Phản hồi trước" }
+  ]);
+  page.requests[3].resolve(answer());
+  await pending;
+});
+
+test("explicit new-question prefix clears both histories even after a failed request", async () => {
+  const page = createPage();
+  let pending = page.submit("Câu hỏi đang làm rõ");
+  page.requests[0].resolve({ ...answer("Làm rõ", "needs_clarification"),
+    continuation_context: { question: "Câu hỏi đang làm rõ", answers: [] } });
+  await pending;
+  pending = page.submit("Câu hỏi mới: Bạn là ai?");
+  assert.deepEqual(page.requests[1].payload, { question: "Câu hỏi mới: Bạn là ai?" });
+  page.requests[1].reject();
+  await pending;
+  pending = page.submit("Mình muốn hỏi lại");
+  assert.deepEqual(page.requests[2].payload, { question: "Mình muốn hỏi lại" });
+  page.requests[2].resolve(answer());
+  await pending;
 });
 
 test("timeout aborts request, removes its loading marker and enables controls", async () => {

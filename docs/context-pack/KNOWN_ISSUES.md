@@ -2,6 +2,12 @@
 
 ## Ưu tiên cao
 
+- Phản hồi người dùng ngày 18/11/2026 xác nhận câu hỏi cơ bản bị trả lời máy móc:
+  local provider chỉ trích các đoạn luật, chưa tổng hợp lời giải thích theo câu hỏi.
+  Đã tách hội thoại và tra định nghĩa theo nguồn. Nhánh hosted có semantic router
+  và history giới hạn cho câu nối tiếp/viết lại; phần này chỉ mới qua mock vì API
+  chưa có quyền dùng model. Local vẫn dùng rule; hội thoại dài vượt budget chưa hỗ trợ.
+  Xem `docs/evaluation/CHAT_ANSWER_FOCUS_2026-11-18.md`.
 - Bản PDF của 133/VBHN-VPQH có trang 218 là ảnh scan và chú thích hợp nhất gây nhiễu parser; pipeline đã tránh lỗi này bằng ba phần Công báo Word chính thức, nhưng nhánh PDF vẫn không được dùng để build index.
 - Luật 43/2024/QH15 đã có metadata/URL nhưng chưa tải hoặc ingest.
 - Kho luật chỉ có một văn bản lõi; câu hỏi ngoài phạm vi dễ thiếu căn cứ.
@@ -48,5 +54,7 @@
 - `pytest.ini` đã chuyển cache sang `data/evaluation/runs/pytest-cache`; lỗi
   quyền ghi cache cũ đã được xử lý. Suite hiện còn cảnh báo deprecation của
   tích hợp Starlette/httpx.
-- Chưa có API key cục bộ để chạy so sánh live Gemini/Qwen; mock test chỉ xác
-  minh tích hợp, không chứng minh chất lượng câu trả lời.
+- Đã có key/endpoint Qwen cục bộ và gọi API thật; bị HTTP403
+  AccessDenied.Unpurchased, chưa có câu trả lời Qwen thành công. Không coi việc
+  có key hoặc local fallback là provider chạy tốt. Chủ tài khoản đang kiểm tra
+  đăng ký/kích hoạt/quyền sử dụng. Chưa có live comparison hoặc kiểm định nội dung.

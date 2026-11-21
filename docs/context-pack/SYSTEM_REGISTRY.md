@@ -7,7 +7,7 @@
 | Query/clarification | `app/agent/` | câu hỏi người dùng | `tests/test_query_understanding.py` |
 | Citation | `app/citation/` | retrieval results | `tests/test_citation_llm.py` |
 | Guardrails | `app/guardrails/` | score và citation | `tests/test_guardrails_service.py` |
-| LLM providers | `app/llm_provider/` | `LLM_PROVIDER`, Gemini/Qwen key tùy chọn | `tests/test_citation_llm.py`, `tests/test_openai_compatible_provider.py` |
+| LLM providers | `app/llm_provider/` | `LLM_PROVIDER`, Gemini/Qwen/OpenRouter key tùy chọn | `tests/test_citation_llm.py`, `tests/test_openai_compatible_provider.py`, `tests/test_openrouter_provider.py` |
 | Acquisition | `app/kb/downloader/` | inventory/raw files | `tests/test_downloader.py` |
 | Parse/normalize | `app/kb/parser/`, `app/kb/normalizer/` | PDF/TXT | parser/normalizer tests |
 | Legal parsing/chunking | `app/kb/legal_parser/`, `app/kb/chunker/` | legal tree/chunks | legal parser/chunk tests |

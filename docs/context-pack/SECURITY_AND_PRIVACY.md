@@ -15,3 +15,8 @@
 - Quote integrity và exact-extractive validation không chứng minh hiệu lực hoặc
   legal entailment. Hosted output chỉ qua kiểm tra cấu trúc/integrity và có
   metadata semantic_support_verified=false; không mô tả thành human review.
+- `conversation_history` giới hạn 8 tin, 4000 ký tự/tin, tổng 12000; role chỉ
+  user/assistant, không phải system. Client không lưu history vào storage, server
+  không ghi nội dung history vào event log. Assistant role từ client có thể bị
+  giả mạo, không được coi là nguồn luật hay bằng chứng tình tiết. Hosted routing
+  gửi history đã giới hạn sang provider khi người dùng bật provider đó.

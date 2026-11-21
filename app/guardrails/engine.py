@@ -102,6 +102,7 @@ class GuardrailEngine:
         citations: list[Citation],
         *,
         extractive: bool = False,
+        definition: bool = False,
     ) -> GuardrailDecision:
         """Verify retained quotes and, for extractive mode, exact rendering.
 
@@ -126,6 +127,24 @@ class GuardrailEngine:
                     validation_scope="citation_integrity",
                 )
         if extractive:
+            if definition:
+                try:
+                    canonical = (
+                        CitationEngine.format_definition_answer(citations[0])
+                        if len(citations) == 1 else None
+                    )
+                except ValueError:
+                    canonical = None
+                if canonical is None or answer.strip() != canonical:
+                    return GuardrailDecision(
+                        False, "definition_content_mismatch",
+                        "Nội dung định nghĩa không khớp khoản được trích dẫn.",
+                        validation_scope="exact_definition_rendering",
+                    )
+                return GuardrailDecision(
+                    True, "exact_definition_evidence",
+                    validation_scope="exact_definition_rendering",
+                )
             # Accept only verbatim canonical output for a prefix of available
             # citations. No unsupported sentence can piggyback on a valid [n].
             allowed_answers = {

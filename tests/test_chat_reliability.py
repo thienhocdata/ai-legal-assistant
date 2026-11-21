@@ -1,5 +1,6 @@
 from pathlib import Path
 from threading import Event
+import json
 
 import pytest
 from fastapi.testclient import TestClient
@@ -118,6 +119,8 @@ def test_ascii_input_does_not_bypass_input_guard(question):
 def test_hosted_semantic_support_is_explicitly_unverified(tmp_path):
     class HostedProvider(BaseLLMProvider):
         def generate(self, **kwargs):
+            if "DỮ LIỆU HỘI THOẠI" in kwargs["user_prompt"]:
+                return LLMResponse(json.dumps({"route": "legal_lookup", "standalone_question": "Điều kiện chuyển nhượng đất là gì?", "reply": ""}), "hosted", "mock")
             return LLMResponse(text="Nhận định mô phỏng chưa được chấm nội dung [1]", provider="hosted", model="mock")
 
     service = LegalAssistantService(settings=Settings(project_root=tmp_path),

@@ -9,6 +9,12 @@ let nextRequestId = 0;
 // This is deliberately tab-memory only. Only the server may propose the next
 // bounded clarification context; displayed conversation HTML is never history.
 let continuationContext = null;
+// Completed turns only, held in this tab's memory. Never read the rendered DOM
+// as history or persist conversations in browser/server storage.
+let conversationHistory = [];
+const HISTORY_MAX_MESSAGES = 8;
+const HISTORY_MAX_MESSAGE_CHARS = 4000;
+const HISTORY_MAX_TOTAL_CHARS = 12000;
 
 const escapeHtml = (value) => String(value ?? "").replace(/[&<>'"]/g, (char) => ({
   "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;"
@@ -21,7 +27,7 @@ function addUserMessage(text) {
 
 function addLoading(requestId) {
   const loadingId = `loading-${requestId}`;
-  messages.insertAdjacentHTML("beforeend", `<article id="${loadingId}" class="message assistant loading"><div class="avatar">ML</div><div class="bubble"><p>Đang đối chiếu căn cứ</p></div></article>`);
+  messages.insertAdjacentHTML("beforeend", `<article id="${loadingId}" class="message assistant loading"><div class="avatar">ML</div><div class="bubble"><p>Đang xử lý câu hỏi</p></div></article>`);
   messages.scrollTop = messages.scrollHeight;
   return loadingId;
 }
@@ -29,7 +35,15 @@ function addLoading(requestId) {
 function renderResponse(data) {
   const clarification = (data.clarification_questions || []).map((q) => `<p>• ${escapeHtml(q)}</p>`).join("");
   const citations = (data.citations || []).map((item) => `<details class="citation"><summary><strong>${escapeHtml(item.citation_id)} Điều ${item.article_no}</strong> · ${escapeHtml(item.article_title)}</summary><p>${escapeHtml(item.quote || "Không có đoạn trích.")}</p></details>`).join("");
-  const provider = data.provider ? `<p class="response-meta">Chế độ trả lời: ${escapeHtml(data.provider)} · ${escapeHtml(data.model || "")}</p>` : "";
+  const modeLabel = data.generation_fallback_reason
+    ? (data.provider === "extractive"
+      ? "Lượt này chưa tổng hợp được câu trả lời; mình gửi các đoạn luật để bạn đối chiếu."
+      : "Lượt này chưa kết nối được mô hình trò chuyện, mình dùng phản hồi có sẵn.")
+    : data.provider === "extractive" && data.answer_kind !== "source_definition"
+    ? "Các đoạn trích được giữ nguyên từ nguồn luật."
+    : (data.provider && data.citations?.length && !["extractive", "glossary"].includes(data.provider)
+      ? "Câu trả lời được mô hình tổng hợp từ các căn cứ bên dưới." : "");
+  const provider = modeLabel ? `<p class="response-meta">${modeLabel}</p>` : "";
   const disclaimer = data.disclaimer ? `<p class="response-meta">${escapeHtml(data.disclaimer)}</p>` : "";
   messages.insertAdjacentHTML("beforeend", `<article class="message assistant"><div class="avatar">ML</div><div class="bubble"><p>${escapeHtml(data.answer || "Không có câu trả lời.").replace(/\n/g, "<br>")}</p>${clarification}<div class="citation-list">${citations}</div>${provider}${disclaimer}</div></article>`);
   messages.scrollTop = messages.scrollHeight;
@@ -43,7 +57,9 @@ function setPending(value) {
 }
 
 function readContinuationContext(data) {
-  if (!["needs_clarification", "insufficient_coverage"].includes(data.status)) return null;
+  const pendingFeedback = data.status === "smalltalk"
+    && ["feedback_tone", "feedback_relevance", "rephrase_request", "acknowledgement", "conversation_capability"].includes(data.conversation_intent);
+  if (!["needs_clarification", "insufficient_coverage"].includes(data.status) && !pendingFeedback) return null;
   const context = data.continuation_context;
   if (!context || typeof context.question !== "string" || !Array.isArray(context.answers)) return null;
   if (!context.question.trim() || context.question.length > 2000 || context.answers.length > 3) return null;
@@ -51,11 +67,37 @@ function readContinuationContext(data) {
   return { question: context.question, answers: [...context.answers] };
 }
 
+function rememberCompletedTurn(question, data) {
+  // A blocked/rejected request must not poison later prompts. Retain only a
+  // completed response with actual text, not a client-generated error bubble.
+  if (["blocked", "generation_rejected"].includes(data.status)
+      || typeof data.answer !== "string" || !data.answer.trim()) return;
+  const turns = [{ role: "user", content: question }];
+  const responseText = data.answer.trim();
+  // Retain complete messages only. A long source quote is omitted from history
+  // rather than clipped, while the latest question remains available.
+  if (responseText.length <= HISTORY_MAX_MESSAGE_CHARS) {
+    turns.push({ role: "assistant", content: responseText });
+  }
+  conversationHistory.push(...turns);
+  const totalChars = () => conversationHistory.reduce((sum, turn) => sum + turn.content.length, 0);
+  while (conversationHistory.length > HISTORY_MAX_MESSAGES || totalChars() > HISTORY_MAX_TOTAL_CHARS) {
+    conversationHistory.shift();
+    // Do not leave an older assistant response without its preceding question.
+    if (conversationHistory[0]?.role === "assistant") conversationHistory.shift();
+  }
+}
+
 async function ask(question, { startNewTopic = false } = {}) {
   question = String(question || "").trim();
   // The guard must run before adding a message, clearing context or starting a
   // request: suggestion clicks and programmatic submit can otherwise overlap.
   if (requestPending || !question) return false;
+  startNewTopic = startNewTopic || /^(?:câu hỏi mới|cau hoi moi):/i.test(question);
+  if (startNewTopic) {
+    continuationContext = null;
+    conversationHistory = [];
+  }
   setPending(true);
   const requestId = ++nextRequestId;
   const controller = new AbortController();
@@ -65,6 +107,9 @@ async function ask(question, { startNewTopic = false } = {}) {
     controller.abort();
   }, REQUEST_TIMEOUT_MS);
   const payload = { question };
+  if (conversationHistory.length) {
+    payload.conversation_history = conversationHistory.map((turn) => ({ ...turn }));
+  }
   if (continuationContext && !startNewTopic) {
     payload.clarification_context = {
       question: continuationContext.question,
@@ -85,6 +130,7 @@ async function ask(question, { startNewTopic = false } = {}) {
     if (!data || typeof data !== "object" || Array.isArray(data)) throw new Error("Phản hồi không hợp lệ. Bạn có thể gửi lại câu hỏi.");
     renderResponse(data);
     continuationContext = readContinuationContext(data);
+    rememberCompletedTurn(question, data);
     return true;
   } catch (error) {
     const message = timedOut

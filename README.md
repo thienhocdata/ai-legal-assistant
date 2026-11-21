@@ -2,6 +2,26 @@
 
 [Báo cáo kỹ thuật: thay đổi so với baseline và sản phẩm hiện tại](docs/BAO_CAO_TONG_QUAN_DU_AN_AI_LUAT.md).
 
+Vòng sửa 18/11/2026: tách một số lượt hội thoại khỏi tra cứu, nhận diện câu hỏi
+khái niệm và tìm đúng khoản định nghĩa trong nguồn. Giải thích nghĩa thường
+của “đất đai” không được gắn nhãn định nghĩa pháp lý. Local vẫn chưa tổng hợp
+linh hoạt các câu hỏi pháp lý khác. [Kiểm chứng và giới hạn](docs/evaluation/CHAT_ANSWER_FOCUS_2026-11-18.md).
+
+Giao diện chỉ có khung chat, không hiển thị metric/sidebar. Nhánh hosted dùng
+mô hình để định tuyến tin nhắn và lịch sử gần nhất, thay vì chỉ nhận câu mẫu;
+câu pháp lý vẫn phải tìm căn cứ và qua guard. Local vẫn có giới hạn rule.
+
+Sau tích hợp OpenRouter ngày 18/11/2026, full suite đạt 457 passed, với một
+warning deprecation có sẵn; mốc trước tích hợp là 439 passed. Đã thử
+`/api/chat` bằng câu hỏi điều kiện chuyển nhượng: trả `provider=openrouter`,
+model ERNIE miễn phí, không fallback, `usage.cost=0`, khoảng 17,9 giây. Đây là
+smoke test một tình huống tự soạn, không phải đánh giá độ đúng pháp lý. Output
+chỉ qua kiểm tra cấu trúc citation/integrity; `semantic_support_verified=false`.
+Qwen đã có cấu hình cục bộ và đã gọi API thật, nhưng bị trả HTTP403
+`AccessDenied.Unpurchased`; chưa có câu trả lời Qwen thành công. Không dùng
+HTTP200 của local fallback hoặc health retrieval làm bằng chứng Qwen hoạt động.
+[Hướng dẫn bàn giao/demo](docs/DEMO_HANDOFF.md).
+
 Vòng sửa chat 17/11/2026: nối tối đa 3 lượt làm rõ bằng context trong bộ nhớ
 tab, hỗ trợ một số cụm tiếng Việt không dấu, giữ nguyên quote, chống gửi chồng,
 probe retrieval khi startup và giữ answer khi log I/O lỗi. Local kiểm tra trích
@@ -20,7 +40,7 @@ phẩm phục vụ demo, nghiên cứu và đánh giá retrieval.
 - Embedding bằng `intfloat/multilingual-e5-small` và FAISS `IndexFlatIP`.
 - Dense retrieval và hybrid retrieval có tăng trọng số tiêu đề pháp lý.
 - Query rewriting, nhận diện ý định và clarification.
-- Citation Engine, Gemini/Qwen provider và chế độ trích xuất local không cần API key.
+- Citation Engine, Gemini/Qwen/OpenRouter provider và chế độ trích xuất local không cần API key.
 - Guardrails cho prompt injection, bằng chứng yếu và citation không hợp lệ.
 - FastAPI, giao diện chat responsive và JSONL logging.
 - Bộ 30 câu ground truth cùng Hit@k, Recall@k và MRR.
@@ -59,6 +79,35 @@ GEMINI_MODEL=gemini-3.5-flash
 ```
 
 Không commit `.env` hoặc API key vào Git.
+
+Để dùng ERNIE miễn phí qua OpenRouter, đặt trong `.env` cục bộ:
+
+```text
+LLM_PROVIDER=openrouter
+OPENROUTER_API_KEY=<key-cục-bộ>
+OPENROUTER_MODEL=baidu/ernie-5.5-flash-preview:free
+LLM_MAX_RETRIES=0
+LLM_MAX_OUTPUT_TOKENS=8192
+```
+
+Giới hạn 8192 token tính cả phần suy luận và câu trả lời; đây là trần output,
+không phải yêu cầu viết dài. Endpoint ERNIE hiện yêu cầu suy luận và từ chối
+`reasoning.enabled=false`; adapter giữ mặc định của model. Nếu `.env` cũ có
+giới hạn 800 token, cần thay bằng giá trị trên. Lượt thử ở mức 800 rơi về local
+với `ProviderResponseError`; chưa ghi nhận finish reason để kết luận nguyên
+nhân chính xác. Lần chẩn đoán ở mức 4096 dùng 4051 completion token, nên tăng
+ngân sách cho cả suy luận và câu trả lời.
+
+Adapter dùng cố định base URL `https://openrouter.ai/api/v1`, chỉ nhận model
+`:free` hoặc `openrouter/free`, gửi `provider.max_price` bằng 0 cho prompt,
+completion và request; không thêm danh sách model dự phòng có phí. Mặc định
+vẫn là `LLM_PROVIDER=none` cho tới khi người dùng chủ động bật hosted provider.
+Tài khoản chưa mua credit hiện có giới hạn 50 lượt gọi API/ngày, dùng chung
+toàn tài khoản; một lượt chat pháp lý thường cần hai lần gọi (định tuyến và
+sinh trả lời), nên không tương đương 50 câu chat. Xem [giới hạn OpenRouter](https://openrouter.ai/docs/api_reference/limits).
+Khởi động lại server sau khi đổi `.env`. Cần xem `provider=openrouter`, model
+thực tế và không có fallback trong `/api/chat` để xác nhận lượt trả lời native;
+`/api/health` chỉ xác nhận truy hồi local.
 
 Để dùng Qwen qua API tương thích OpenAI của Alibaba Cloud Model Studio:
 
@@ -141,9 +190,10 @@ pháp lý vẫn cần human review. Output so sánh nằm trong
 đo. Kết quả gốc và sau sửa lưu ở path riêng trong `data/evaluation/`. BM25/RRF
 và article diversity chỉ là thí nghiệm; hybrid mặc định giữ nguyên vì các thử
 nghiệm có giảm điểm hoặc mất nội dung khoản. Vòng routing trước đạt 116 passed;
-pytest cache đã chuyển vào runtime dir. Vòng sửa chat hiện đạt 171 passed
+pytest cache đã chuyển vào runtime dir. Vòng sửa chat 17/11 đạt 171 passed
 (bao gồm wrapper chạy 11 Node tests). Cần Node.js để chạy các test JS; nếu thiếu
-Node, pytest báo skip phần đó chứ không tính là đã xác minh UI.
+Node, pytest báo skip phần đó chứ không tính là đã xác minh UI. Vòng sửa trọng
+tâm 18/11/2026 đạt 307 passed, gồm wrapper chạy 12 Node tests.
 
 `GET /api/health` chỉ trả `ready` sau startup local-retrieval probe thành công;
 trong lúc nạp trả `warming_up`, thất bại trả `failed` hoặc `degraded`. Health
@@ -153,8 +203,10 @@ hạn, timeout phía trình duyệt 90 giây không bảo đảm hủy computati
 `POST /api/chat` vẫn nhận `question` như trước, thêm tùy chọn
 `clarification_context: {question, answers}` từ `continuation_context` của
 response trước. Mỗi chuỗi tối đa 2000 ký tự, tối đa 3 câu bổ sung, tổng 6000 ký
-tự. Không lưu history trên server hoặc localStorage. Dùng nút gợi ý hoặc tiền
-tố `Câu hỏi mới:` để bắt đầu chủ đề khác.
+tự. Trường `conversation_history` nhận tối đa 8 tin user/assistant, 4000 ký tự
+mỗi tin, tổng 12000 ký tự. Client chỉ gửi các lượt đã hoàn thành, bỏ nguyên
+tin quá dài thay vì cắt quote. Không lưu history trên server hoặc localStorage.
+Tiền tố `Câu hỏi mới:` xóa cả history và context làm rõ để bắt đầu chủ đề khác.
 
 ## Cấu trúc chính
 
@@ -164,7 +216,7 @@ app/
   citation/          Citation Engine
   guardrails/        Input, evidence, output gates
   kb/                Parser, normalizer, chunker, embedding
-  llm_provider/      Extractive + Gemini + OpenAI-compatible/Qwen provider
+  llm_provider/      Extractive + Gemini + OpenAI-compatible/Qwen/OpenRouter
   rag/               FAISS Vector Store + Retriever
   services/          End-to-end Legal Assistant orchestration
   static/            Web chat

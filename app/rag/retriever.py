@@ -11,6 +11,7 @@ from typing import Any
 from app.kb.embedding import SentenceTransformerEmbedder
 from app.rag.vector_store import FaissVectorStore
 from app.rag.ranking import diverse_article_rows
+from app.agent.concepts import definition_clause, definition_match_term, definition_term
 
 
 class LegalRetriever:
@@ -322,6 +323,41 @@ class LegalRetriever:
             )
 
         return "\n\n".join(blocks)
+
+    def lookup_definition(self, term: str) -> dict[str, Any] | None:
+        """Find one exact source definition; this is not a similarity score.
+
+        load() validates the same chunk/embedding manifest used by retrieval.
+        Definitions are derived from single-clause definition chunks, never
+        copied into a parallel hardcoded legal glossary.
+        """
+        if not self._loaded:
+            self.load()
+        requested = definition_match_term(term)
+        if not requested:
+            return None
+        matches = []
+        for chunk in self._chunks_by_id.values():
+            if (
+                definition_match_term(str(chunk.get("article_title", ""))) != "giai thich tu ngu"
+                or len(chunk.get("clause_nos", [])) != 1
+            ):
+                continue
+            source_text = str(chunk.get("text") or chunk.get("clean_text") or "")
+            source_term = definition_term(source_text)
+            if source_term is None or definition_clause(source_text) is None:
+                continue
+            if definition_match_term(source_term) == requested:
+                matches.append(chunk)
+        # More than one source definition may have different scope/version.
+        # Leave that ambiguity to ordinary lookup rather than choosing silently.
+        if len(matches) != 1:
+            return None
+        return {
+            **matches[0],
+            "score": 0.0,
+            "retrieval_method": "exact_definition",
+        }
 
     _TOKEN_RE = re.compile(r"[0-9a-zA-ZÀ-ỹĐđ]+", re.UNICODE)
     _STOPWORDS = {

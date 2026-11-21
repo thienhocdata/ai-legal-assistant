@@ -6,6 +6,19 @@
 >
 > Phạm vi: trợ lý tra cứu pháp luật đất đai Việt Nam phục vụ demo/nghiên cứu
 
+> Cập nhật 18/11/2026 (working tree chưa commit): sửa ranh giới hội thoại và
+> câu hỏi định nghĩa sau phản hồi người dùng; mốc đầu 307 test, sau UI/hội thoại
+> đạt 352 test; sau semantic router/history đạt 439 test. V2 dev giữ nguyên
+> 39/50 Hit@1, 46/50 Hit@k, 35/50 độ phủ mọi nhãn trong answer. Các mốc 171/116
+> bên dưới là lịch sử. Chi tiết và giới hạn tại
+> [bản kiểm chứng trọng tâm câu trả lời](evaluation/CHAT_ANSWER_FOCUS_2026-11-18.md).
+
+> Qwen hiện đã có key/endpoint cục bộ và có lần gọi API thật, nhưng bị trả
+> HTTP403 AccessDenied.Unpurchased. Chưa có câu trả lời Qwen thành công; phần
+> router/history được kiểm tra bằng mock và luồng fallback local. Runbook tại
+> [DEMO_HANDOFF.md](DEMO_HANDOFF.md); bản thảo cuối khóa cần bổ sung dữ kiện thật
+> tại [báo cáo thực tập dự thảo](BAO_CAO_THUC_TAP_CUOI_KHOA_DU_THAO.md).
+
 ## Tóm tắt
 
 AI Legal Assistant là hệ thống RAG chạy qua FastAPI và giao diện web, nhận câu
@@ -32,7 +45,7 @@ dưới; phần so sánh ba commit cũ vẫn giữ làm lịch sử kỹ thuật
 ## Vòng sửa độ tin cậy chat — 17/11/2026
 
 Đây là sửa các lỗi chức năng đã tái hiện bằng mock/source; không phải tuyên bố
-đã giải quyết toàn bộ chất lượng pháp lý hoặc ranking. Bộ test hiện đạt
+đã giải quyết toàn bộ chất lượng pháp lý hoặc ranking. Bộ test tại mốc này đạt
 **171 passed**, gồm một pytest wrapper chạy **11 Node tests** cho luồng UI.
 Warning còn lại là deprecation của Starlette TestClient/HTTPX.
 

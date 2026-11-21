@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from app.llm_provider import OpenAICompatibleProvider, ProviderRequestError
+from app.llm_provider import OpenAICompatibleProvider, ProviderRequestError, ProviderResponseError
 
 
 def test_openai_compatible_provider_parses_answer_and_usage() -> None:
@@ -142,3 +142,42 @@ def test_factory_builds_qwen_from_environment(monkeypatch: pytest.MonkeyPatch) -
     provider = create_llm_provider("qwen")
     assert isinstance(provider, OpenAICompatibleProvider)
     assert provider.model == "qwen-test"
+
+
+def _provider_with_choice(choice: dict) -> OpenAICompatibleProvider:
+    return OpenAICompatibleProvider(
+        api_key="test-key",
+        base_url="https://example.test/v1",
+        model="test-model",
+        provider_name="qwen",
+        client=httpx.Client(transport=httpx.MockTransport(
+            lambda _: httpx.Response(200, json={"choices": [choice]}),
+        )),
+    )
+
+
+def test_provider_rejects_truncated_answer_even_with_citation_marker() -> None:
+    provider = _provider_with_choice({
+        "message": {"content": "Kết luận [1], với điều kiện"},
+        "finish_reason": "length",
+    })
+    with pytest.raises(ProviderResponseError, match="bị cắt"):
+        provider.generate(system_prompt="system", user_prompt="question")
+
+
+@pytest.mark.parametrize("content", [None, 123, ["Đáp án [1]."], {"text": "Đáp án [1]."}, "", "  "])
+def test_provider_rejects_missing_or_nontext_content(content) -> None:
+    provider = _provider_with_choice({
+        "message": {"content": content}, "finish_reason": "stop",
+    })
+    with pytest.raises(ProviderResponseError, match="nội dung văn bản"):
+        provider.generate(system_prompt="system", user_prompt="question")
+
+
+def test_provider_preserves_successful_finish_reason() -> None:
+    provider = _provider_with_choice({
+        "message": {"content": "  Đáp án đầy đủ [1].  "}, "finish_reason": "stop",
+    })
+    response = provider.generate(system_prompt="system", user_prompt="question")
+    assert response.text == "Đáp án đầy đủ [1]."
+    assert response.metadata["finish_reason"] == "stop"

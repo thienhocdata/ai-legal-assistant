@@ -64,8 +64,8 @@ class ClarificationEngine:
         if not analysis.in_scope:
             return ClarificationResult(
                 status="out_of_scope",
-                reason="Câu hỏi chưa thể hiện nội dung thuộc pháp luật đất đai.",
-                questions=["Bạn có thể nêu rõ vấn đề liên quan đến đất đai cần tra cứu không?"],
+                reason="Mình chưa hiểu rõ ý bạn ở câu này.",
+                questions=["Bạn nói thêm một chút về điều muốn hỏi hoặc phần muốn mình giải thích nhé?"],
             )
         if analysis.missing_context_types:
             context_type = analysis.missing_context_types[0]

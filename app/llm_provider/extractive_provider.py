@@ -28,9 +28,8 @@ class ExtractiveProvider(BaseLLMProvider):
         )
         if evidence:
             text = (
-                "Hệ thống đang chạy ở chế độ trích xuất cục bộ. "
-                "Các đoạn căn cứ dưới đây được truy hồi để bạn đối chiếu; "
-                "hệ thống chưa kết luận áp dụng cho vụ việc:\n\n"
+                "Mình tìm được các đoạn luật liên quan dưới đây; "
+                "chưa kết luận áp dụng cho vụ việc:\n\n"
                 f"{evidence}\n\n"
                 "Chưa kiểm tra hiệu lực hiện hành và văn bản sửa đổi. "
                 "Vui lòng đối chiếu toàn văn trước khi áp dụng."

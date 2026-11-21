@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from typing import Any
 from hashlib import sha256
+import re
 
+from app.agent.concepts import definition_clause, definition_term
+from app.agent.query_understanding import fold_vietnamese
 from .models import Citation
 
 
@@ -83,10 +86,27 @@ class CitationEngine:
         if not context:
             return "Không tìm thấy căn cứ đủ rõ để trả lời."
         return (
-            "Hệ thống đang chạy ở chế độ trích xuất cục bộ. "
-            "Các đoạn căn cứ dưới đây được truy hồi để bạn đối chiếu; "
-            "hệ thống chưa kết luận áp dụng cho vụ việc:\n\n"
+            "Mình tìm được các đoạn luật liên quan dưới đây; "
+            "chưa kết luận áp dụng cho vụ việc:\n\n"
             f"{context}\n\n"
             "Chưa kiểm tra hiệu lực hiện hành và văn bản sửa đổi. "
             "Vui lòng đối chiếu toàn văn trước khi áp dụng."
         )
+
+    @staticmethod
+    def format_definition_answer(citation: Citation) -> str:
+        """Display one complete definition, retaining the original source quote.
+
+        Only structural headers and the clause number are omitted in the answer.
+        Conditions and all following sentences in that clause remain verbatim.
+        """
+        clause = definition_clause(citation.quote)
+        if (
+            clause is None
+            or definition_term(citation.quote) is None
+            or fold_vietnamese(citation.article_title) != "giai thich tu ngu"
+            or citation.clause_nos != [int(clause.split(".", 1)[0])]
+        ):
+            raise ValueError("Căn cứ không phải một khoản định nghĩa đầy đủ.")
+        content = re.sub(r"^\d+\.\s+", "", clause, count=1)
+        return f"{content} {citation.citation_id}"

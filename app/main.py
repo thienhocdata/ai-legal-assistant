@@ -6,13 +6,13 @@ import asyncio
 import json
 from pathlib import Path
 from threading import Lock
-from typing import Annotated
+from typing import Annotated, Literal
 
 from fastapi import FastAPI, HTTPException
 from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, Field, StringConstraints
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
 
 from app.services.legal_assistant import LegalAssistantService
 from app.services.runtime import RuntimeReadiness
@@ -23,6 +23,9 @@ STATIC_DIR = ROOT / "app" / "static"
 
 
 QuestionText = Annotated[str, StringConstraints(min_length=1, max_length=2000)]
+HistoryText = Annotated[
+    str, StringConstraints(strip_whitespace=True, min_length=1, max_length=4000)
+]
 
 
 class ClarificationContext(BaseModel):
@@ -30,9 +33,23 @@ class ClarificationContext(BaseModel):
     answers: list[QuestionText] = Field(default_factory=list, max_length=3)
 
 
+class ChatTurn(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    role: Literal["user", "assistant"]
+    content: HistoryText
+
+
 class ChatRequest(BaseModel):
     question: QuestionText
     clarification_context: ClarificationContext | None = None
+    conversation_history: list[ChatTurn] | None = Field(default=None, max_length=8)
+
+    @model_validator(mode="after")
+    def validate_history_budget(self) -> "ChatRequest":
+        if sum(len(turn.content) for turn in self.conversation_history or []) > 12000:
+            raise ValueError("Lịch sử hội thoại vượt tổng giới hạn 12000 ký tự.")
+        return self
 
 
 @lru_cache(maxsize=1)
@@ -121,6 +138,10 @@ async def chat(request: ChatRequest) -> dict:
             service.answer, request.question,
             clarification_context=(request.clarification_context.model_dump()
                                    if request.clarification_context else None),
+            conversation_history=(
+                [turn.model_dump() for turn in request.conversation_history]
+                if request.conversation_history is not None else None
+            ),
         )
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc

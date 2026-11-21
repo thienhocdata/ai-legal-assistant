@@ -1,6 +1,6 @@
 # Cổng tài liệu dự án
 
-Ngày rà soát gần nhất: 17/11/2026.
+Ngày rà soát gần nhất: 18/11/2026.
 
 ## Đọc nhanh
 
@@ -14,6 +14,8 @@ Ngày rà soát gần nhất: 17/11/2026.
 ## Định tuyến theo công việc
 
 - API, orchestration hoặc UI: `PROJECT_OVERVIEW.md`, `ARCHITECTURE_MAP.md`, `SYSTEM_REGISTRY.md`.
+- Hội thoại và câu hỏi khái niệm sau phản hồi người dùng: `evaluation/CHAT_ANSWER_FOCUS_2026-11-18.md`.
+- Chạy và bàn giao demo: `DEMO_HANDOFF.md`; khung báo cáo cuối khóa cần bổ sung thông tin thật: `BAO_CAO_THUC_TAP_CUOI_KHOA_DU_THAO.md`.
 - Ingest, parser, chunking, embedding hoặc FAISS: `DATA_AND_LEGAL_SOURCES.md`, `ARCHITECTURE_MAP.md`, `TESTING_GUIDE.md`.
 - Retrieval, query understanding hoặc evaluation: `ARCHITECTURE_MAP.md`,
   `KNOWN_ISSUES.md`, `TESTING_GUIDE.md`; kết quả V2 tại
@@ -22,6 +24,7 @@ Ngày rà soát gần nhất: 17/11/2026.
 - Vòng sửa sau V2: `evaluation/DATASET_ROLES.md` (dev/holdout và schema metric),
   `evaluation/V2_FAILURE_AUDIT.md` (19 lỗi); kết quả trước/sau trong báo cáo tổng quan.
 - Citation, LLM hoặc guardrails: `SECURITY_AND_PRIVACY.md`, `DATA_AND_LEGAL_SOURCES.md`, `TESTING_GUIDE.md`.
+- Kết nối OpenRouter/ERNIE: `evaluation/OPENROUTER_INTEGRATION_2026-11-18.md`.
 - Lập kế hoạch: `CURRENT_PRIORITIES.md`, `KNOWN_ISSUES.md`.
 - Kiểm tra tài liệu cũ: `DOCUMENT_AUDIT_REPORT.md`, `context-pack/DOCUMENT_STATUS.md`.
 

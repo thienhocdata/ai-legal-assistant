@@ -21,7 +21,9 @@ def main() -> None:
     page = client.get("/")
     assert page.status_code == 200
     assert "Minh Long" in page.text
-    assert "không phải độ chính xác pháp lý tổng quát" in page.text
+    assert 'id="chat-form"' in page.text
+    assert 'id="question"' in page.text
+    assert "MRR" not in page.text
     invalid = client.post("/api/chat", json={"question": ""})
     assert invalid.status_code == 422
     print("API & WEB UI: SUCCESS")
@@ -53,8 +55,14 @@ def test_api_health_ui_and_chat_contracts_without_live_provider(tmp_path, monkey
         assert health.status_code == 200
         assert health.json()["active_document_id"] == "vbhn_133_2025_luat_dat_dai"
         page = client.get("/")
-        assert "Baseline V2 trước sửa" in page.text
-        assert "V1 là dev set" in page.text
+        assert page.status_code == 200
+        assert "Minh Long" in page.text
+        assert 'id="chat-form"' in page.text
+        assert 'id="question"' in page.text
+        assert 'id="submit"' in page.text
+        assert '<aside' not in page.text
+        for metric_label in ("Baseline", "Hit@", "Recall@", "MRR", "dev set"):
+            assert metric_label not in page.text
         assert client.get("/api/chat").status_code == 405
         response = client.post("/api/chat", json={"question": "Điều kiện chuyển nhượng đất là gì?"})
         assert response.status_code == 200

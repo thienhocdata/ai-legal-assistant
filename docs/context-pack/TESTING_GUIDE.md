@@ -11,7 +11,27 @@ Baseline sau promotion ngày 08/08/2026: 38 test đạt. Sau quality hardening n
 116 passed; vòng sửa chat 17/11/2026: 171 passed. Cache đã chuyển tới `data/evaluation/runs/pytest-cache` bằng
 `pytest.ini`. Warning còn lại là deprecation của Starlette TestClient/HTTPX.
 
-`tests/test_js_chat_flow.py` chạy 11 Node DOM/network mock tests. Cần Node.js;
+Vòng sửa trọng tâm 18/11/2026 đạt 307 passed. Các test mới tại
+`test_chat_intents.py`, `test_concept_lookup.py`, `test_answer_intents.py`
+kiểm tra ranh giới hội thoại/khái niệm/vụ việc, câu hỏi pháp lý trộn lời chào,
+trích nguyên khoản định nghĩa và chống thêm nhận định vào output local.
+
+Sau sửa UI/hội thoại, full suite mới nhất đạt 352 passed. Test provider kiểm
+tra từ chối output bị cắt do token limit và content null/không phải chuỗi.
+Nhánh hosted hội thoại chỉ được kiểm tra bằng mock, không phải gọi Qwen thật.
+
+Vòng semantic router/history đạt 439 passed. Có test tin nhắn ngoài các mẫu
+hội thoại cũ, follow-up truy hồi lại nguồn, không xóa source gap qua query viết
+lại, bounds/history injection, reset, và timeout theo lượt. Qwen đã được gọi
+thật nhưng trả lỗi quyền truy cập; chưa có test live thành công để chấm nội dung.
+
+Sau tích hợp OpenRouter, full suite đạt **457 passed**. Test mới kiểm tra key
+riêng, endpoint cố định, giới hạn model/giá miễn phí, model thực tế và lỗi
+HTTP200. Smoke test thật qua `/api/chat` xác nhận ERNIE trả lời hội thoại và câu
+luật, cost 0, không fallback; chưa chấm chất lượng pháp lý độc lập. Xem
+`docs/evaluation/OPENROUTER_INTEGRATION_2026-11-18.md`.
+
+`tests/test_js_chat_flow.py` chạy 19 Node DOM/network mock tests. Cần Node.js;
 máy thiếu Node sẽ skip wrapper, không được mô tả là đã kiểm thử JS trên máy đó.
 Các test mới ở `test_chat_reliability.py`, `test_evidence_integrity.py` và
 `test_vietnamese_input.py` kiểm tra context, nguồn còn thiếu, tiếng Việt không
